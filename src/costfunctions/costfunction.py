@@ -19,8 +19,8 @@ class CostFunction:
     def get_maximum_for_dataset(self, dataset: dataset_type) -> float:
         current_maximum: float = 0.0
         for index1 in range(len(dataset)):
-            for index2 in range(len(dataset) - index1):
-                current_value = self.distance_metric(dataset[index1].coordinates, dataset[index1 + index2].coordinates)
+            for index2 in range(len(dataset) - index1 - 1):
+                current_value = self.distance_metric(dataset[index1].coordinates, dataset[index1 + index2 + 1].coordinates)
                 if current_value > current_maximum:
                     current_maximum = current_value
         return current_maximum
@@ -28,8 +28,8 @@ class CostFunction:
     def get_minimum_for_dataset(self, dataset: dataset_type) -> float:
         current_minimum: float = 9999999.9
         for index1 in range(len(dataset)):
-            for index2 in range(len(dataset) - index1):
-                current_value = self.distance_metric(dataset[index1].coordinates, dataset[index1 + index2].coordinates)
+            for index2 in range(len(dataset) - index1 - 1):
+                current_value = self.distance_metric(dataset[index1].coordinates, dataset[index1 + index2 + 1].coordinates)
                 if current_value < current_minimum:
                     current_minimum = current_value
         return current_minimum
@@ -42,10 +42,10 @@ class CostFunction:
                 current_maximum = current_value
         return current_maximum
 
-    def get_maximum_keyword_distance(self, query: KeywordCoordinate, poi_list: dataset_type) -> float:
+    def get_maximum_keyword_distance(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
         current_maximum = 0
-        for poi in poi_list:
-            current_value = self.similarity_metric(query.keywords, poi.keywords)
+        for element in dataset:
+            current_value = self.similarity_metric(query.keywords, element.keywords)
             if current_value > current_maximum:
                 current_maximum = current_value
         return current_maximum

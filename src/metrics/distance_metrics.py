@@ -8,4 +8,4 @@ def euclidean_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> floa
 
 
 def manhattan_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> float:
-    return abs(coordinate1.x - coordinate2.x) + abs(coordinate1.y + coordinate2.y)
+    return abs(coordinate1.x - coordinate2.x) + abs(coordinate1.y - coordinate2.y)

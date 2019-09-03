@@ -16,4 +16,4 @@ class TestNaiveSolver(TestCase):
         cf = Type1(euclidean_distance, keyword_distance, 0.3, 0.3, 0.4)
         ns = NaiveSolver(query, poiset, cf)
         result = ns.solve()
-        self.assertAlmostEqual(result[0], 0.4242640687119285, delta=0.01)
+        self.assertAlmostEqual(result[0], 0.42, delta=0.01)
