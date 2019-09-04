@@ -5,12 +5,12 @@ from metrics.types import dataset_type
 from costfunctions.costfunction import CostFunction
 from model.keyword_coordinate import KeywordCoordinate
 from metrics.similarity_metrics import find_subsets
+from solvers.solver import Solver
 
-class NaiveSolver:
+
+class NaiveSolver(Solver):
     def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction):
-        self.query: KeywordCoordinate = query
-        self.data: dataset_type = data
-        self.cost_function: CostFunction = cost_function
+        super().__init__(query, data, cost_function)
 
     def solve(self) -> typing.Tuple[float, typing.Set[KeywordCoordinate]]:
         lowest_cost = 999999999
