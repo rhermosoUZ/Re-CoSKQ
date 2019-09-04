@@ -158,7 +158,7 @@ class TestCostFunction(TestCase):
         result = cf.get_maximum_for_query(query, dataset)
         self.assertAlmostEqual(result, 49.5, delta=0.01)
 
-    def test_get_maximum_for_query3(self):
+    def test_get_maximum_for_query4(self):
         keywords_dont_matter_here = ['']
         query = KeywordCoordinate(0, 0, keywords_dont_matter_here)
         kwc1 = KeywordCoordinate(8, 8, keywords_dont_matter_here)
@@ -170,6 +170,58 @@ class TestCostFunction(TestCase):
         cf = CostFunction(manhattan_distance, keyword_distance, 0.3, 0.3, 0.4)
         result = cf.get_maximum_for_query(query, dataset)
         self.assertAlmostEqual(result, 70.0, delta=0.01)
+
+    def test_get_minimum_for_query1(self):
+        keywords_dont_matter_here = ['']
+        query = KeywordCoordinate(0, 0, keywords_dont_matter_here)
+        kwc1 = KeywordCoordinate(1, 1, keywords_dont_matter_here)
+        kwc2 = KeywordCoordinate(2, 2, keywords_dont_matter_here)
+        kwc3 = KeywordCoordinate(3, 3, keywords_dont_matter_here)
+        kwc4 = KeywordCoordinate(4, 4, keywords_dont_matter_here)
+        kwc5 = KeywordCoordinate(5, 5, keywords_dont_matter_here)
+        dataset: dataset_type = [kwc1, kwc2, kwc3, kwc4, kwc5]
+        cf = CostFunction(euclidean_distance, keyword_distance, 0.3, 0.3, 0.4)
+        result = cf.get_minimum_for_query(query, dataset)
+        self.assertAlmostEqual(result, 1.41, delta=0.01)
+
+    def test_get_minimum_for_query2(self):
+        keywords_dont_matter_here = ['']
+        query = KeywordCoordinate(0, 0, keywords_dont_matter_here)
+        kwc1 = KeywordCoordinate(1, 1, keywords_dont_matter_here)
+        kwc2 = KeywordCoordinate(2, 2, keywords_dont_matter_here)
+        kwc3 = KeywordCoordinate(3, 3, keywords_dont_matter_here)
+        kwc4 = KeywordCoordinate(4, 4, keywords_dont_matter_here)
+        kwc5 = KeywordCoordinate(5, 5, keywords_dont_matter_here)
+        dataset: dataset_type = [kwc1, kwc2, kwc3, kwc4, kwc5]
+        cf = CostFunction(manhattan_distance, keyword_distance, 0.3, 0.3, 0.4)
+        result = cf.get_minimum_for_query(query, dataset)
+        self.assertAlmostEqual(result, 2.0, delta=0.01)
+
+    def test_get_minimum_for_query3(self):
+        keywords_dont_matter_here = ['']
+        query = KeywordCoordinate(0, 0, keywords_dont_matter_here)
+        kwc1 = KeywordCoordinate(8, 8, keywords_dont_matter_here)
+        kwc2 = KeywordCoordinate(9, 9, keywords_dont_matter_here)
+        kwc3 = KeywordCoordinate(13, 13, keywords_dont_matter_here)
+        kwc4 = KeywordCoordinate(24, 24, keywords_dont_matter_here)
+        kwc5 = KeywordCoordinate(35, 35, keywords_dont_matter_here)
+        dataset: dataset_type = [kwc1, kwc2, kwc3, kwc4, kwc5]
+        cf = CostFunction(euclidean_distance, keyword_distance, 0.3, 0.3, 0.4)
+        result = cf.get_minimum_for_query(query, dataset)
+        self.assertAlmostEqual(result, 11.31, delta=0.01)
+
+    def test_get_minimum_for_query4(self):
+        keywords_dont_matter_here = ['']
+        query = KeywordCoordinate(0, 0, keywords_dont_matter_here)
+        kwc1 = KeywordCoordinate(8, 8, keywords_dont_matter_here)
+        kwc2 = KeywordCoordinate(9, 9, keywords_dont_matter_here)
+        kwc3 = KeywordCoordinate(13, 13, keywords_dont_matter_here)
+        kwc4 = KeywordCoordinate(24, 24, keywords_dont_matter_here)
+        kwc5 = KeywordCoordinate(35, 35, keywords_dont_matter_here)
+        dataset: dataset_type = [kwc1, kwc2, kwc3, kwc4, kwc5]
+        cf = CostFunction(manhattan_distance, keyword_distance, 0.3, 0.3, 0.4)
+        result = cf.get_minimum_for_query(query, dataset)
+        self.assertAlmostEqual(result, 16.0, delta=0.01)
 
     def test_get_maximum_keyword_distance1(self):
         keywords_query = ['food', 'fun', 'outdoor']

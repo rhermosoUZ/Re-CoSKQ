@@ -3,7 +3,7 @@ from __future__ import annotations
 from costfunctions.costfunction import CostFunction
 from metrics.types import dataset_type
 from model.keyword_coordinate import KeywordCoordinate
-import typing
+from metrics.types import solution
 
 
 class Solver:
@@ -12,5 +12,5 @@ class Solver:
         self.data: dataset_type = data
         self.cost_function: CostFunction = cost_function
 
-    def solve(self) -> typing.Tuple[float, typing.Set[KeywordCoordinate]]:
+    def solve(self) -> solution:
         pass

@@ -42,6 +42,14 @@ class CostFunction:
                 current_maximum = current_value
         return current_maximum
 
+    def get_minimum_for_query(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
+        current_minimum = 99999999
+        for index in range(len(dataset)):
+            current_value = self.distance_metric(query.coordinates, dataset[index].coordinates)
+            if current_value < current_minimum:
+                current_minimum = current_value
+        return current_minimum
+
     def get_maximum_keyword_distance(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
         current_maximum = 0
         for element in dataset:

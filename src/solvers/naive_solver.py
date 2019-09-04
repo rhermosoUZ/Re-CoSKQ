@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import typing
+from metrics.types import solution
 from metrics.types import dataset_type
 from costfunctions.costfunction import CostFunction
 from model.keyword_coordinate import KeywordCoordinate
@@ -12,7 +12,7 @@ class NaiveSolver(Solver):
     def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction):
         super().__init__(query, data, cost_function)
 
-    def solve(self) -> typing.Tuple[float, typing.Set[KeywordCoordinate]]:
+    def solve(self) -> solution:
         lowest_cost = 999999999
         lowest_cost_set = {None, None}
         for index in range(len(self.data)):
@@ -23,3 +23,6 @@ class NaiveSolver(Solver):
                     lowest_cost = current_cost
                     lowest_cost_set = subset
         return (lowest_cost, lowest_cost_set)
+
+    def __str__(self):
+        return 'NaiveSolver'
