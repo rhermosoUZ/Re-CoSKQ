@@ -10,8 +10,4 @@ class Type3(CostFunction):
         super().__init__(distance_metric, similarity_metric, alpha, beta, omega)
 
     def solve(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
-        print(self.alpha * self.get_minimum_for_query(query, dataset))
-        print(self.beta * self.get_maximum_for_dataset(dataset))
-        print(self.omega * self.get_maximum_keyword_distance(query, dataset))
-        print('Sum:', self.alpha * self.get_minimum_for_query(query, dataset) + self.beta * self.get_maximum_for_dataset(dataset) + self.omega * self.get_maximum_keyword_distance(query, dataset))
         return self.alpha * self.get_minimum_for_query(query, dataset) + self.beta * self.get_maximum_for_dataset(dataset) + self.omega * self.get_maximum_keyword_distance(query, dataset)
