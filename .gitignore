@@ -1,1 +1,10 @@
+# Ignore everything
+*
+# Whitelist all directories
+!*/
+# Block IDE config
 .idea
+# Add file types of interest
+!README.md
+!.gitignore
+!*.py
