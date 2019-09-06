@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-import math, typing
+import math
+import typing
+import logging
 import itertools
 from metrics.types import sim_dataset_type, keyword_dataset_type, dataset_type
 
@@ -10,10 +12,16 @@ from model.keyword_coordinate import KeywordCoordinate
 
 # TODO if a set of keywords covers the query plus additional categories the similarity declines. Is this wanted?
 def cosine_similarity(dataset1: sim_dataset_type, dataset2: sim_dataset_type) -> float:
+    logger = logging.getLogger(__name__ + '.cosine_similarity')
+    logger.debug('calculating for {} and {}'.format(dataset1, dataset2))
     if len(dataset1) != len(dataset2):
-        raise ValueError('Both datasets have to be of the same length.')
+        msg = 'Both datasets have to be of the same length.'
+        logger.error(msg)
+        raise ValueError(msg)
     if sum(dataset1) == 0 or sum(dataset2) == 0:
-        raise ValueError('Neither dataset may only consist of 0-values.')
+        msg = 'Neither dataset may only consist of 0-values.'
+        logger.error(msg)
+        raise ValueError(msg)
     # Numerator
     numerator = 0
     for index in range(len(dataset1)):
@@ -25,12 +33,16 @@ def cosine_similarity(dataset1: sim_dataset_type, dataset2: sim_dataset_type) ->
         a += dataset1[index] ** 2
         b += dataset2[index] ** 2
     denominator = math.sqrt(a) * math.sqrt(b)
-    return numerator / denominator
+    solution = numerator / denominator
+    logger.debug('calculated {}'.format(solution))
+    return solution
 
 
 # TODO generate general keyword vector over the entire set of keyword coordinates
 def create_keyword_vector(keyword_list1: keyword_dataset_type, keyword_list2: keyword_dataset_type) -> typing.Tuple[
     typing.List[int], typing.List[int]]:
+    logger = logging.getLogger(__name__ + '.create_keyword_vector')
+    logger.debug('calculating for {} and {}'.format(keyword_list1, keyword_list2))
     merged_list = list(map(str.lower, (keyword_list1 + keyword_list2)))
     vector = list(set(merged_list))
     del (merged_list)
@@ -45,19 +57,27 @@ def create_keyword_vector(keyword_list1: keyword_dataset_type, keyword_list2: ke
             result_vector2.append(1)
         else:
             result_vector2.append(0)
-    return (result_vector1, result_vector2)
+    solution = (result_vector1, result_vector2)
+    logger.debug('calculated {}'.format(solution))
+    return solution
 
 
-def keyword_distance(query_keyword_list, poi_keyword_list) -> float:
-    # dist(k 1 , k 2 ) = 1 − sim(k 1 , k 2 )
-    kw_vectors = create_keyword_vector(query_keyword_list, poi_keyword_list)
-    cosim = cosine_similarity(kw_vectors[0], kw_vectors[1])
-    return 1 - cosim
+def keyword_distance(query_keyword_list, data_keyword_list) -> float:
+    logger = logging.getLogger(__name__ + '.keyword_distance')
+    logger.debug('calculating for query {} and dataset {}'.format(query_keyword_list, data_keyword_list))
+    kw_vectors = create_keyword_vector(query_keyword_list, data_keyword_list)
+    solution = 1 - cosine_similarity(kw_vectors[0], kw_vectors[1])
+    logger.debug('calculated {}'.format(solution))
+    return solution
 
 
 # https://stackoverflow.com/questions/374626/how-can-i-find-all-the-subsets-of-a-set-with-exactly-n-elements#374645
 def find_subsets(input_set: typing.List, subset_size: int):
+    logger = logging.getLogger(__name__ + '.find_subsets')
+    logger.debug('finding all subsets of length {} in set {}'.format(subset_size, input_set))
     if subset_size > len(input_set):
-        return set(itertools.combinations(input_set, 0))
+        solution = set(itertools.combinations(input_set, 0))
     else:
-        return set(itertools.combinations(input_set, subset_size))
+        solution = set(itertools.combinations(input_set, subset_size))
+    logger.debug('found {}'.format(solution))
+    return solution

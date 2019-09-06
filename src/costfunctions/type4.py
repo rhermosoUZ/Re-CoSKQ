@@ -3,6 +3,7 @@ from costfunctions.costfunction import CostFunction
 
 from metrics.types import distance_function_type, similarity_function_type, dataset_type
 from model.keyword_coordinate import KeywordCoordinate
+import logging
 
 
 class Type4(CostFunction):
@@ -12,6 +13,8 @@ class Type4(CostFunction):
         self.phi_2 = phi_2
 
     def solve(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
+        logger = logging.getLogger(__name__)
+        logger.debug('solving for query {} and dataset {}'.format(query, dataset))
         a: float = 0.0
         for element in dataset:
             a += self.distance_metric(query.coordinates, element.coordinates) ** self.phi_1
@@ -19,4 +22,6 @@ class Type4(CostFunction):
         a = (self.alpha * a) ** self.phi_2
         b: float = (self.beta * self.get_maximum_for_dataset(dataset)) ** self.phi_2
         c: float = ((self.omega * self.get_maximum_keyword_distance(query, dataset)) ** self.phi_2) ** (1 / self.phi_2)
-        return a + b + c
+        solution = a + b + c
+        logger.debug('solved with a cost of {}'.format(solution))
+        return solution

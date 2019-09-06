@@ -3,7 +3,8 @@ from __future__ import annotations
 from costfunctions.costfunction import CostFunction
 from metrics.types import dataset_type
 from model.keyword_coordinate import KeywordCoordinate
-from metrics.types import solution
+from metrics.types import solution_type
+import logging
 
 
 class Solver:
@@ -11,6 +12,7 @@ class Solver:
         self.query: KeywordCoordinate = query
         self.data: dataset_type = data
         self.cost_function: CostFunction = cost_function
+        logging.getLogger(__name__).debug('created with query {}, data {} and cost function {}'.format(self.query, self.data, self.cost_function))
 
-    def solve(self) -> solution:
+    def solve(self) -> solution_type:
         pass
