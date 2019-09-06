@@ -3,7 +3,7 @@ from __future__ import annotations
 from solvers.solver import Solver
 import typing
 import logging
-from metrics.types import solution_type
+from utils.types import solution_type
 
 
 class Evaluator:

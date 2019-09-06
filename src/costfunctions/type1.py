@@ -1,7 +1,8 @@
 from costfunctions.costfunction import CostFunction
 
 
-from metrics.types import distance_function_type, similarity_function_type, dataset_type
+from utils.types import distance_function_type, similarity_function_type, dataset_type
+from utils.logging_utils import dataset_comprehension
 from model.keyword_coordinate import KeywordCoordinate
 import logging
 
@@ -12,7 +13,7 @@ class Type1(CostFunction):
 
     def solve(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
         logger = logging.getLogger(__name__)
-        logger.debug('solving for query {} and dataset {}'.format(query, dataset))
+        logger.debug('solving for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
         solution = self.alpha * self.get_maximum_for_query(query, dataset) + self.beta * self.get_maximum_for_dataset(dataset) + self.omega * self.get_maximum_keyword_distance(query, dataset)
         logger.debug('solved with a cost of {}'.format(solution))
         return solution

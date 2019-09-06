@@ -4,10 +4,11 @@ import math
 import typing
 import logging
 import itertools
-from metrics.types import sim_dataset_type, keyword_dataset_type, dataset_type
+from utils.types import sim_dataset_type, keyword_dataset_type
+from utils.logging_utils import dataset_comprehension
+
 
 # Cosine Similarity
-from model.keyword_coordinate import KeywordCoordinate
 
 
 # TODO if a set of keywords covers the query plus additional categories the similarity declines. Is this wanted?
@@ -74,7 +75,7 @@ def keyword_distance(query_keyword_list, data_keyword_list) -> float:
 # https://stackoverflow.com/questions/374626/how-can-i-find-all-the-subsets-of-a-set-with-exactly-n-elements#374645
 def find_subsets(input_set: typing.List, subset_size: int):
     logger = logging.getLogger(__name__ + '.find_subsets')
-    logger.debug('finding all subsets of length {} in set {}'.format(subset_size, input_set))
+    logger.debug('finding all subsets of length {} in set {}'.format(subset_size, dataset_comprehension(input_set)))
     if subset_size > len(input_set):
         solution = set(itertools.combinations(input_set, 0))
     else:

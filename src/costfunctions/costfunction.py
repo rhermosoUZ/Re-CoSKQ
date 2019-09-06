@@ -3,8 +3,9 @@ from __future__ import annotations
 import typing
 import logging
 
-from metrics.types import distance_function_type, similarity_function_type, dataset_type
+from utils.types import distance_function_type, similarity_function_type, dataset_type
 from model.keyword_coordinate import KeywordCoordinate
+from utils.logging_utils import dataset_comprehension
 
 
 class CostFunction:
@@ -20,7 +21,7 @@ class CostFunction:
     # TODO check if minimum and maximum functions can be refactored into one
     def get_maximum_for_dataset(self, dataset: dataset_type) -> float:
         logger = logging.getLogger(__name__)
-        logger.debug('finding maximum distance for dataset {}'.format(dataset))
+        logger.debug('finding maximum distance for dataset {}'.format(dataset_comprehension(dataset)))
         current_maximum: float = 0.0
         for index1 in range(len(dataset)):
             for index2 in range(len(dataset) - index1 - 1):
@@ -32,7 +33,7 @@ class CostFunction:
 
     def get_minimum_for_dataset(self, dataset: dataset_type) -> float:
         logger = logging.getLogger(__name__)
-        logger.debug('finding minimum distance for dataset {}'.format(dataset))
+        logger.debug('finding minimum distance for dataset {}'.format(dataset_comprehension(dataset)))
         current_minimum: float = 9999999.9
         for index1 in range(len(dataset)):
             for index2 in range(len(dataset) - index1 - 1):
@@ -44,7 +45,7 @@ class CostFunction:
 
     def get_maximum_for_query(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
         logger = logging.getLogger(__name__)
-        logger.debug('finding maximum distance for query {} and dataset {}'.format(query, dataset))
+        logger.debug('finding maximum distance for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
         current_maximum = 0
         for index in range(len(dataset)):
             current_value = self.distance_metric(query.coordinates, dataset[index].coordinates)
@@ -55,7 +56,7 @@ class CostFunction:
 
     def get_minimum_for_query(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
         logger = logging.getLogger(__name__)
-        logger.debug('finding minimum distance for query {} and dataset {}'.format(query, dataset))
+        logger.debug('finding minimum distance for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
         current_minimum = 99999999
         for index in range(len(dataset)):
             current_value = self.distance_metric(query.coordinates, dataset[index].coordinates)
@@ -66,7 +67,7 @@ class CostFunction:
 
     def get_maximum_keyword_distance(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
         logger = logging.getLogger(__name__)
-        logger.debug('finding maximum similarity for query {} and dataset {}'.format(query, dataset))
+        logger.debug('finding maximum similarity for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
         current_maximum = 0
         for element in dataset:
             current_value = self.similarity_metric(query.keywords, element.keywords)
