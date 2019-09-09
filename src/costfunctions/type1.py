@@ -1,10 +1,9 @@
-from costfunctions.costfunction import CostFunction
-
-
-from utils.types import distance_function_type, similarity_function_type, dataset_type
-from utils.logging_utils import dataset_comprehension
-from model.keyword_coordinate import KeywordCoordinate
 import logging
+
+from costfunctions.costfunction import CostFunction
+from model.keyword_coordinate import KeywordCoordinate
+from utils.logging_utils import dataset_comprehension
+from utils.types import distance_function_type, similarity_function_type, dataset_type
 
 
 class Type1(CostFunction):

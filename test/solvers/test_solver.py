@@ -1,10 +1,10 @@
 from unittest import TestCase
 
 from costfunctions.costfunction import CostFunction
-from solvers.solver import Solver
-from model.keyword_coordinate import KeywordCoordinate
 from metrics.distance_metrics import euclidean_distance
 from metrics.similarity_metrics import keyword_distance
+from model.keyword_coordinate import KeywordCoordinate
+from solvers.solver import Solver
 
 
 class TestSolver(TestCase):

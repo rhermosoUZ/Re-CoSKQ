@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from model.coordinate import Coordinate
-import typing
 import logging
+import typing
+
+from model.coordinate import Coordinate
 
 
 class KeywordCoordinate:

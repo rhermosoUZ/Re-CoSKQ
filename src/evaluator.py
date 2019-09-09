@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from solvers.solver import Solver
-import typing
 import logging
+import typing
+
+from solvers.solver import Solver
+from utils.logging_utils import list_comprehension, solution_list_comprehension
 from utils.types import solution_type
 
 
@@ -18,12 +20,12 @@ class Evaluator:
 
     def evaluate(self):
         logger = logging.getLogger(__name__)
-        logger.debug('starting evaluation for solvers {}'.format(self.solvers))
+        logger.debug('starting evaluation for solvers {}'.format(list_comprehension(self.solvers)))
         for solver in self.solvers:
             result = solver.solve()
             self.results.append((result, solver))
-        logger.debug('finished evaluation with results {}'.format(self.results))
+        logger.debug('finished evaluation with results {}'.format(solution_list_comprehension(self.results)))
 
     def get_results(self):
-        logging.getLogger(__name__).debug('getting results {}'.format(self.results))
+        logging.getLogger(__name__).debug('getting results {}'.format(solution_list_comprehension(self.results)))
         return self.results.copy()

@@ -1,5 +1,5 @@
-import math
 import logging
+import math
 
 from model.coordinate import Coordinate
 

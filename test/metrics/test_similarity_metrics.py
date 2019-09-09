@@ -1,6 +1,7 @@
 from unittest import TestCase
-from utils.types import sim_dataset_type, sim_tuple_type
+
 import metrics.similarity_metrics as mt
+from utils.types import sim_dataset_type, sim_tuple_type
 
 
 class TestSimilarityMetrics(TestCase):

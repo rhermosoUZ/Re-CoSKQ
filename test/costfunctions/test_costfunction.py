@@ -1,9 +1,10 @@
 from unittest import TestCase
+
 from costfunctions.costfunction import CostFunction
 from metrics.distance_metrics import euclidean_distance, manhattan_distance
 from metrics.similarity_metrics import keyword_distance
-from utils.types import dataset_type
 from model.keyword_coordinate import KeywordCoordinate
+from utils.types import dataset_type
 
 
 class TestCostFunction(TestCase):

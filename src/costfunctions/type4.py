@@ -1,10 +1,9 @@
-from costfunctions.costfunction import CostFunction
-
-
-from utils.types import distance_function_type, similarity_function_type, dataset_type
-from utils.logging_utils import dataset_comprehension
-from model.keyword_coordinate import KeywordCoordinate
 import logging
+
+from costfunctions.costfunction import CostFunction
+from model.keyword_coordinate import KeywordCoordinate
+from utils.logging_utils import dataset_comprehension
+from utils.types import distance_function_type, similarity_function_type, dataset_type
 
 
 class Type4(CostFunction):
@@ -26,3 +25,6 @@ class Type4(CostFunction):
         solution = a + b + c
         logger.debug('solved with a cost of {}'.format(solution))
         return solution
+
+    def __str__(self):
+        return 'Type4(dist: {}, sim: {}, alpha: {}, beta: {}, omega: {}, phi_1: {}, phi_2: {})'.format(self.distance_metric, self.similarity_metric, self.alpha, self.beta, self.omega, self.phi_1, self.phi_2)

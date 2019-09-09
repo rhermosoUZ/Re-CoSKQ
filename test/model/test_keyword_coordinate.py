@@ -1,4 +1,5 @@
 from unittest import TestCase
+
 from model.keyword_coordinate import KeywordCoordinate
 
 

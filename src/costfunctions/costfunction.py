@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import typing
 import logging
+import typing
 
-from utils.types import distance_function_type, similarity_function_type, dataset_type
 from model.keyword_coordinate import KeywordCoordinate
 from utils.logging_utils import dataset_comprehension
+from utils.types import distance_function_type, similarity_function_type, dataset_type
 
 
 class CostFunction:
@@ -78,3 +78,6 @@ class CostFunction:
 
     def solve(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
         pass
+
+    def __str__(self):
+        return '{}(dist: {}, sim: {}, alpha: {}, beta: {}, omega: {})'.format(type(self).__name__, self.distance_metric, self.similarity_metric, self.alpha, self.beta, self.omega)

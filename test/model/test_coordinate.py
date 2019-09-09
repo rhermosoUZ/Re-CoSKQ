@@ -1,4 +1,5 @@
 from unittest import TestCase
+
 from model.coordinate import Coordinate
 
 

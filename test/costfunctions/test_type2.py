@@ -1,7 +1,8 @@
 from unittest import TestCase
+
 from costfunctions.type2 import Type2
-from metrics.similarity_metrics import keyword_distance
 from metrics.distance_metrics import euclidean_distance, manhattan_distance
+from metrics.similarity_metrics import keyword_distance
 from model.keyword_coordinate import KeywordCoordinate
 
 

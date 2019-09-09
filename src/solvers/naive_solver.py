@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from utils.types import solution_type
-from utils.types import dataset_type
+import logging
+
 from costfunctions.costfunction import CostFunction
-from model.keyword_coordinate import KeywordCoordinate
 from metrics.similarity_metrics import find_subsets
+from model.keyword_coordinate import KeywordCoordinate
 from solvers.solver import Solver
 from utils.logging_utils import dataset_comprehension
-import logging
+from utils.types import dataset_type
+from utils.types import solution_type
 
 
 class NaiveSolver(Solver):
@@ -32,6 +33,3 @@ class NaiveSolver(Solver):
         solution = (lowest_cost, lowest_cost_set)
         logger.debug('solved for ({}, {})'.format(solution[0], dataset_comprehension(solution[1])))
         return solution
-
-    def __str__(self):
-        return 'NaiveSolver'

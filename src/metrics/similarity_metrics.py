@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import itertools
+import logging
 import math
 import typing
-import logging
-import itertools
+
+from utils.logging_utils import dataset_comprehension, sets_of_set_comprehension
 from utils.types import sim_dataset_type, keyword_dataset_type
-from utils.logging_utils import dataset_comprehension
 
 
 # Cosine Similarity
@@ -80,5 +81,5 @@ def find_subsets(input_set: typing.List, subset_size: int):
         solution = set(itertools.combinations(input_set, 0))
     else:
         solution = set(itertools.combinations(input_set, subset_size))
-    logger.debug('found {}'.format(solution))
+    logger.debug('found {}'.format(sets_of_set_comprehension(solution)))
     return solution
