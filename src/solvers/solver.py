@@ -10,14 +10,15 @@ from utils.types import solution_type
 
 
 class Solver:
-    def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction):
+    def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction, result_length=10):
         self.query: KeywordCoordinate = query
         self.data: dataset_type = data
         self.cost_function: CostFunction = cost_function
-        logging.getLogger(__name__).debug('created with query {}, data {} and cost function {}'.format(self.query, dataset_comprehension(self.data), self.cost_function))
+        self.result_length = result_length
+        logging.getLogger(__name__).debug('created with query {}, data {}, cost function {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.result_length))
 
     def solve(self) -> solution_type:
         pass
 
     def __str__(self):
-        return '{}(query: {}, dataset: {}, cost function: {})'.format(type(self).__name__, self.query, dataset_comprehension(self.data), self.cost_function)
+        return '{}(query: {}, dataset: {}, cost function: {}, result length {})'.format(type(self).__name__, self.query, dataset_comprehension(self.data), self.cost_function, self.result_length)

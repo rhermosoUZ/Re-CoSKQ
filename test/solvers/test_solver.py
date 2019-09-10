@@ -19,7 +19,7 @@ class TestSolver(TestCase):
         kwc3 = KeywordCoordinate(3, 3, kwc3_keywords)
         data = [kwc1, kwc2, kwc3]
         cf = CostFunction(euclidean_distance, keyword_distance, 0.3, 0.3, 0.4)
-        so = Solver(query, data, cf)
+        so = Solver(query, data, cf, result_length=10)
         self.assertAlmostEqual(so.query.coordinates.x, 0, delta=0.01)
         self.assertAlmostEqual(so.query.coordinates.y, 0, delta=0.01)
         self.assertListEqual(so.data, data)
@@ -43,3 +43,4 @@ class TestSolver(TestCase):
         self.assertAlmostEqual(so.cost_function.alpha, 0.3, delta=0.01)
         self.assertAlmostEqual(so.cost_function.beta, 0.3, delta=0.01)
         self.assertAlmostEqual(so.cost_function.omega, 0.4, delta=0.01)
+        self.assertEqual(so.result_length, 10)

@@ -20,7 +20,16 @@ def dataset_comprehension(dataset: dataset_type) -> str:
 def solution_list_comprehension(solution_list: typing.List[typing.Tuple]) -> str:
     result = '['
     for tuple in solution_list:
-        result += '({}, {}, {}), '.format(str(tuple[0][0]), dataset_comprehension(tuple[0][1]), tuple[1].__str__())
+        result += '(result: {}, solver: {}), '.format(result_list_comprehension(tuple[0]), tuple[1].__str__())
+    result = result[:-2]
+    result += ']'
+    return result
+
+
+def result_list_comprehension(result_list: typing.List[typing.Tuple[float, typing.Set[KeywordCoordinate]]]) -> str:
+    result = '['
+    for element in result_list:
+        result += '({}, {}), '.format(element[0], dataset_comprehension(element[1]))
     result = result[:-2]
     result += ']'
     return result
