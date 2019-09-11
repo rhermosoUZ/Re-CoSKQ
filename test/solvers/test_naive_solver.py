@@ -15,6 +15,6 @@ class TestNaiveSolver(TestCase):
         kwc3 = KeywordCoordinate(2, 2, ['outdoor'])
         data = [kwc1, kwc2, kwc3]
         cf = Type1(euclidean_distance, keyword_distance, 0.3, 0.3, 0.4)
-        ns = NaiveSolver(query, data, cf, result_length=1)
+        ns = NaiveSolver(query, data, cf, normalize=False, result_length=1)
         result = ns.solve()
         self.assertAlmostEqual(result[0][0], 0.42, delta=0.01)

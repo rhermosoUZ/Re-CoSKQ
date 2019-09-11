@@ -26,7 +26,7 @@ def solution_list_comprehension(solution_list: typing.List[typing.Tuple]) -> str
     return result
 
 
-def result_list_comprehension(result_list: typing.List[typing.Tuple[float, typing.Set[KeywordCoordinate]]]) -> str:
+def result_list_comprehension(result_list: typing.List[typing.Tuple[float, typing.List[KeywordCoordinate]]]) -> str:
     result = '['
     for element in result_list:
         result += '({}, {}), '.format(element[0], dataset_comprehension(element[1]))

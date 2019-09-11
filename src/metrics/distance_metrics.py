@@ -1,7 +1,12 @@
+import copy
 import logging
 import math
+import typing
 
 from model.coordinate import Coordinate
+from model.keyword_coordinate import KeywordCoordinate
+from utils.logging_utils import dataset_comprehension, result_list_comprehension
+from utils.types import solution_type
 
 
 def euclidean_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> float:
@@ -18,3 +23,40 @@ def manhattan_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> floa
     solution = abs(coordinate1.x - coordinate2.x) + abs(coordinate1.y - coordinate2.y)
     logger.debug('calculated {}'.format(solution))
     return solution
+
+
+def normalize_data(query: KeywordCoordinate, dataset: typing.List[KeywordCoordinate]) -> typing.Tuple[KeywordCoordinate, typing.List[KeywordCoordinate], float, float, float, float]:
+    logger = logging.getLogger(__name__ + '.normalize_data')
+    logger.debug('calculation for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
+    data = copy.deepcopy(dataset)
+    data.append(copy.deepcopy(query))
+    list_of_x = []
+    list_of_y = []
+    for kwc in data:
+        list_of_x.append(kwc.coordinates.x)
+        list_of_y.append(kwc.coordinates.y)
+    min_x = min(list_of_x)
+    min_y = min(list_of_y)
+    max_x = max(list_of_x)
+    max_y = max(list_of_y)
+    for index in range(len(data)):
+        new_x = (data[index].coordinates.x - min_x) / (max_x - min_x)
+        new_y = (data[index].coordinates.y - min_y) / (max_y - min_y)
+        data[index].coordinates.x = new_x
+        data[index].coordinates.y = new_y
+    logger.debug('calculated query {} and dataset {}'.format(data[-1:][0], dataset_comprehension(data[:-1])))
+    return (data[-1:][0], data[:-1], max_x, min_x, max_y, min_y)
+
+
+def denormalize_result_data(result_list: typing.List[solution_type], max_x: float, min_x: float, max_y: float, min_y: float) -> typing.List[solution_type]:
+    logger = logging.getLogger(__name__ + '.denormalize_result_data')
+    logger.debug('calculation for result {}, max_x {}, min_x {}, max_y {} and min_y {}'.format(result_list_comprehension(result_list), max_x, min_x, max_y, min_y))
+    result: typing.List[solution_type] = []
+    for solution_tuple in result_list:
+        solution_tuple_copy = copy.deepcopy(solution_tuple)
+        for kwc in solution_tuple_copy[1]:
+            kwc.coordinates.x = kwc.coordinates.x * (max_x - min_x) + min_x
+            kwc.coordinates.y = kwc.coordinates.y * (max_y - min_y) + min_y
+        result.append(solution_tuple_copy)
+    logger.debug('calculated results {}'.format(result_list_comprehension(result)))
+    return result

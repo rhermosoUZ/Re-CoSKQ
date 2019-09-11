@@ -10,12 +10,17 @@ from utils.types import solution_type
 
 
 class Solver:
-    def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction, result_length=10):
+    def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction, normalize=True, result_length=10):
         self.query: KeywordCoordinate = query
         self.data: dataset_type = data
         self.cost_function: CostFunction = cost_function
         self.result_length = result_length
-        logging.getLogger(__name__).debug('created with query {}, data {}, cost function {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.result_length))
+        self.normalize_data = normalize
+        self.denormalize_max_x: float = 0.0
+        self.denormalize_min_x: float = 0.0
+        self.denormalize_max_y: float = 0.0
+        self.denormalize_min_y: float = 0.0
+        logging.getLogger(__name__).debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
     def solve(self) -> solution_type:
         pass
