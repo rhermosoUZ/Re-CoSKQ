@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 import metrics.similarity_metrics as mt
+from model.keyword_coordinate import KeywordCoordinate
 from utils.types import sim_dataset_type, sim_tuple_type
 
 
@@ -100,42 +101,66 @@ class TestSimilarityMetrics(TestCase):
         self.assertAlmostEqual(result, 0.13, delta=0.01)
 
     def test_find_subsets0(self):
-        superset = [0, 1, 2, 3]
+        kwc1 = KeywordCoordinate(0, 0, ['0'])
+        kwc2 = KeywordCoordinate(1, 1, ['1'])
+        kwc3 = KeywordCoordinate(2, 2, ['2'])
+        kwc4 = KeywordCoordinate(3, 3, ['3'])
+        superset = [kwc1, kwc2, kwc3, kwc4]
         subsets = mt.find_subsets(superset, 0)
         self.assertEqual(len(subsets), 1)
         for subset in subsets:
             self.assertEqual(len(subset), 0)
 
     def test_find_subsets1(self):
-        superset = [0, 1, 2, 3]
+        kwc1 = KeywordCoordinate(0, 0, ['0'])
+        kwc2 = KeywordCoordinate(1, 1, ['1'])
+        kwc3 = KeywordCoordinate(2, 2, ['2'])
+        kwc4 = KeywordCoordinate(3, 3, ['3'])
+        superset = [kwc1, kwc2, kwc3, kwc4]
         subsets = mt.find_subsets(superset, 1)
         self.assertEqual(len(subsets), 4)
         for subset in subsets:
             self.assertEqual(len(subset), 1)
 
     def test_find_subsets2(self):
-        superset = [0, 1, 2, 3]
+        kwc1 = KeywordCoordinate(0, 0, ['0'])
+        kwc2 = KeywordCoordinate(1, 1, ['1'])
+        kwc3 = KeywordCoordinate(2, 2, ['2'])
+        kwc4 = KeywordCoordinate(3, 3, ['3'])
+        superset = [kwc1, kwc2, kwc3, kwc4]
         subsets = mt.find_subsets(superset, 2)
         self.assertEqual(len(subsets), 6)
         for subset in subsets:
             self.assertEqual(len(subset), 2)
 
     def test_find_subsets3(self):
-        superset = [0, 1, 2, 3]
+        kwc1 = KeywordCoordinate(0, 0, ['0'])
+        kwc2 = KeywordCoordinate(1, 1, ['1'])
+        kwc3 = KeywordCoordinate(2, 2, ['2'])
+        kwc4 = KeywordCoordinate(3, 3, ['3'])
+        superset = [kwc1, kwc2, kwc3, kwc4]
         subsets = mt.find_subsets(superset, 3)
         self.assertEqual(len(subsets), 4)
         for subset in subsets:
             self.assertEqual(len(subset), 3)
 
     def test_find_subsets4(self):
-        superset = [0, 1, 2, 3]
+        kwc1 = KeywordCoordinate(0, 0, ['0'])
+        kwc2 = KeywordCoordinate(1, 1, ['1'])
+        kwc3 = KeywordCoordinate(2, 2, ['2'])
+        kwc4 = KeywordCoordinate(3, 3, ['3'])
+        superset = [kwc1, kwc2, kwc3, kwc4]
         subsets = mt.find_subsets(superset, 4)
         self.assertEqual(len(subsets), 1)
         for subset in subsets:
             self.assertEqual(len(subset), 4)
 
     def test_find_subsets5(self):
-        superset = [0, 1, 2, 3]
+        kwc1 = KeywordCoordinate(0, 0, ['0'])
+        kwc2 = KeywordCoordinate(1, 1, ['1'])
+        kwc3 = KeywordCoordinate(2, 2, ['2'])
+        kwc4 = KeywordCoordinate(3, 3, ['3'])
+        superset = [kwc1, kwc2, kwc3, kwc4]
         subsets = mt.find_subsets(superset, 5)
         print(subsets)
         self.assertEqual(len(subsets), 1)
