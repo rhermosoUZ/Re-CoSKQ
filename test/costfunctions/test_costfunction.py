@@ -9,12 +9,16 @@ from utils.types import dataset_type
 
 class TestCostFunction(TestCase):
     def test_instantiation(self):
-        cf = CostFunction(euclidean_distance, keyword_distance, 0.3, 0.3, 0.4)
+        cf = CostFunction(euclidean_distance, keyword_distance, 0.3, 0.3, 0.4, 0.5, 0.6, 0.7, False)
         self.assertEqual(euclidean_distance.__get__, cf.distance_metric.__get__)
         self.assertEqual(keyword_distance.__get__, cf.similarity_metric.__get__)
         self.assertAlmostEqual(cf.alpha, 0.3, delta=0.01)
         self.assertAlmostEqual(cf.beta, 0.3, delta=0.01)
         self.assertAlmostEqual(cf.omega, 0.4, delta=0.01)
+        self.assertAlmostEqual(cf.query_distance_threshold, 0.5, delta=0.01)
+        self.assertAlmostEqual(cf.dataset_distance_threshold, 0.6, delta=0.01)
+        self.assertAlmostEqual(cf.keyword_similarity_threshold, 0.7, delta=0.01)
+        self.assertEqual(cf.disable_thresholds, False)
 
     def test_get_maximum_for_dataset1(self):
         keywords_dont_matter_here = ['']

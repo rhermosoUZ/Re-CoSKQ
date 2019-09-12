@@ -14,7 +14,7 @@ class TestNaiveSolver(TestCase):
         kwc2 = KeywordCoordinate(3, 3, ['food'])
         kwc3 = KeywordCoordinate(2, 2, ['outdoor'])
         data = [kwc1, kwc2, kwc3]
-        cf = Type1(euclidean_distance, keyword_distance, 0.3, 0.3, 0.4)
+        cf = Type1(euclidean_distance, keyword_distance, 0.3, 0.3, 0.4, disable_thresholds=True)
         ns = NaiveSolver(query, data, cf, normalize=False, result_length=1)
         result = ns.solve()
         self.assertAlmostEqual(result[0][0], 0.42, delta=0.01)

@@ -1,4 +1,5 @@
 import logging
+import math
 
 from costfunctions.costfunction import CostFunction
 from model.keyword_coordinate import KeywordCoordinate
@@ -7,12 +8,22 @@ from utils.types import distance_function_type, similarity_function_type, datase
 
 
 class Type1(CostFunction):
-    def __init__(self, distance_metric: distance_function_type, similarity_metric: similarity_function_type, alpha: float, beta: float, omega: float):
-        super().__init__(distance_metric, similarity_metric, alpha, beta, omega)
+    def __init__(self, distance_metric: distance_function_type, similarity_metric: similarity_function_type, alpha: float, beta: float, omega: float, query_distance_threshold: float = 0.7, dataset_distance_threshold: float = 0.7, keyword_similarity_threshold: float = 0.7, disable_thresholds: bool = False):
+        super().__init__(distance_metric, similarity_metric, alpha, beta, omega, query_distance_threshold, dataset_distance_threshold, keyword_similarity_threshold, disable_thresholds)
 
     def solve(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
         logger = logging.getLogger(__name__)
         logger.debug('solving for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
-        solution = self.alpha * self.get_maximum_for_query(query, dataset) + self.beta * self.get_maximum_for_dataset(dataset) + self.omega * self.get_maximum_keyword_distance(query, dataset)
-        logger.debug('solved with a cost of {}'.format(solution))
-        return solution
+        query_distance = self.get_maximum_for_query(query, dataset)
+        logger.debug('solved query distance for {}'.format(query_distance))
+        dataset_distance = self.get_maximum_for_dataset(dataset)
+        logger.debug('solved dataset distance for {}'.format(dataset_distance))
+        keyword_similarity = self.get_maximum_keyword_distance(query, dataset)
+        logger.debug('solved keyword similarity for {}'.format(keyword_similarity))
+        if (not self.disable_thresholds and (query_distance > self.query_distance_threshold or dataset_distance > self.dataset_distance_threshold or keyword_similarity > self.keyword_similarity_threshold)):
+            logger.debug('One of the thresholds was not met. Query threshold: {}, dataset threshold: {}, keyword threshold {}'.format(self.query_distance_threshold, self.dataset_distance_threshold, self.keyword_similarity_threshold))
+            return math.inf
+        else:
+            solution = self.alpha * query_distance + self.beta * dataset_distance + self.omega * keyword_similarity
+            logger.debug('solved with a cost of {}'.format(solution))
+            return solution

@@ -10,12 +10,16 @@ from utils.types import distance_function_type, similarity_function_type, datase
 
 class CostFunction:
     def __init__(self, distance_metric: distance_function_type,
-                 similarity_metric: similarity_function_type, alpha: float, beta: float, omega: float) -> typing.NoReturn:
+                 similarity_metric: similarity_function_type, alpha: float, beta: float, omega: float, query_distance_threshold: float = 0.7, dataset_distance_threshold: float = 0.7, keyword_similarity_threshold: float = 0.7, disable_thresholds: bool = False) -> typing.NoReturn:
         self.distance_metric: distance_function_type = distance_metric
         self.similarity_metric: similarity_function_type = similarity_metric
         self.alpha = alpha
         self.beta = beta
         self.omega = omega
+        self.query_distance_threshold = query_distance_threshold
+        self.dataset_distance_threshold = dataset_distance_threshold
+        self.keyword_similarity_threshold = keyword_similarity_threshold
+        self.disable_thresholds = disable_thresholds
         logging.getLogger(__name__).debug('created with distance metric {}, similarity metric {}, alpha {}, beta {} and omega {}'.format(self.distance_metric.__name__, self.similarity_metric.__name__, self.alpha, self.beta, self.omega))
 
     # TODO check if minimum and maximum functions can be refactored into one
