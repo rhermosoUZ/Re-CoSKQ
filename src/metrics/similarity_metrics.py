@@ -5,6 +5,7 @@ import logging
 import math
 import typing
 
+from model.keyword_coordinate import KeywordCoordinate
 from utils.logging_utils import dataset_comprehension, sets_of_set_comprehension
 from utils.types import sim_dataset_type, keyword_dataset_type, dataset_type
 
@@ -40,17 +41,12 @@ def cosine_similarity(dataset1: sim_dataset_type, dataset2: sim_dataset_type) ->
     return solution
 
 
-# TODO generate general keyword vector over the entire set of keyword coordinates
-def create_keyword_vector(keyword_list1: keyword_dataset_type, keyword_list2: keyword_dataset_type) -> typing.Tuple[
-    typing.List[int], typing.List[int]]:
-    logger = logging.getLogger(__name__ + '.create_keyword_vector')
-    logger.debug('calculating for {} and {}'.format(keyword_list1, keyword_list2))
-    merged_list = list(map(str.lower, (keyword_list1 + keyword_list2)))
-    vector = list(set(merged_list))
-    del (merged_list)
-    result_vector1 = []
-    result_vector2 = []
-    for element in vector:
+def one_hot_encode(keyword_list1, keyword_list2, combined_keyword_list) -> typing.Tuple[typing.List[int], typing.List[int]]:
+    logger = logging.getLogger(__name__ + '.one_hot_encode')
+    logger.debug('calculating list 1 {}, list 2 {} using combined list {}'.format(keyword_list1, keyword_list2, combined_keyword_list))
+    result_vector1: typing.List[int] = []
+    result_vector2: typing.List[int] = []
+    for element in combined_keyword_list:
         if element in keyword_list1:
             result_vector1.append(1)
         else:
@@ -64,11 +60,47 @@ def create_keyword_vector(keyword_list1: keyword_dataset_type, keyword_list2: ke
     return solution
 
 
-def keyword_distance(query_keyword_list, data_keyword_list) -> float:
-    logger = logging.getLogger(__name__ + '.keyword_distance')
+def create_keyword_vector(keyword_list1: keyword_dataset_type, keyword_list2: keyword_dataset_type) -> typing.Tuple[
+    typing.List[int], typing.List[int]]:
+    logger = logging.getLogger(__name__ + '.create_keyword_vector')
+    logger.debug('calculating for {} and {}'.format(keyword_list1, keyword_list2))
+    merged_list = list(map(str.lower, (keyword_list1 + keyword_list2)))
+    vector = list(set(merged_list))
+    logger.debug('calculated combined vector of {}'.format(vector))
+    del (merged_list)
+    solution = one_hot_encode(keyword_list1, keyword_list2, vector)
+    logger.debug('calculated {}'.format(solution))
+    return solution
+
+
+def create_combined_keyword_vector(query: KeywordCoordinate, dataset: dataset_type) -> typing.List[str]:
+    logger = logging.getLogger(__name__ + '.create_combined_keyword_vector')
+    logger.debug('calculating for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
+    result_keyword_list: typing.List[str] = []
+    for string in query.keywords:
+        result_keyword_list.append(string)
+    for kwc in dataset:
+        for string in kwc.keywords:
+            result_keyword_list.append(string)
+    result = list(set(result_keyword_list))
+    return result
+
+
+def separated_cosine_similarity(query_keyword_list, data_keyword_list) -> float:
+    logger = logging.getLogger(__name__ + '.separated_cosine_similarity')
     logger.debug('calculating for query {} and dataset {}'.format(query_keyword_list, data_keyword_list))
-    kw_vectors = create_keyword_vector(query_keyword_list, data_keyword_list)
-    solution = 1 - cosine_similarity(kw_vectors[0], kw_vectors[1])
+    query_vector, data_vector = create_keyword_vector(query_keyword_list, data_keyword_list)
+    solution = 1 - cosine_similarity(query_vector, data_vector)
+    logger.debug('calculated {}'.format(solution))
+    return solution
+
+
+def combined_cosine_similarity(query_keyword_list, data_keyword_list, dataset_keyword_list) -> float:
+    logger = logging.getLogger(__name__ + '.combined_cosine_similarity')
+    logger.debug('calculating for query {} and dataset {} using combined keyword list {}'.format(query_keyword_list, data_keyword_list, dataset_keyword_list))
+    query_vector, data_vector = one_hot_encode(query_keyword_list, data_keyword_list, dataset_keyword_list)
+    logger.debug('calculated query vector {} and data vector {}'.format(query_vector, data_vector))
+    solution = 1 - cosine_similarity(query_vector, data_vector)
     logger.debug('calculated {}'.format(solution))
     return solution
 

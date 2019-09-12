@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from costfunctions.costfunction import CostFunction
 from metrics.distance_metrics import euclidean_distance
-from metrics.similarity_metrics import keyword_distance
+from metrics.similarity_metrics import separated_cosine_similarity
 from model.keyword_coordinate import KeywordCoordinate
 from solvers.solver import Solver
 
@@ -18,7 +18,7 @@ class TestSolver(TestCase):
         kwc2 = KeywordCoordinate(2, 2, kwc2_keywords)
         kwc3 = KeywordCoordinate(3, 3, kwc3_keywords)
         data = [kwc1, kwc2, kwc3]
-        cf = CostFunction(euclidean_distance, keyword_distance, 0.3, 0.3, 0.4)
+        cf = CostFunction(euclidean_distance, separated_cosine_similarity, 0.3, 0.3, 0.4)
         so = Solver(query, data, cf, normalize=False, result_length=10)
         self.assertAlmostEqual(so.query.coordinates.x, 0, delta=0.01)
         self.assertAlmostEqual(so.query.coordinates.y, 0, delta=0.01)
@@ -39,7 +39,7 @@ class TestSolver(TestCase):
         for index in range(len(so.data[2].keywords)):
             self.assertEqual(so.data[2].keywords[index], kwc3_keywords[index])
         self.assertEqual(euclidean_distance.__get__, so.cost_function.distance_metric.__get__)
-        self.assertEqual(keyword_distance.__get__, so.cost_function.similarity_metric.__get__)
+        self.assertEqual(separated_cosine_similarity.__get__, so.cost_function.similarity_metric.__get__)
         self.assertAlmostEqual(so.cost_function.alpha, 0.3, delta=0.01)
         self.assertAlmostEqual(so.cost_function.beta, 0.3, delta=0.01)
         self.assertAlmostEqual(so.cost_function.omega, 0.4, delta=0.01)

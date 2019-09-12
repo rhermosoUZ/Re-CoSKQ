@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import typing
 
+from metrics.similarity_metrics import create_combined_keyword_vector
 from model.keyword_coordinate import KeywordCoordinate
 from utils.logging_utils import dataset_comprehension
 from utils.types import distance_function_type, similarity_function_type, dataset_type
@@ -73,8 +74,15 @@ class CostFunction:
         logger = logging.getLogger(__name__)
         logger.debug('finding maximum similarity for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
         current_maximum = 0
+        combination = False
+        if self.similarity_metric.__name__ == 'combined_cosine_similarity':
+            combined_keyword_vector: typing.List[str] = create_combined_keyword_vector(query, dataset)
+            combination = True
         for element in dataset:
-            current_value = self.similarity_metric(query.keywords, element.keywords)
+            if combination:
+                current_value = self.similarity_metric(query.keywords, element.keywords, combined_keyword_vector)
+            else:
+                current_value = self.similarity_metric(query.keywords, element.keywords)
             if current_value > current_maximum:
                 current_maximum = current_value
         logger.debug('found maximum similarity for query and dataset of {}'.format(current_maximum))

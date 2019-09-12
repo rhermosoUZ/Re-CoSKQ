@@ -25,9 +25,7 @@ class NaiveSolver(Solver):
         logger.debug('solving for query {} and dataset {} using cost function {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.result_length))
         result_list: typing.List[solution_type] = []
         if(self.normalize_data):
-            print('DATA', dataset_comprehension(self.data))
             query, data, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y = normalize_data(self.query, self.data)
-            print('DATA', dataset_comprehension(self.data))
         else:
             query = self.query
             data = self.data

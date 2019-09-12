@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import logging
 import typing
 
@@ -14,11 +15,11 @@ class Evaluator:
         self.results: typing.List[typing.Tuple[solution_type, Solver]] = []
         logging.getLogger(__name__).debug('created')
 
-    def add_solver(self, solver: Solver):
+    def add_solver(self, solver: Solver) -> typing.NoReturn:
         self.solvers.append(solver)
         logging.getLogger(__name__).debug('added solver {}'.format(solver))
 
-    def evaluate(self):
+    def evaluate(self) -> typing.NoReturn:
         logger = logging.getLogger(__name__)
         logger.debug('starting evaluation for solvers {}'.format(list_comprehension(self.solvers)))
         for solver in self.solvers:
@@ -26,6 +27,6 @@ class Evaluator:
             self.results.append((result, solver))
         logger.debug('finished evaluation with results {}'.format(solution_list_comprehension(self.results)))
 
-    def get_results(self):
+    def get_results(self) -> typing.List[typing.Tuple[solution_type, Solver]]:
         logging.getLogger(__name__).debug('getting results {}'.format(solution_list_comprehension(self.results)))
-        return self.results.copy()
+        return copy.deepcopy(self.results)
