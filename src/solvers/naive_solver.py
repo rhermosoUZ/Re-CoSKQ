@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import math
 import typing
 
 from costfunctions.costfunction import CostFunction
@@ -33,6 +34,8 @@ class NaiveSolver(Solver):
             list_of_subsets = find_subsets(data, index + 1)
             for subset in list_of_subsets:
                 current_cost = self.cost_function.solve(query, subset)
+                if current_cost == math.inf:
+                    continue
                 if len(result_list) < self.result_length or current_cost < result_list[len(result_list) - 1][0]:
                     result_list.append((current_cost, subset))
                     logger.debug('appended ({}, {}) to result'.format(current_cost, dataset_comprehension(subset)))
