@@ -15,13 +15,28 @@ from utils.types import solution_type
 
 
 class NaiveSolver(Solver):
+    """
+    The NaiveSolver does not use any kind of heuristic. It calculates the cost for every possibility and returns the best results.
+    """
     def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction, normalize=True, result_length=10):
+        """
+        Constructs a new NaiveSolver object.
+        :param query: The query for which to solve for
+        :param data: The data for which to solve for
+        :param cost_function: The cost function to determine subset costs
+        :param normalize: If the data should be normalized before being processed. The data will be denormalized before being returned.
+        :param result_length: The size of the results (Top-N)
+        """
         logger = logging.getLogger(__name__)
         logger.debug('creating with query {}, data {}, cost function {}, normalization {} and result length {}'.format(query, dataset_comprehension(data), cost_function, normalize, result_length))
         super().__init__(query, data, cost_function, normalize, result_length)
-        logging.getLogger(__name__).debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
+        logger.debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
     def solve(self) -> typing.List[solution_type]:
+        """
+        Implements the solution algorithm.
+        :return: A list with tuples. Every tuple contains a cost and the corresponding subset of KeywordCoordinates.
+        """
         logger = logging.getLogger(__name__)
         logger.debug('solving for query {} and dataset {} using cost function {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.result_length))
         result_list: typing.List[solution_type] = []

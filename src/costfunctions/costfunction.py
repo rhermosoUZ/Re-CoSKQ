@@ -10,8 +10,23 @@ from utils.types import distance_function_type, similarity_function_type, datase
 
 
 class CostFunction:
+    """
+    The CostFunction class acts as base for the specific types of cost functions. It offers all the required methods for the cost calculations. The purpose of a CostFunction is to enable comparability between different sets of data.
+    """
     def __init__(self, distance_metric: distance_function_type,
                  similarity_metric: similarity_function_type, alpha: float, beta: float, omega: float, query_distance_threshold: float = 0.7, dataset_distance_threshold: float = 0.7, keyword_similarity_threshold: float = 0.7, disable_thresholds: bool = False) -> typing.NoReturn:
+        """
+        Constructs a new CostFunction object. The CostFunction class should never be directly instantiated. Instead use a class that inherits from the CostFunction class and implements the solve() method.
+        :param distance_metric: The distance metric to calculate coordinate distances between KeywordCoordinates.
+        :param similarity_metric: The similarity metric to calculate the similarity between keyword lists of KeywordCoordinates.
+        :param alpha: The scaling parameter for the query-dataset distance.
+        :param beta: The scaling parameter for the inter-dataset distance.
+        :param omega: The scaling parameter for the keyword list similarity.
+        :param query_distance_threshold: The threshold for the query-dataset distance.
+        :param dataset_distance_threshold: The threshold for the inter-dataset distance.
+        :param keyword_similarity_threshold: The threshold for the keyword list similarity.
+        :param disable_thresholds: Whether to honor any threshold values.
+        """
         self.distance_metric: distance_function_type = distance_metric
         self.similarity_metric: similarity_function_type = similarity_metric
         self.alpha = alpha
@@ -25,6 +40,11 @@ class CostFunction:
 
     # TODO check if minimum and maximum functions can be refactored into one
     def get_maximum_for_dataset(self, dataset: dataset_type) -> float:
+        """
+        Calculates the maximum inter-dataset distance cost.
+        :param dataset: The dataset.
+        :return: Maximum inter-dataset distance cost.
+        """
         logger = logging.getLogger(__name__)
         logger.debug('finding maximum distance for dataset {}'.format(dataset_comprehension(dataset)))
         current_maximum: float = 0.0
@@ -37,6 +57,11 @@ class CostFunction:
         return current_maximum
 
     def get_minimum_for_dataset(self, dataset: dataset_type) -> float:
+        """
+        Calculates the minimum inter-dataset distance cost.
+        :param dataset: The dataset.I
+        :return: Minimum inter-dataset distance cost.
+        """
         logger = logging.getLogger(__name__)
         logger.debug('finding minimum distance for dataset {}'.format(dataset_comprehension(dataset)))
         current_minimum: float = 9999999.9
@@ -49,6 +74,12 @@ class CostFunction:
         return current_minimum
 
     def get_maximum_for_query(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
+        """
+        Calculates the maximum query-dataset distance cost.
+        :param query: The query
+        :param dataset: The dataset
+        :return: Maximum query-dataset distance cost
+        """
         logger = logging.getLogger(__name__)
         logger.debug('finding maximum distance for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
         current_maximum = 0
@@ -60,6 +91,12 @@ class CostFunction:
         return current_maximum
 
     def get_minimum_for_query(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
+        """
+        Calculates the minimum query-dataset distance cost.
+        :param query: The query
+        :param dataset: The dataset
+        :return: Minimum query-dataset distance cost
+        """
         logger = logging.getLogger(__name__)
         logger.debug('finding minimum distance for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
         current_minimum = 99999999
@@ -71,6 +108,12 @@ class CostFunction:
         return current_minimum
 
     def get_maximum_keyword_distance(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
+        """
+        Calculates the maximum keyword distance.
+        :param query: The query
+        :param dataset: The dataset
+        :return:
+        """
         logger = logging.getLogger(__name__)
         logger.debug('finding maximum similarity for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
         current_maximum = 0
@@ -89,6 +132,12 @@ class CostFunction:
         return current_maximum
 
     def solve(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
+        """
+        Implements the solution algorithm. Any costfunction class needs to implement this.
+        :param query: The query
+        :param dataset: The dataset
+        :return: The cost
+        """
         pass
 
     def __str__(self):

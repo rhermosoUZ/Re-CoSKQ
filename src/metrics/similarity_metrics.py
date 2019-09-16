@@ -10,11 +10,13 @@ from utils.logging_utils import dataset_comprehension, sets_of_set_comprehension
 from utils.types import sim_dataset_type, keyword_dataset_type, dataset_type
 
 
-# Cosine Similarity
-
-
-# TODO if a set of keywords covers the query plus additional categories the similarity declines. Is this wanted?
 def cosine_similarity(dataset1: sim_dataset_type, dataset2: sim_dataset_type) -> float:
+    """
+    Calculates the cosine similarity between two datasets. They have to be in the format of ones and zeroes in a list.
+    :param dataset1: The first dataset
+    :param dataset2: The second dataset
+    :return: The cosine similarity
+    """
     logger = logging.getLogger(__name__ + '.cosine_similarity')
     logger.debug('calculating for {} and {}'.format(dataset1, dataset2))
     if len(dataset1) != len(dataset2):
@@ -42,6 +44,13 @@ def cosine_similarity(dataset1: sim_dataset_type, dataset2: sim_dataset_type) ->
 
 
 def one_hot_encode(keyword_list1, keyword_list2, combined_keyword_list) -> typing.Tuple[typing.List[int], typing.List[int]]:
+    """
+    Calculates the one-hot-encoded result lists of the two input keyword lists using the combined keyword list as a baseline.
+    :param keyword_list1: The first keyword list
+    :param keyword_list2: The second keyword list
+    :param combined_keyword_list: The combined keyword list
+    :return: A tuple with the one-hot-encoded versions of the first and second keyword list
+    """
     logger = logging.getLogger(__name__ + '.one_hot_encode')
     logger.debug('calculating list 1 {}, list 2 {} using combined list {}'.format(keyword_list1, keyword_list2, combined_keyword_list))
     result_vector1: typing.List[int] = []
@@ -60,8 +69,15 @@ def one_hot_encode(keyword_list1, keyword_list2, combined_keyword_list) -> typin
     return solution
 
 
+# TODO Refactor. This function could be removed.
 def create_keyword_vector(keyword_list1: keyword_dataset_type, keyword_list2: keyword_dataset_type) -> typing.Tuple[
     typing.List[int], typing.List[int]]:
+    """
+    Creates a tuple of the one-hot-encoded input lists.
+    :param keyword_list1: The first input list
+    :param keyword_list2: The second input list
+    :return: A tuple with the first one-hot-encoded keyword vector and the second one-hot-encoded keyword vector
+    """
     logger = logging.getLogger(__name__ + '.create_keyword_vector')
     logger.debug('calculating for {} and {}'.format(keyword_list1, keyword_list2))
     merged_list = list(map(str.lower, (keyword_list1 + keyword_list2)))
@@ -74,6 +90,12 @@ def create_keyword_vector(keyword_list1: keyword_dataset_type, keyword_list2: ke
 
 
 def create_combined_keyword_vector(query: KeywordCoordinate, dataset: dataset_type) -> typing.List[str]:
+    """
+    Creates a combined keyword vector of the query and the dataset. This vector contains all the keywords that appear in either the query or dataset.
+    :param query: The query
+    :param dataset: The dataset
+    :return: A list with all the unique keywords in the query and dataset
+    """
     logger = logging.getLogger(__name__ + '.create_combined_keyword_vector')
     logger.debug('calculating for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
     result_keyword_list: typing.List[str] = []
@@ -87,6 +109,12 @@ def create_combined_keyword_vector(query: KeywordCoordinate, dataset: dataset_ty
 
 
 def separated_cosine_similarity(query_keyword_list, data_keyword_list) -> float:
+    """
+    Calculates the cosine similarity between the keyword list of a query and the keyword list of a data point.
+    :param query_keyword_list: The keyword list of the query
+    :param data_keyword_list: The keyword list of the data point
+    :return: The cosine similarity between the query keywords and data point keywords
+    """
     logger = logging.getLogger(__name__ + '.separated_cosine_similarity')
     logger.debug('calculating for query {} and dataset {}'.format(query_keyword_list, data_keyword_list))
     query_vector, data_vector = create_keyword_vector(query_keyword_list, data_keyword_list)
@@ -96,6 +124,13 @@ def separated_cosine_similarity(query_keyword_list, data_keyword_list) -> float:
 
 
 def combined_cosine_similarity(query_keyword_list, data_keyword_list, dataset_keyword_list) -> float:
+    """
+    Calculates the cosine similarity between the keyword list of a query and the keyword list of a data point. This happens using a baseline keyword list of the entire dataset.
+    :param query_keyword_list: The keyword list of the query
+    :param data_keyword_list: The keyword list of the data point
+    :param dataset_keyword_list: The keyword list for the entire dataset
+    :return: The cosine similarity between the query keywords and data point keywords using the baseline keyword list of the entire dataset.
+    """
     logger = logging.getLogger(__name__ + '.combined_cosine_similarity')
     logger.debug('calculating for query {} and dataset {} using combined keyword list {}'.format(query_keyword_list, data_keyword_list, dataset_keyword_list))
     query_vector, data_vector = one_hot_encode(query_keyword_list, data_keyword_list, dataset_keyword_list)
@@ -107,6 +142,12 @@ def combined_cosine_similarity(query_keyword_list, data_keyword_list, dataset_ke
 
 # https://stackoverflow.com/questions/374626/how-can-i-find-all-the-subsets-of-a-set-with-exactly-n-elements#374645
 def find_subsets(input_set: dataset_type, subset_size: int):
+    """
+    Calculates all the subsets of an input dataset and a given size.
+    :param input_set: The input dataset
+    :param subset_size: The subset size
+    :return: A set of all the subsets
+    """
     logger = logging.getLogger(__name__ + '.find_subsets')
     logger.debug('finding all subsets of length {} in set {}'.format(subset_size, dataset_comprehension(input_set)))
     if subset_size > len(input_set):

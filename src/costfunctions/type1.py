@@ -9,9 +9,27 @@ from utils.types import distance_function_type, similarity_function_type, datase
 
 class Type1(CostFunction):
     def __init__(self, distance_metric: distance_function_type, similarity_metric: similarity_function_type, alpha: float, beta: float, omega: float, query_distance_threshold: float = 0.7, dataset_distance_threshold: float = 0.7, keyword_similarity_threshold: float = 0.7, disable_thresholds: bool = False):
+        """
+        Constructs a Type1 cost function object.
+        :param distance_metric: The distance metric to calculate coordinate distances between KeywordCoordinates.
+        :param similarity_metric: The similarity metric to calculate the similarity between keyword lists of KeywordCoordinates.
+        :param alpha: The scaling parameter for the query-dataset distance.
+        :param beta: The scaling parameter for the inter-dataset distance.
+        :param omega: The scaling parameter for the keyword list similarity.
+        :param query_distance_threshold: The threshold for the query-dataset distance.
+        :param dataset_distance_threshold: The threshold for the inter-dataset distance.
+        :param keyword_similarity_threshold: The threshold for the keyword list similarity.
+        :param disable_thresholds: Whether to honor any threshold values.
+        """
         super().__init__(distance_metric, similarity_metric, alpha, beta, omega, query_distance_threshold, dataset_distance_threshold, keyword_similarity_threshold, disable_thresholds)
 
     def solve(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
+        """
+        Solves the Type1 cost function.
+        :param query: The query
+        :param dataset: The dataset
+        :return: The maximum cost for the given query and dataset
+        """
         logger = logging.getLogger(__name__)
         logger.debug('solving for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
         query_distance = self.get_maximum_for_query(query, dataset)

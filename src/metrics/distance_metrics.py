@@ -10,6 +10,12 @@ from utils.types import solution_type
 
 
 def euclidean_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> float:
+    """
+    Calculates the euclidean distance between two coordinates.
+    :param coordinate1: The first coordinate
+    :param coordinate2: The second coordinate
+    :return: The euclidean distance
+    """
     logger = logging.getLogger(__name__ + '.euclidean_distance')
     logger.debug('calculating for {} and {}'.format(coordinate1, coordinate2))
     solution = math.sqrt((coordinate1.x - coordinate2.x) ** 2 + (coordinate1.y - coordinate2.y) ** 2)
@@ -18,6 +24,12 @@ def euclidean_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> floa
 
 
 def manhattan_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> float:
+    """
+    Calculates the manhattan distance between two coordinates.
+    :param coordinate1: The first coordinate
+    :param coordinate2: The second coordinate
+    :return: The manhattan distance
+    """
     logger = logging.getLogger(__name__ + '.manhattan_distance')
     logger.debug('calculating for {} and {}'.format(coordinate1, coordinate2))
     solution = abs(coordinate1.x - coordinate2.x) + abs(coordinate1.y - coordinate2.y)
@@ -26,6 +38,12 @@ def manhattan_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> floa
 
 
 def normalize_data(query: KeywordCoordinate, dataset: typing.List[KeywordCoordinate]) -> typing.Tuple[KeywordCoordinate, typing.List[KeywordCoordinate], float, float, float, float]:
+    """
+    Calculates the normalizes query, dataset and parameters to undo this normalization.
+    :param query: The query
+    :param dataset: The dataset
+    :return: A tuple with: the normalized query, the normalized dataset, the denormalization parameter max_x,  the denormalization parameter min_x, the denormalization parameter max_y and the denormalization parameter min_y,
+    """
     logger = logging.getLogger(__name__ + '.normalize_data')
     logger.debug('calculation for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
     data = copy.deepcopy(dataset)
@@ -49,6 +67,15 @@ def normalize_data(query: KeywordCoordinate, dataset: typing.List[KeywordCoordin
 
 
 def denormalize_result_data(result_list: typing.List[solution_type], max_x: float, min_x: float, max_y: float, min_y: float) -> typing.List[solution_type]:
+    """
+    Calculates the denormalized results.
+    :param result_list: The normalized results
+    :param max_x: Denormalization parameter max_x
+    :param min_x: Denormalization parameter min_x
+    :param max_y: Denormalization parameter max_y
+    :param min_y: Denormalization parameter min_y
+    :return: The denormalized list of results
+    """
     logger = logging.getLogger(__name__ + '.denormalize_result_data')
     logger.debug('calculation for result {}, max_x {}, min_x {}, max_y {} and min_y {}'.format(result_list_comprehension(result_list), max_x, min_x, max_y, min_y))
     result: typing.List[solution_type] = []
