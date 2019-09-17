@@ -7,4 +7,5 @@
 # Add file types of interest
 !README.md
 !.gitignore
+!logs/config/logging.config
 !*.py
