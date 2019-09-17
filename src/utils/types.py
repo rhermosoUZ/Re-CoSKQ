@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import typing
 
-from model.coordinate import Coordinate
-from model.keyword_coordinate import KeywordCoordinate
+from src.model.coordinate import Coordinate
+from src.model.keyword_coordinate import KeywordCoordinate
 
 # from solvers.solver import Solver
 

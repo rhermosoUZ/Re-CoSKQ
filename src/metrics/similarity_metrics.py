@@ -5,9 +5,9 @@ import logging
 import math
 import typing
 
-from model.keyword_coordinate import KeywordCoordinate
-from utils.logging_utils import dataset_comprehension, sets_of_set_comprehension
-from utils.types import sim_dataset_type, keyword_dataset_type, dataset_type
+from src.model.keyword_coordinate import KeywordCoordinate
+from src.utils.logging_utils import dataset_comprehension, sets_of_set_comprehension
+from src.utils.types import sim_dataset_type, keyword_dataset_type, dataset_type
 
 
 def cosine_similarity(dataset1: sim_dataset_type, dataset2: sim_dataset_type) -> float:

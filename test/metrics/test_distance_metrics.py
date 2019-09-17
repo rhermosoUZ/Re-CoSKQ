@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-import metrics.distance_metrics as mt
-from model.keyword_coordinate import KeywordCoordinate
+import src.metrics.distance_metrics as mt
+from src.model.keyword_coordinate import KeywordCoordinate
 
 
 class TestDistanceMetrics(TestCase):

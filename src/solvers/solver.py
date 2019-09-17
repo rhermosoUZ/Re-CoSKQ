@@ -3,11 +3,11 @@ from __future__ import annotations
 import logging
 import typing
 
-from costfunctions.costfunction import CostFunction
-from model.keyword_coordinate import KeywordCoordinate
-from utils.logging_utils import dataset_comprehension
-from utils.types import dataset_type
-from utils.types import solution_type
+from src.costfunctions.costfunction import CostFunction
+from src.model.keyword_coordinate import KeywordCoordinate
+from src.utils.logging_utils import dataset_comprehension
+from src.utils.types import dataset_type
+from src.utils.types import solution_type
 
 
 class Solver:

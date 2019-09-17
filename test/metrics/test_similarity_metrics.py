@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-import metrics.similarity_metrics as mt
-from model.keyword_coordinate import KeywordCoordinate
-from utils.types import sim_dataset_type, sim_tuple_type
+import src.metrics.similarity_metrics as mt
+from src.model.keyword_coordinate import KeywordCoordinate
+from src.utils.types import sim_dataset_type, sim_tuple_type
 
 
 class TestSimilarityMetrics(TestCase):

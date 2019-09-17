@@ -1,10 +1,10 @@
 from unittest import TestCase
 
-from costfunctions.type1 import Type1
-from metrics.distance_metrics import euclidean_distance
-from metrics.similarity_metrics import separated_cosine_similarity
-from model.keyword_coordinate import KeywordCoordinate
-from solvers.naive_solver import NaiveSolver
+from src.costfunctions.type1 import Type1
+from src.metrics.distance_metrics import euclidean_distance
+from src.metrics.similarity_metrics import separated_cosine_similarity
+from src.model.keyword_coordinate import KeywordCoordinate
+from src.solvers.naive_solver import NaiveSolver
 
 
 class TestNaiveSolver(TestCase):

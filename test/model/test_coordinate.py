@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from model.coordinate import Coordinate
+from src.model.coordinate import Coordinate
 
 
 class TestCoordinate(TestCase):

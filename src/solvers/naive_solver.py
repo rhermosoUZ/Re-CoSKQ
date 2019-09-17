@@ -4,14 +4,14 @@ import logging
 import math
 import typing
 
-from costfunctions.costfunction import CostFunction
-from metrics.distance_metrics import normalize_data, denormalize_result_data
-from metrics.similarity_metrics import find_subsets
-from model.keyword_coordinate import KeywordCoordinate
-from solvers.solver import Solver
-from utils.logging_utils import dataset_comprehension, result_list_comprehension
-from utils.types import dataset_type
-from utils.types import solution_type
+from src.costfunctions.costfunction import CostFunction
+from src.metrics.distance_metrics import normalize_data, denormalize_result_data
+from src.metrics.similarity_metrics import find_subsets
+from src.model.keyword_coordinate import KeywordCoordinate
+from src.solvers.solver import Solver
+from src.utils.logging_utils import dataset_comprehension, result_list_comprehension
+from src.utils.types import dataset_type
+from src.utils.types import solution_type
 
 
 class NaiveSolver(Solver):

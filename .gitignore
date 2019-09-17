@@ -4,8 +4,10 @@
 !*/
 # Block IDE config
 .idea
-# Add file types of interest
+# Add files of interest
 !README.md
 !.gitignore
 !logs/config/logging.config
+!docs/index.rst
+!docs/Makefile
 !*.py

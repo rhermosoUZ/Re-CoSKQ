@@ -4,9 +4,9 @@ import copy
 import logging
 import typing
 
-from solvers.solver import Solver
-from utils.logging_utils import list_comprehension, solution_list_comprehension
-from utils.types import solution_type
+from src.solvers.solver import Solver
+from src.utils.logging_utils import list_comprehension, solution_list_comprehension
+from src.utils.types import solution_type
 
 
 class Evaluator:

@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import typing
 
-from model.coordinate import Coordinate
+from src.model.coordinate import Coordinate
 
 
 class KeywordCoordinate:

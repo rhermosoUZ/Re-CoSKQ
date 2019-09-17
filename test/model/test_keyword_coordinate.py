@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from model.keyword_coordinate import KeywordCoordinate
+from src.model.keyword_coordinate import KeywordCoordinate
 
 
 class TestKeywordCoordinate(TestCase):

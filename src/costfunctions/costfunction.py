@@ -3,10 +3,10 @@ from __future__ import annotations
 import logging
 import typing
 
-from metrics.similarity_metrics import create_combined_keyword_vector
-from model.keyword_coordinate import KeywordCoordinate
-from utils.logging_utils import dataset_comprehension
-from utils.types import distance_function_type, similarity_function_type, dataset_type
+from src.metrics.similarity_metrics import create_combined_keyword_vector
+from src.model.keyword_coordinate import KeywordCoordinate
+from src.utils.logging_utils import dataset_comprehension
+from src.utils.types import distance_function_type, similarity_function_type, dataset_type
 
 
 class CostFunction:
