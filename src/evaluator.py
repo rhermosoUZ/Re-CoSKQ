@@ -30,18 +30,18 @@ class Evaluator:
         :param solver: The solver
         """
         self.solvers.append(solver)
-        logging.getLogger(__name__).debug('added solver {}'.format(solver))
+        logging.getLogger(__name__).info('added solver {}'.format(solver))
 
     def evaluate(self) -> typing.NoReturn:
         """
         Starts the evaluation of all added solvers.
         """
         logger = logging.getLogger(__name__)
-        logger.debug('starting evaluation for solvers {}'.format(list_comprehension(self.solvers)))
+        logger.info('starting evaluation for solvers {}'.format(list_comprehension(self.solvers)))
         for solver in self.solvers:
             result = solver.solve()
             self.results.append((result, solver))
-        logger.debug('finished evaluation with results {}'.format(solution_list_comprehension(self.results)))
+        logger.info('finished evaluation with results {}'.format(solution_list_comprehension(self.results)))
 
     def get_results(self) -> typing.List[typing.Tuple[solution_type, Solver]]:
         """

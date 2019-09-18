@@ -53,7 +53,7 @@ class CostFunction:
                 current_value = self.distance_metric(dataset[index1].coordinates, dataset[index1 + index2 + 1].coordinates)
                 if current_value > current_maximum:
                     current_maximum = current_value
-        logger.debug('found maximum distance for dataset of {}'.format(current_maximum))
+        logger.info('found maximum distance for dataset of {}'.format(current_maximum))
         return current_maximum
 
     def get_minimum_for_dataset(self, dataset: dataset_type) -> float:
@@ -70,7 +70,7 @@ class CostFunction:
                 current_value = self.distance_metric(dataset[index1].coordinates, dataset[index1 + index2 + 1].coordinates)
                 if current_value < current_minimum:
                     current_minimum = current_value
-        logger.debug('found minimum distance for dataset of {}'.format(current_minimum))
+        logger.info('found minimum distance for dataset of {}'.format(current_minimum))
         return current_minimum
 
     def get_maximum_for_query(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
@@ -87,7 +87,7 @@ class CostFunction:
             current_value = self.distance_metric(query.coordinates, dataset[index].coordinates)
             if current_value > current_maximum:
                 current_maximum = current_value
-        logger.debug('found maximum distance for query and dataset of {}'.format(current_maximum))
+        logger.info('found maximum distance for query and dataset of {}'.format(current_maximum))
         return current_maximum
 
     def get_minimum_for_query(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
@@ -104,7 +104,7 @@ class CostFunction:
             current_value = self.distance_metric(query.coordinates, dataset[index].coordinates)
             if current_value < current_minimum:
                 current_minimum = current_value
-        logger.debug('found minimum distance for query and dataset of {}'.format(current_minimum))
+        logger.info('found minimum distance for query and dataset of {}'.format(current_minimum))
         return current_minimum
 
     def get_maximum_keyword_distance(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
@@ -128,7 +128,7 @@ class CostFunction:
                 current_value = self.similarity_metric(query.keywords, element.keywords)
             if current_value > current_maximum:
                 current_maximum = current_value
-        logger.debug('found maximum similarity for query and dataset of {}'.format(current_maximum))
+        logger.info('found maximum similarity cost for query and dataset of {}'.format(current_maximum))
         return current_maximum
 
     def solve(self, query: KeywordCoordinate, dataset: dataset_type) -> float:

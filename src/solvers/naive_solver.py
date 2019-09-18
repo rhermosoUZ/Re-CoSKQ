@@ -38,7 +38,7 @@ class NaiveSolver(Solver):
         :return: A list with tuples. Every tuple contains a cost and the corresponding subset of KeywordCoordinates.
         """
         logger = logging.getLogger(__name__)
-        logger.debug('solving for query {} and dataset {} using cost function {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.result_length))
+        logger.info('solving for query {} and dataset {} using cost function {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.result_length))
         result_list: typing.List[solution_type] = []
         if(self.normalize_data):
             query, data, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y = normalize_data(self.query, self.data)
@@ -49,6 +49,7 @@ class NaiveSolver(Solver):
             list_of_subsets = find_subsets(data, index + 1)
             for subset in list_of_subsets:
                 current_cost = self.cost_function.solve(query, subset)
+                logger.debug('calculated current cost {}'.format(current_cost))
                 if current_cost == math.inf:
                     continue
                 if len(result_list) < self.result_length or current_cost < result_list[len(result_list) - 1][0]:
@@ -58,5 +59,5 @@ class NaiveSolver(Solver):
                     logger.debug('sorted result {}'.format(result_list_comprehension(result_list)))
                     result_list = result_list[:self.result_length]
         denormalized_result_list = denormalize_result_data(result_list, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y)
-        logger.debug('solved for {} with length {}'.format(result_list_comprehension(denormalized_result_list), self.result_length))
+        logger.info('solved for {} with length {}'.format(result_list_comprehension(denormalized_result_list), self.result_length))
         return denormalized_result_list

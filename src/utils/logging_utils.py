@@ -42,6 +42,8 @@ def result_list_comprehension(result_list: typing.List[typing.Tuple[float, typin
     :param result_list: The result list
     :return: A string with the unrolled result list information
     """
+    if len(result_list) == 0:
+        return '[]'
     result = '['
     for element in result_list:
         result += '({}, {}), '.format(element[0], dataset_comprehension(element[1]))

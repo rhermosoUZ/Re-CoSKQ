@@ -35,7 +35,7 @@ class Type4(CostFunction):
         :return: The maximum cost for the given query and dataset
         """
         logger = logging.getLogger(__name__)
-        logger.debug('solving for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
+        logger.info('solving for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
         # TODO does this type of threshold filtering make sense for the unified function?
         query_distance = self.get_maximum_for_query(query, dataset)
         logger.debug('solved query distance for {}'.format(query_distance))
@@ -45,7 +45,7 @@ class Type4(CostFunction):
         logger.debug('solved keyword similarity for {}'.format(keyword_similarity))
         if (not self.disable_thresholds and (
                 query_distance > self.query_distance_threshold or dataset_distance > self.dataset_distance_threshold or keyword_similarity > self.keyword_similarity_threshold)):
-            logger.debug(
+            logger.info(
                 'One of the thresholds was not met. Query threshold: {}, dataset threshold: {}, keyword threshold {}'.format(
                     self.query_distance_threshold, self.dataset_distance_threshold, self.keyword_similarity_threshold))
             return math.inf
@@ -59,7 +59,7 @@ class Type4(CostFunction):
             c: float = ((self.omega * keyword_similarity) ** self.phi_2) ** (
                         1 / self.phi_2)
             solution = a + b + c
-            logger.debug('solved with a cost of {}'.format(solution))
+            logger.info('solved with a cost of {}'.format(solution))
             return solution
 
     def __str__(self):
