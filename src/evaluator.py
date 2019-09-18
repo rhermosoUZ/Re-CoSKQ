@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import copy
 import logging
+import logging.config
+import os
 import typing
 
 from src.solvers.solver import Solver
@@ -17,6 +19,7 @@ class Evaluator:
         """
         Constructs a new Evaluator object and initializes the state of the object. Solvers can be added to the evaluator.
         """
+        logging.config.fileConfig(os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '/../logs/config/logging.config'))
         self.solvers: typing.List[Solver] = []
         self.results: typing.List[typing.Tuple[solution_type, Solver]] = []
         logging.getLogger(__name__).debug('created')
