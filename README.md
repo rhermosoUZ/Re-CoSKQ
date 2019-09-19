@@ -7,11 +7,11 @@ The query and every element in the set of data consist of physical coordinates a
 In order to calculate the costs of a subset, CoSKQ calculates the physical distance between the query and the subset and also the physical distance between the entries of the subset.
 These calculations are only carried out if the combined keywords of the subset cover the keywords of the query.
 
-Vanilla CoSKQ is not suitable for Re-CoSKQ as it requires complete matches between the subset's keywords and the query's keywords.
+Plain CoSKQ is not suitable for Re-CoSKQ as it requires complete matches between the subset's keywords and the query's keywords.
 Therefore, Re-CoSKQ calculates these best-cost subsets based on their physical distance to the query, the distance between the subset entries and the similarity between the query and subset keywords.
 However, Re-CoSKQ does not strictly exclude subsets because of the keyword coverage.
 
-## The Project Setup
+## Project Setup
 
 The Project consists of multiple classes and functions to accommodate the needs of Re-CoSKQ.
 In general, it has been built with modularity and extensibility in mind.
@@ -46,14 +46,14 @@ It has a state and can be used interactively.
 
 ```python
 from src.model.keyword_coordinate import KeywordCoordinate
-from src.costfunctions.type1 import Type1
-from src.costfunctions.type2 import Type2
 from src.metrics.distance_metrics import manhattan_distance, euclidean_distance
 from src.metrics.similarity_metrics import separated_cosine_similarity, combined_cosine_similarity
-from src.solvers.naive_solver import NaiveSolver
-from src.evaluator import Evaluator
 from src.utils.logging_utils import solution_list_comprehension
 from src.utils.data_generator import DataGenerator
+from src.costfunctions.type1 import Type1
+from src.costfunctions.type2 import Type2
+from src.solvers.naive_solver import NaiveSolver
+from src.evaluator import Evaluator
 
 # Evaluator, instantiate it first for logging purposes
 ev = Evaluator()
