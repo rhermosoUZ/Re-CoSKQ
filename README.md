@@ -53,6 +53,7 @@ from src.metrics.similarity_metrics import separated_cosine_similarity, combined
 from src.solvers.naive_solver import NaiveSolver
 from src.evaluator import Evaluator
 from src.utils.logging_utils import solution_list_comprehension
+from src.utils.data_generator import DataGenerator
 
 # Evaluator, instantiate it first for logging purposes
 ev = Evaluator()
@@ -63,6 +64,9 @@ kwc1 = KeywordCoordinate(2, 1, ['family'])
 kwc2 = KeywordCoordinate(1, 2, ['food'])
 kwc3 = KeywordCoordinate(2, 2, ['outdoor'])
 data = [kwc1, kwc2, kwc3]
+possible_keywords = ['family', 'food', 'outdoor', 'rest', 'indoor', 'sports', 'science', 'culture', 'history']
+dg = DataGenerator(possible_keywords)
+gen_data = dg.generate(10)
 
 # Define the cost functions
 cf = Type1(manhattan_distance, separated_cosine_similarity, 0.2, 0.1, 0.7, disable_thresholds=False)
@@ -70,7 +74,7 @@ cf2 = Type2(euclidean_distance, combined_cosine_similarity, 0.2, 0.1, 0.7, disab
 
 # Choose which solver to use
 ns = NaiveSolver(query, data, cf, result_length=5)
-ns2 = NaiveSolver(query, data, cf2, result_length=5)
+ns2 = NaiveSolver(query, gen_data, cf2, result_length=5)
 
 # Add Solvers to evaluator
 ev.add_solver(ns)
@@ -98,7 +102,7 @@ Possible targets include: html, singlehtml and latexpdf.
 
 Take the following steps to generate the documentation:
  - Start from the root of the project (usually the re-coskq folder)
- - Generate the .rst files: sphinx-apidoc --implicit-namespaces -o docs/ src/
+ - Generate the .rst files: sphinx-apidoc --implicit-namespaces --force -o docs/ src/
  - Go to the docs/ directory: cd docs/
  - (If something went wrong previously: make clean)
  - Build the target: make html
