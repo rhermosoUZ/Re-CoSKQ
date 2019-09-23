@@ -8,7 +8,7 @@ import typing
 
 from src.solvers.solver import Solver
 from src.utils.logging_utils import list_comprehension, solution_list_comprehension
-from src.utils.types import solution_type
+from src.utils.typing_definitions import solution_type
 
 
 class Evaluator:

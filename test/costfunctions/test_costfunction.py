@@ -4,7 +4,7 @@ from src.costfunctions.costfunction import CostFunction
 from src.metrics.distance_metrics import euclidean_distance, manhattan_distance
 from src.metrics.similarity_metrics import separated_cosine_similarity
 from src.model.keyword_coordinate import KeywordCoordinate
-from src.utils.types import dataset_type
+from src.utils.typing_definitions import dataset_type
 
 
 class TestCostFunction(TestCase):

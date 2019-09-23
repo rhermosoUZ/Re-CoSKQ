@@ -6,8 +6,8 @@ import typing
 from src.costfunctions.costfunction import CostFunction
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.logging_utils import dataset_comprehension
-from src.utils.types import dataset_type
-from src.utils.types import solution_type
+from src.utils.typing_definitions import dataset_type
+from src.utils.typing_definitions import solution_type
 
 
 class Solver:

@@ -1,7 +1,7 @@
 import typing
 
 from src.model.keyword_coordinate import KeywordCoordinate
-from src.utils.types import dataset_type
+from src.utils.typing_definitions import dataset_type
 
 
 def dataset_comprehension(dataset: dataset_type) -> str:

@@ -1,12 +1,15 @@
 from __future__ import annotations
 
 import logging
+import os
 import typing
+
+import word2vec
 
 from src.metrics.similarity_metrics import create_combined_keyword_vector
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.logging_utils import dataset_comprehension
-from src.utils.types import distance_function_type, similarity_function_type, dataset_type
+from src.utils.typing_definitions import distance_function_type, similarity_function_type, dataset_type
 
 
 class CostFunction:
@@ -14,7 +17,7 @@ class CostFunction:
     The CostFunction class acts as base for the specific types of cost functions. It offers all the required methods for the cost calculations. The purpose of a CostFunction is to enable comparability between different sets of data.
     """
     def __init__(self, distance_metric: distance_function_type,
-                 similarity_metric: similarity_function_type, alpha: float, beta: float, omega: float, query_distance_threshold: float = 0.7, dataset_distance_threshold: float = 0.7, keyword_similarity_threshold: float = 0.7, disable_thresholds: bool = False) -> typing.NoReturn:
+                 similarity_metric: similarity_function_type, alpha: float, beta: float, omega: float, query_distance_threshold: float = 0.7, dataset_distance_threshold: float = 0.7, keyword_similarity_threshold: float = 0.7, disable_thresholds: bool = False):
         """
         Constructs a new CostFunction object. The CostFunction class should never be directly instantiated. Instead use a class that inherits from the CostFunction class and implements the solve() method.
         :param distance_metric: The distance metric to calculate coordinate distances between KeywordCoordinates.
@@ -36,7 +39,16 @@ class CostFunction:
         self.dataset_distance_threshold = dataset_distance_threshold
         self.keyword_similarity_threshold = keyword_similarity_threshold
         self.disable_thresholds = disable_thresholds
-        logging.getLogger(__name__).debug('created with distance metric {}, similarity metric {}, alpha {}, beta {} and omega {}'.format(self.distance_metric.__name__, self.similarity_metric.__name__, self.alpha, self.beta, self.omega))
+        logger = logging.getLogger(__name__)
+        if self.similarity_metric.__name__ == 'word2vec_cosine_similarity':
+            model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../model.bin')
+            logger.debug('loading model from path {}'.format(model_path))
+            try:
+                self.model = word2vec.load(model_path)
+            except:
+                logger.error('Could not load model from path {}'.format(model_path))
+                raise ValueError('Could not load model from path {}')
+        logger.debug('created with distance metric {}, similarity metric {}, alpha {}, beta {} and omega {}'.format(self.distance_metric.__name__, self.similarity_metric.__name__, self.alpha, self.beta, self.omega))
 
     # TODO check if minimum and maximum functions can be refactored into one
     def get_maximum_for_dataset(self, dataset: dataset_type) -> float:
@@ -112,18 +124,23 @@ class CostFunction:
         Calculates the maximum keyword distance.
         :param query: The query
         :param dataset: The dataset
-        :return:
+        :return: Maximum distance between the keywords
         """
         logger = logging.getLogger(__name__)
         logger.debug('finding maximum similarity for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
         current_maximum = 0
         combination = False
+        latentfactors = False
         if self.similarity_metric.__name__ == 'combined_cosine_similarity':
             combined_keyword_vector: typing.List[str] = create_combined_keyword_vector(query, dataset)
             combination = True
+        elif self.similarity_metric.__name__ == 'word2vec_cosine_similarity':
+            latentfactors = True
         for element in dataset:
             if combination:
                 current_value = self.similarity_metric(query.keywords, element.keywords, combined_keyword_vector)
+            elif latentfactors:
+                current_value = self.similarity_metric(query.keywords, element.keywords, self.model)
             else:
                 current_value = self.similarity_metric(query.keywords, element.keywords)
             if current_value > current_maximum:

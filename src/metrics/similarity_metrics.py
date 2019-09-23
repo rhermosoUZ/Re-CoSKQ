@@ -5,9 +5,11 @@ import logging
 import math
 import typing
 
+import numpy as np
+
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.logging_utils import dataset_comprehension, sets_of_set_comprehension
-from src.utils.types import sim_dataset_type, keyword_dataset_type, dataset_type
+from src.utils.typing_definitions import sim_dataset_type, keyword_dataset_type, dataset_type
 
 
 def cosine_similarity(dataset1: sim_dataset_type, dataset2: sim_dataset_type) -> float:
@@ -138,6 +140,54 @@ def combined_cosine_similarity(query_keyword_list, data_keyword_list, dataset_ke
     solution = 1 - cosine_similarity(query_vector, data_vector)
     logger.debug('calculated {}'.format(solution))
     return solution
+
+
+def word2vec_cosine_similarity(wordlist1: typing.List[str], wordlist2: typing.List[str], model) -> float:
+    """
+    Calculates the cosine similarity between lists of words based on their word2vec vectors.
+    :param wordlist1: The first word list
+    :param wordlist2: The second word list
+    :param model: The word2vec model
+    :return: The calculated keyword similarity cost using word2vec vectors
+    """
+    logger = logging.getLogger(__name__ + '.word2vec_cosine_similarity')
+    logger.debug('calculating for wordlist 1 {} and wordlist 2 {}'.format(wordlist1, wordlist2))
+    word_vector_list1: typing.List[np.array] = []
+    for element in wordlist1:
+        logger.debug('getting vector for word {}'.format(element))
+        try:
+            word_vector_list1.append(model.get_vector(element))
+        except:
+            logger.warning('the word {} is not part of the vocabulary and will therefore not be taken into account'.format(element))
+    logger.debug('vector 1 {}'.format(word_vector_list1))
+    if len(word_vector_list1) == 0:
+        logger.error('query (keywords: {}) has no valid keywords'.format(wordlist1))
+        raise ValueError('query (keywords: {}) has no valid keywords'.format(wordlist1))
+    word_vector_list2: typing.List[np.array] = []
+    for element in wordlist2:
+        logger.debug('getting vector for word {}'.format(element))
+        try:
+            word_vector_list2.append(model.get_vector(element))
+        except:
+            logger.warning('the word {} is not part of the vocabulary and will therefore not be taken into account'.format(element))
+    logger.debug('vector 2 {}'.format(word_vector_list2))
+    if len(word_vector_list2) == 0:
+        logger.error('query (keywords: {}) has no valid keywords'.format(wordlist2))
+        raise ValueError('query (keywords: {}) has no valid keywords'.format(wordlist2))
+    vector_shape = word_vector_list1[0].shape
+    logger.debug('vector_shape {}'.format(vector_shape))
+    query_vector_sum: np.array = np.zeros(vector_shape)
+    for vector in word_vector_list1:
+        query_vector_sum = query_vector_sum + vector
+    logger.debug('query_vector_sum {}'.format(query_vector_sum))
+    subset_vector_sum: np.array = np.zeros(vector_shape)
+    for vector in word_vector_list2:
+        subset_vector_sum = subset_vector_sum + vector
+    logger.debug('subset_vector_sum {}'.format(subset_vector_sum))
+    sim = cosine_similarity(query_vector_sum, subset_vector_sum)
+    logger.debug('similarity {}'.format(sim))
+    logger.debug('returning cost {}'.format(1 - sim))
+    return 1 - sim
 
 
 # https://stackoverflow.com/questions/374626/how-can-i-find-all-the-subsets-of-a-set-with-exactly-n-elements#374645

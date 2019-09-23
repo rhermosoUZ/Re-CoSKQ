@@ -6,7 +6,7 @@ import typing
 
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.logging_utils import dataset_comprehension
-from src.utils.types import dataset_type
+from src.utils.typing_definitions import dataset_type
 
 
 class DataGenerator:

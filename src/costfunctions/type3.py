@@ -4,7 +4,7 @@ import math
 from src.costfunctions.costfunction import CostFunction
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.logging_utils import dataset_comprehension
-from src.utils.types import distance_function_type, similarity_function_type, dataset_type
+from src.utils.typing_definitions import distance_function_type, similarity_function_type, dataset_type
 
 
 class Type3(CostFunction):

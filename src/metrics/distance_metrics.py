@@ -6,7 +6,7 @@ import typing
 from src.model.coordinate import Coordinate
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.logging_utils import dataset_comprehension, result_list_comprehension
-from src.utils.types import solution_type
+from src.utils.typing_definitions import solution_type
 
 
 def euclidean_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> float:
