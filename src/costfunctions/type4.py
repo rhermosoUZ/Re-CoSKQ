@@ -8,7 +8,7 @@ from src.utils.typing_definitions import distance_function_type, similarity_func
 
 
 class Type4(CostFunction):
-    def __init__(self, distance_metric: distance_function_type, similarity_metric: similarity_function_type, alpha: float, beta: float, omega: float, phi_1: float, phi_2: float, query_distance_threshold: float = 0.7, dataset_distance_threshold: float = 0.7, keyword_similarity_threshold: float = 0.7, disable_thresholds: bool = False):
+    def __init__(self, distance_metric: distance_function_type, similarity_metric: similarity_function_type, alpha: float, beta: float, omega: float, phi_1: float, phi_2: float, query_distance_threshold: float = 0.7, dataset_distance_threshold: float = 0.7, keyword_similarity_threshold: float = 0.7, disable_thresholds: bool = False, model=None):
         """
         Constructs a Type2 cost function object.
         :param distance_metric: The distance metric to calculate coordinate distances between KeywordCoordinates.
@@ -22,8 +22,9 @@ class Type4(CostFunction):
         :param dataset_distance_threshold: The threshold for the inter-dataset distance.
         :param keyword_similarity_threshold: The threshold for the keyword list similarity.
         :param disable_thresholds: Whether to honor any threshold values.
+        :param model: The word2vec model. This can be passed to the CostFunction instead of reading it from disk to improve performance.
         """
-        super().__init__(distance_metric, similarity_metric, alpha, beta, omega, query_distance_threshold, dataset_distance_threshold, keyword_similarity_threshold, disable_thresholds)
+        super().__init__(distance_metric, similarity_metric, alpha, beta, omega, query_distance_threshold, dataset_distance_threshold, keyword_similarity_threshold, disable_thresholds, model)
         self.phi_1 = phi_1
         self.phi_2 = phi_2
 

@@ -4,6 +4,7 @@ import logging
 import os
 import typing
 
+import numpy as np
 import word2vec
 
 from src.metrics.similarity_metrics import create_combined_keyword_vector
@@ -17,7 +18,7 @@ class CostFunction:
     The CostFunction class acts as base for the specific types of cost functions. It offers all the required methods for the cost calculations. The purpose of a CostFunction is to enable comparability between different sets of data.
     """
     def __init__(self, distance_metric: distance_function_type,
-                 similarity_metric: similarity_function_type, alpha: float, beta: float, omega: float, query_distance_threshold: float = 0.7, dataset_distance_threshold: float = 0.7, keyword_similarity_threshold: float = 0.7, disable_thresholds: bool = False):
+                 similarity_metric: similarity_function_type, alpha: float, beta: float, omega: float, query_distance_threshold: float = 0.7, dataset_distance_threshold: float = 0.7, keyword_similarity_threshold: float = 0.7, disable_thresholds: bool = False, model=None):
         """
         Constructs a new CostFunction object. The CostFunction class should never be directly instantiated. Instead use a class that inherits from the CostFunction class and implements the solve() method.
         :param distance_metric: The distance metric to calculate coordinate distances between KeywordCoordinates.
@@ -29,6 +30,7 @@ class CostFunction:
         :param dataset_distance_threshold: The threshold for the inter-dataset distance.
         :param keyword_similarity_threshold: The threshold for the keyword list similarity.
         :param disable_thresholds: Whether to honor any threshold values.
+        :param model: The word2vec model. This can be passed to the CostFunction instead of reading it from disk to improve performance.
         """
         self.distance_metric: distance_function_type = distance_metric
         self.similarity_metric: similarity_function_type = similarity_metric
@@ -41,13 +43,20 @@ class CostFunction:
         self.disable_thresholds = disable_thresholds
         logger = logging.getLogger(__name__)
         if self.similarity_metric.__name__ == 'word2vec_cosine_similarity':
-            model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../model.bin')
-            logger.debug('loading model from path {}'.format(model_path))
             try:
-                self.model = word2vec.load(model_path)
+                if model is None:
+                    model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../model.bin')
+                    logger.debug('loading model from path {}'.format(model_path))
+                    self.model = word2vec.load(model_path)
+                else:
+                    logger.debug('loading model {} from parameter'.format(model))
+                    self.model = model
+                    if type(self.model.vocab) != np.ndarray:
+                        logger.error('Model seems to be corrupt.')
+                        raise ValueError('Model seems to be corrupt.')
             except:
-                logger.error('Could not load model from path {}'.format(model_path))
-                raise ValueError('Could not load model from path {}')
+                logger.error('Could not load model')
+                raise ValueError('Could not load model')
         logger.debug('created with distance metric {}, similarity metric {}, alpha {}, beta {} and omega {}'.format(self.distance_metric.__name__, self.similarity_metric.__name__, self.alpha, self.beta, self.omega))
 
     # TODO check if minimum and maximum functions can be refactored into one
