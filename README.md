@@ -47,11 +47,13 @@ It has a state and can be used interactively.
 ```python
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.metrics.distance_metrics import manhattan_distance, euclidean_distance
-from src.metrics.similarity_metrics import separated_cosine_similarity, combined_cosine_similarity
+from src.metrics.similarity_metrics import separated_cosine_similarity, combined_cosine_similarity, word2vec_cosine_similarity
 from src.utils.logging_utils import solution_list_comprehension
 from src.utils.data_generator import DataGenerator
+from src.utils.data_handler import load_word2vec_model
 from src.costfunctions.type1 import Type1
 from src.costfunctions.type2 import Type2
+from src.costfunctions.type3 import Type3
 from src.solvers.naive_solver import NaiveSolver
 from src.evaluator import Evaluator
 
@@ -64,21 +66,33 @@ kwc1 = KeywordCoordinate(2, 1, ['family'])
 kwc2 = KeywordCoordinate(1, 2, ['food'])
 kwc3 = KeywordCoordinate(2, 2, ['outdoor'])
 data = [kwc1, kwc2, kwc3]
+
 possible_keywords = ['family', 'food', 'outdoor', 'rest', 'indoor', 'sports', 'science', 'culture', 'history']
 dg = DataGenerator(possible_keywords)
+gen_query = KeywordCoordinate(50,50, ['food', 'family', 'indoor'])
 gen_data = dg.generate(10)
 
 # Define the cost functions
-cf = Type1(manhattan_distance, separated_cosine_similarity, 0.2, 0.1, 0.7, disable_thresholds=False)
+word2vec_model = load_word2vec_model()
+cf1 = Type1(manhattan_distance, separated_cosine_similarity, 0.2, 0.1, 0.7, disable_thresholds=True)
 cf2 = Type2(euclidean_distance, combined_cosine_similarity, 0.2, 0.1, 0.7, disable_thresholds=True)
+cf3 = Type3(euclidean_distance, word2vec_cosine_similarity, 0.2, 0.1, 0.7, model=word2vec_model)
 
 # Choose which solver to use
-ns = NaiveSolver(query, data, cf, result_length=5)
-ns2 = NaiveSolver(query, gen_data, cf2, result_length=5)
+ns = NaiveSolver(query, data, cf1, result_length=5)
+ns2 = NaiveSolver(query, data, cf2, result_length=5)
+ns3 = NaiveSolver(query, data, cf3, result_length=5)
+ns4 = NaiveSolver(gen_query, gen_data, cf1, result_length=5)
+ns5 = NaiveSolver(gen_query, gen_data, cf2, result_length=5)
+ns6 = NaiveSolver(gen_query, gen_data, cf3, result_length=5)
 
 # Add Solvers to evaluator
 ev.add_solver(ns)
 ev.add_solver(ns2)
+ev.add_solver(ns3)
+ev.add_solver(ns4)
+ev.add_solver(ns5)
+ev.add_solver(ns6)
 
 # Run evaluator and fetch results
 ev.evaluate()
