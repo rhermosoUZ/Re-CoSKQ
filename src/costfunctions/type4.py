@@ -4,11 +4,18 @@ import math
 from src.costfunctions.costfunction import CostFunction
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.logging_utils import dataset_comprehension
-from src.utils.typing_definitions import distance_function_type, similarity_function_type, dataset_type
+from src.utils.typing_definitions import distance_function_type, similarity_function_type, dataset_type, \
+    precalculated_dict_type
 
 
 class Type4(CostFunction):
-    def __init__(self, distance_metric: distance_function_type, similarity_metric: similarity_function_type, alpha: float, beta: float, omega: float, phi_1: float, phi_2: float, query_distance_threshold: float = 0.7, dataset_distance_threshold: float = 0.7, keyword_similarity_threshold: float = 0.7, disable_thresholds: bool = False, model=None):
+    def __init__(self, distance_metric: distance_function_type, similarity_metric: similarity_function_type,
+                 alpha: float, beta: float, omega: float, phi_1: float, phi_2: float,
+                 query_distance_threshold: float = 0.7, dataset_distance_threshold: float = 0.7,
+                 keyword_similarity_threshold: float = 0.7, disable_thresholds: bool = False, model=None,
+                 precalculated_query_dataset_dict: precalculated_dict_type = None,
+                 precalculated_inter_dataset_dict: precalculated_dict_type = None,
+                 precalculated_keyword_similarity_dict: precalculated_dict_type = None):
         """
         Constructs a Type2 cost function object.
         :param distance_metric: The distance metric to calculate coordinate distances between KeywordCoordinates.
@@ -24,7 +31,10 @@ class Type4(CostFunction):
         :param disable_thresholds: Whether to honor any threshold values.
         :param model: The word2vec model. This can be passed to the CostFunction instead of reading it from disk to improve performance.
         """
-        super().__init__(distance_metric, similarity_metric, alpha, beta, omega, query_distance_threshold, dataset_distance_threshold, keyword_similarity_threshold, disable_thresholds, model)
+        super().__init__(distance_metric, similarity_metric, alpha, beta, omega, query_distance_threshold,
+                         dataset_distance_threshold, keyword_similarity_threshold, disable_thresholds, model,
+                         precalculated_query_dataset_dict, precalculated_inter_dataset_dict,
+                         precalculated_keyword_similarity_dict)
         self.phi_1 = phi_1
         self.phi_2 = phi_2
 

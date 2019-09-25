@@ -72,29 +72,29 @@ dg = DataGenerator(possible_keywords)
 gen_query = KeywordCoordinate(50,50, ['food', 'family', 'indoor'])
 gen_data = dg.generate(10)
 
-# Define the cost functions
+# Define the CostFunctions
 word2vec_model = load_word2vec_model()
 cf1 = Type1(manhattan_distance, separated_cosine_similarity, 0.2, 0.1, 0.7, disable_thresholds=True)
 cf2 = Type2(euclidean_distance, combined_cosine_similarity, 0.2, 0.1, 0.7, disable_thresholds=True)
 cf3 = Type3(euclidean_distance, word2vec_cosine_similarity, 0.2, 0.1, 0.7, model=word2vec_model)
 
-# Choose which solver to use
-ns = NaiveSolver(query, data, cf1, result_length=5)
+# Choose which Solvers to use
+ns1 = NaiveSolver(query, data, cf1, result_length=5)
 ns2 = NaiveSolver(query, data, cf2, result_length=5)
 ns3 = NaiveSolver(query, data, cf3, result_length=5)
 ns4 = NaiveSolver(gen_query, gen_data, cf1, result_length=5)
 ns5 = NaiveSolver(gen_query, gen_data, cf2, result_length=5)
 ns6 = NaiveSolver(gen_query, gen_data, cf3, result_length=5)
 
-# Add Solvers to evaluator
-ev.add_solver(ns)
+# Add Solvers to Evaluator
+ev.add_solver(ns1)
 ev.add_solver(ns2)
 ev.add_solver(ns3)
 ev.add_solver(ns4)
 ev.add_solver(ns5)
 ev.add_solver(ns6)
 
-# Run evaluator and fetch results
+# Run Evaluator and fetch results
 ev.evaluate()
 results = ev.get_results()
 print(solution_list_comprehension(results))

@@ -17,4 +17,4 @@ sim_tuple_type = typing.Tuple[sim_dataset_type, sim_dataset_type]
 keyword_dataset_type = typing.List[str]
 solution_type = typing.Tuple[float, typing.List[KeywordCoordinate]]
 # solution_list = typing.List[typing.Tuple[solution_type, Solver]]
-
+precalculated_dict_type = typing.Dict[typing.FrozenSet, float]

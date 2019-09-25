@@ -19,5 +19,24 @@ class KeywordCoordinate:
         self.keywords: typing.List[str] = keyword_set
         logger.debug('created at ({}, {}) with the keywords {}'.format(self.coordinates.x, self.coordinates.y, self.keywords))
 
+    def __eq__(self, other: KeywordCoordinate):
+        if self.coordinates.x != other.coordinates.x or self.coordinates.y != other.coordinates.y:
+            return False
+        if len(self.keywords) != len(other.keywords):
+            return False
+        for index in range(len(self.keywords)):
+            if self.keywords[index] != other.keywords[index]:
+                return False
+        return True
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __key(self):
+        return (self.coordinates.x, self.coordinates.y, tuple(self.keywords))
+
+    def __hash__(self):
+        return hash(self.__key())
+
     def __str__(self):
         return '({}, {}), {}'.format(self.coordinates.x, self.coordinates.y, self.keywords)

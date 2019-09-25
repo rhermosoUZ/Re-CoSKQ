@@ -4,9 +4,11 @@ import logging
 import typing
 
 from src.costfunctions.costfunction import CostFunction
+from src.metrics.distance_metrics import normalize_data
+from src.metrics.similarity_metrics import find_subsets
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.logging_utils import dataset_comprehension
-from src.utils.typing_definitions import dataset_type
+from src.utils.typing_definitions import dataset_type, precalculated_dict_type
 from src.utils.typing_definitions import solution_type
 
 
@@ -40,6 +42,82 @@ class Solver:
         :return: A list with tuples. Every tuple contains a cost and the corresponding subset of KeywordCoordinates.
         """
         pass
+
+    def get_max_inter_dataset_distance(self) -> precalculated_dict_type:
+        if (self.normalize_data):
+            norm_data = normalize_data(self.query, self.data)
+            data = norm_data[1]
+        else:
+            data = self.data
+        result_dict: precalculated_dict_type = dict()
+        for index in range(len(data)):
+            list_of_subsets = find_subsets(data, index + 1)
+            for subset in list_of_subsets:
+                current_result = self.cost_function.get_maximum_for_dataset(subset)
+                result_dict[frozenset(subset)] = current_result
+        return result_dict
+
+    def get_min_inter_dataset_distance(self) -> precalculated_dict_type:
+        if (self.normalize_data):
+            norm_data = normalize_data(self.query, self.data)
+            data = norm_data[1]
+        else:
+            data = self.data
+        result_dict: precalculated_dict_type = dict()
+        for index in range(len(data)):
+            list_of_subsets = find_subsets(data, index + 1)
+            for subset in list_of_subsets:
+                current_result = self.cost_function.get_minimum_for_dataset(subset)
+                result_dict[frozenset(subset)] = current_result
+        return result_dict
+
+    def get_max_query_dataset_distance(self) -> precalculated_dict_type:
+        if (self.normalize_data):
+            norm_data = normalize_data(self.query, self.data)
+            query = norm_data[0]
+            data = norm_data[1]
+        else:
+            query = self.query
+            data = self.data
+        result_dict: precalculated_dict_type = dict()
+        for index in range(len(data)):
+            list_of_subsets = find_subsets(data, index + 1)
+            for subset in list_of_subsets:
+                current_result = self.cost_function.get_maximum_for_query(query, data)
+                result_dict[frozenset(subset)] = current_result
+        return result_dict
+
+    def get_min_query_dataset_distance(self) -> precalculated_dict_type:
+        if (self.normalize_data):
+            norm_data = normalize_data(self.query, self.data)
+            query = norm_data[0]
+            data = norm_data[1]
+        else:
+            query = self.query
+            data = self.data
+        result_dict: precalculated_dict_type = dict()
+        for index in range(len(data)):
+            list_of_subsets = find_subsets(data, index + 1)
+            for subset in list_of_subsets:
+                current_result = self.cost_function.get_minimum_for_query(query, data)
+                result_dict[frozenset(subset)] = current_result
+        return result_dict
+
+    def get_max_keyword_similarity(self) -> precalculated_dict_type:
+        if (self.normalize_data):
+            norm_data = normalize_data(self.query, self.data)
+            query = norm_data[0]
+            data = norm_data[1]
+        else:
+            query = self.query
+            data = self.data
+        result_dict: precalculated_dict_type = dict()
+        for index in range(len(data)):
+            list_of_subsets = find_subsets(data, index + 1)
+            for subset in list_of_subsets:
+                current_result = self.cost_function.get_maximum_keyword_distance(query, data)
+                result_dict[frozenset(subset)] = current_result
+        return result_dict
 
     def __str__(self):
         return '{}(query: {}, dataset: {}, cost function: {}, result length {})'.format(type(self).__name__, self.query, dataset_comprehension(self.data), self.cost_function, self.result_length)
