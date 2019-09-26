@@ -38,6 +38,9 @@ class CostFunction:
         :param keyword_similarity_threshold: The threshold for the keyword list similarity.
         :param disable_thresholds: Whether to honor any threshold values.
         :param model: The word2vec model. This can be passed to the CostFunction instead of reading it from disk to improve performance.
+        :param precalculated_query_dataset_dict: A dictionary with precalculated query-dataset values for a given frozen subset.
+        :param precalculated_inter_dataset_dict: A dictionary with precalculated inter-dataset values for a given frozen subset.
+        :param precalculated_keyword_similarity_dict: A dictionary with precalculated keyword similarity values for a given frozen subset.
         """
         self.distance_metric: distance_function_type = distance_metric
         self.similarity_metric: similarity_function_type = similarity_metric
@@ -120,6 +123,9 @@ class CostFunction:
         else:
             logger.debug('No precalculated inter-dataset dict found')
         current_minimum: float = 9999999.9
+        if len(dataset) <= 1:
+            logger.debug('Dataset of size 1 returning inter-dataset distance of 0.0')
+            return 0.0
         for index1 in range(len(dataset)):
             for index2 in range(len(dataset) - index1 - 1):
                 current_value = self.distance_metric(dataset[index1].coordinates,

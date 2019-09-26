@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from src.costfunctions.costfunction import CostFunction
 from src.metrics.distance_metrics import euclidean_distance
-from src.metrics.similarity_metrics import separated_cosine_similarity
+from src.metrics.similarity_metrics import separated_cosine_similarity, combined_cosine_similarity
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.solvers.solver import Solver
 
@@ -49,3 +49,148 @@ class TestSolver(TestCase):
         self.assertAlmostEqual(so.denormalize_min_x, 0.0, delta=0.01)
         self.assertAlmostEqual(so.denormalize_max_y, 0.0, delta=0.01)
         self.assertAlmostEqual(so.denormalize_min_y, 0.0, delta=0.01)
+
+    def test_get_max_inter_dataset_distance(self):
+        query_keywords = ['family', 'food', 'outdoor']
+        kwc1_keywords = ['family', 'food', 'outdoor']
+        kwc2_keywords = ['food']
+        kwc3_keywords = ['outdoor']
+        query = KeywordCoordinate(0, 0, query_keywords)
+        kwc1 = KeywordCoordinate(1, 1, kwc1_keywords)
+        kwc2 = KeywordCoordinate(2, 2, kwc2_keywords)
+        kwc3 = KeywordCoordinate(3, 3, kwc3_keywords)
+        data = [kwc1, kwc2, kwc3]
+        cf = CostFunction(euclidean_distance, combined_cosine_similarity, 0.3, 0.3, 0.4)
+        so = Solver(query, data, cf, normalize=False)
+        fs1 = frozenset([kwc1])
+        fs2 = frozenset([kwc2])
+        fs3 = frozenset([kwc3])
+        fs4 = frozenset([kwc1, kwc2])
+        fs5 = frozenset([kwc1, kwc3])
+        fs6 = frozenset([kwc2, kwc3])
+        fs7 = frozenset([kwc1, kwc2, kwc3])
+        result = so.get_max_inter_dataset_distance()
+        self.assertEqual(len(result), 7)
+        self.assertAlmostEqual(result.get(fs1), 0.0, delta=0.01)
+        self.assertAlmostEqual(result.get(fs2), 0.0, delta=0.01)
+        self.assertAlmostEqual(result.get(fs3), 0.0, delta=0.01)
+        self.assertAlmostEqual(result.get(fs4), 1.41, delta=0.01)
+        self.assertAlmostEqual(result.get(fs5), 2.83, delta=0.01)
+        self.assertAlmostEqual(result.get(fs6), 1.41, delta=0.01)
+        self.assertAlmostEqual(result.get(fs7), 2.83, delta=0.01)
+
+    def test_get_min_inter_dataset_distance(self):
+        query_keywords = ['family', 'food', 'outdoor']
+        kwc1_keywords = ['family', 'food', 'outdoor']
+        kwc2_keywords = ['food']
+        kwc3_keywords = ['outdoor']
+        query = KeywordCoordinate(0, 0, query_keywords)
+        kwc1 = KeywordCoordinate(1, 1, kwc1_keywords)
+        kwc2 = KeywordCoordinate(2, 2, kwc2_keywords)
+        kwc3 = KeywordCoordinate(3, 3, kwc3_keywords)
+        data = [kwc1, kwc2, kwc3]
+        cf = CostFunction(euclidean_distance, combined_cosine_similarity, 0.3, 0.3, 0.4)
+        so = Solver(query, data, cf, normalize=False)
+        fs1 = frozenset([kwc1])
+        fs2 = frozenset([kwc2])
+        fs3 = frozenset([kwc3])
+        fs4 = frozenset([kwc1, kwc2])
+        fs5 = frozenset([kwc1, kwc3])
+        fs6 = frozenset([kwc2, kwc3])
+        fs7 = frozenset([kwc1, kwc2, kwc3])
+        result = so.get_min_inter_dataset_distance()
+        self.assertEqual(len(result), 7)
+        self.assertAlmostEqual(result.get(fs1), 0.0, delta=0.01)
+        self.assertAlmostEqual(result.get(fs2), 0.0, delta=0.01)
+        self.assertAlmostEqual(result.get(fs3), 0.0, delta=0.01)
+        self.assertAlmostEqual(result.get(fs4), 1.41, delta=0.01)
+        self.assertAlmostEqual(result.get(fs5), 2.83, delta=0.01)
+        self.assertAlmostEqual(result.get(fs6), 1.41, delta=0.01)
+        self.assertAlmostEqual(result.get(fs7), 1.41, delta=0.01)
+
+    def test_get_max_query_dataset_distance(self):
+        query_keywords = ['family', 'food', 'outdoor']
+        kwc1_keywords = ['family', 'food', 'outdoor']
+        kwc2_keywords = ['food']
+        kwc3_keywords = ['outdoor']
+        query = KeywordCoordinate(0, 0, query_keywords)
+        kwc1 = KeywordCoordinate(1, 1, kwc1_keywords)
+        kwc2 = KeywordCoordinate(2, 2, kwc2_keywords)
+        kwc3 = KeywordCoordinate(3, 3, kwc3_keywords)
+        data = [kwc1, kwc2, kwc3]
+        cf = CostFunction(euclidean_distance, combined_cosine_similarity, 0.3, 0.3, 0.4)
+        so = Solver(query, data, cf, normalize=False)
+        fs1 = frozenset([kwc1])
+        fs2 = frozenset([kwc2])
+        fs3 = frozenset([kwc3])
+        fs4 = frozenset([kwc1, kwc2])
+        fs5 = frozenset([kwc1, kwc3])
+        fs6 = frozenset([kwc2, kwc3])
+        fs7 = frozenset([kwc1, kwc2, kwc3])
+        result = so.get_max_query_dataset_distance()
+        self.assertEqual(len(result), 7)
+        self.assertAlmostEqual(result.get(fs1), 1.41, delta=0.01)
+        self.assertAlmostEqual(result.get(fs2), 2.83, delta=0.01)
+        self.assertAlmostEqual(result.get(fs3), 4.24, delta=0.01)
+        self.assertAlmostEqual(result.get(fs4), 2.83, delta=0.01)
+        self.assertAlmostEqual(result.get(fs5), 4.24, delta=0.01)
+        self.assertAlmostEqual(result.get(fs6), 4.24, delta=0.01)
+        self.assertAlmostEqual(result.get(fs7), 4.24, delta=0.01)
+
+    def test_get_min_query_dataset_distance(self):
+        query_keywords = ['family', 'food', 'outdoor']
+        kwc1_keywords = ['family', 'food', 'outdoor']
+        kwc2_keywords = ['food']
+        kwc3_keywords = ['outdoor']
+        query = KeywordCoordinate(0, 0, query_keywords)
+        kwc1 = KeywordCoordinate(1, 1, kwc1_keywords)
+        kwc2 = KeywordCoordinate(2, 2, kwc2_keywords)
+        kwc3 = KeywordCoordinate(3, 3, kwc3_keywords)
+        data = [kwc1, kwc2, kwc3]
+        cf = CostFunction(euclidean_distance, combined_cosine_similarity, 0.3, 0.3, 0.4)
+        so = Solver(query, data, cf, normalize=False)
+        fs1 = frozenset([kwc1])
+        fs2 = frozenset([kwc2])
+        fs3 = frozenset([kwc3])
+        fs4 = frozenset([kwc1, kwc2])
+        fs5 = frozenset([kwc1, kwc3])
+        fs6 = frozenset([kwc2, kwc3])
+        fs7 = frozenset([kwc1, kwc2, kwc3])
+        result = so.get_min_query_dataset_distance()
+        self.assertEqual(len(result), 7)
+        self.assertAlmostEqual(result.get(fs1), 1.41, delta=0.01)
+        self.assertAlmostEqual(result.get(fs2), 2.83, delta=0.01)
+        self.assertAlmostEqual(result.get(fs3), 4.24, delta=0.01)
+        self.assertAlmostEqual(result.get(fs4), 1.41, delta=0.01)
+        self.assertAlmostEqual(result.get(fs5), 1.41, delta=0.01)
+        self.assertAlmostEqual(result.get(fs6), 2.83, delta=0.01)
+        self.assertAlmostEqual(result.get(fs7), 1.41, delta=0.01)
+
+    def test_get_max_keyword_similarity(self):
+        query_keywords = ['family', 'food', 'outdoor']
+        kwc1_keywords = ['family', 'food', 'outdoor']
+        kwc2_keywords = ['food', 'family']
+        kwc3_keywords = ['outdoor']
+        query = KeywordCoordinate(0, 0, query_keywords)
+        kwc1 = KeywordCoordinate(1, 1, kwc1_keywords)
+        kwc2 = KeywordCoordinate(2, 2, kwc2_keywords)
+        kwc3 = KeywordCoordinate(3, 3, kwc3_keywords)
+        data = [kwc1, kwc2, kwc3]
+        cf = CostFunction(euclidean_distance, combined_cosine_similarity, 0.3, 0.3, 0.4)
+        so = Solver(query, data, cf, normalize=False)
+        fs1 = frozenset([kwc1])
+        fs2 = frozenset([kwc2])
+        fs3 = frozenset([kwc3])
+        fs4 = frozenset([kwc1, kwc2])
+        fs5 = frozenset([kwc1, kwc3])
+        fs6 = frozenset([kwc2, kwc3])
+        fs7 = frozenset([kwc1, kwc2, kwc3])
+        result = so.get_max_keyword_similarity()
+        self.assertEqual(len(result), 7)
+        self.assertAlmostEqual(result.get(fs1), 0.0, delta=0.01)
+        self.assertAlmostEqual(result.get(fs2), 0.18, delta=0.01)
+        self.assertAlmostEqual(result.get(fs3), 0.42, delta=0.01)
+        self.assertAlmostEqual(result.get(fs4), 0.18, delta=0.01)
+        self.assertAlmostEqual(result.get(fs5), 0.42, delta=0.01)
+        self.assertAlmostEqual(result.get(fs6), 0.42, delta=0.01)
+        self.assertAlmostEqual(result.get(fs7), 0.42, delta=0.01)

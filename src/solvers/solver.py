@@ -43,7 +43,18 @@ class Solver:
         """
         pass
 
+    def get_inter_dataset_distance(self) -> precalculated_dict_type:
+        """
+        Convenience function. Returns the correct inter-dataset distance.
+        :return: Correct inter-dataset distance
+        """
+        return self.get_max_inter_dataset_distance()
+
     def get_max_inter_dataset_distance(self) -> precalculated_dict_type:
+        """
+        Calculates a dictionary of the maximum inter-dataset cost for all subsets.
+        :return: The Dictionary with frozen subsets as keys and the corresponding cost value as values.
+        """
         if (self.normalize_data):
             norm_data = normalize_data(self.query, self.data)
             data = norm_data[1]
@@ -58,6 +69,10 @@ class Solver:
         return result_dict
 
     def get_min_inter_dataset_distance(self) -> precalculated_dict_type:
+        """
+        Calculates a dictionary of the minimum inter-dataset cost for all subsets.
+        :return: The Dictionary with frozen subsets as keys and the corresponding cost value as values.
+        """
         if (self.normalize_data):
             norm_data = normalize_data(self.query, self.data)
             data = norm_data[1]
@@ -71,7 +86,21 @@ class Solver:
                 result_dict[frozenset(subset)] = current_result
         return result_dict
 
+    def get_query_dataset_distance(self) -> precalculated_dict_type:
+        """
+        Convenience function. Returns the correct query-dataset distance.
+        :return: Correct query-dataset distance
+        """
+        if self.cost_function.__class__.__name__ == 'Type3':
+            return self.get_min_query_dataset_distance()
+        else:
+            return self.get_max_query_dataset_distance()
+
     def get_max_query_dataset_distance(self) -> precalculated_dict_type:
+        """
+        Calculates a dictionary of the maximum query-dataset cost for all subsets.
+        :return: The Dictionary with frozen subsets as keys and the corresponding cost value as values.
+        """
         if (self.normalize_data):
             norm_data = normalize_data(self.query, self.data)
             query = norm_data[0]
@@ -83,11 +112,15 @@ class Solver:
         for index in range(len(data)):
             list_of_subsets = find_subsets(data, index + 1)
             for subset in list_of_subsets:
-                current_result = self.cost_function.get_maximum_for_query(query, data)
+                current_result = self.cost_function.get_maximum_for_query(query, subset)
                 result_dict[frozenset(subset)] = current_result
         return result_dict
 
     def get_min_query_dataset_distance(self) -> precalculated_dict_type:
+        """
+        Calculates a dictionary of the minimum query-dataset cost for all subsets.
+        :return: The Dictionary with frozen subsets as keys and the corresponding cost value as values.
+        """
         if (self.normalize_data):
             norm_data = normalize_data(self.query, self.data)
             query = norm_data[0]
@@ -99,11 +132,22 @@ class Solver:
         for index in range(len(data)):
             list_of_subsets = find_subsets(data, index + 1)
             for subset in list_of_subsets:
-                current_result = self.cost_function.get_minimum_for_query(query, data)
+                current_result = self.cost_function.get_minimum_for_query(query, subset)
                 result_dict[frozenset(subset)] = current_result
         return result_dict
 
+    def get_keyword_similarity(self) -> precalculated_dict_type:
+        """
+        Convenience function. Returns the correct keyword similarity.
+        :return: Correct keyword similarity
+        """
+        return self.get_max_keyword_similarity()
+
     def get_max_keyword_similarity(self) -> precalculated_dict_type:
+        """
+        Calculates a dictionary of the maximum keyword-similarity cost for all subsets.
+        :return: The Dictionary with frozen subsets as keys and the corresponding cost value as values.
+        """
         if (self.normalize_data):
             norm_data = normalize_data(self.query, self.data)
             query = norm_data[0]
@@ -115,7 +159,7 @@ class Solver:
         for index in range(len(data)):
             list_of_subsets = find_subsets(data, index + 1)
             for subset in list_of_subsets:
-                current_result = self.cost_function.get_maximum_keyword_distance(query, data)
+                current_result = self.cost_function.get_maximum_keyword_distance(query, subset)
                 result_dict[frozenset(subset)] = current_result
         return result_dict
 

@@ -30,6 +30,9 @@ class Type4(CostFunction):
         :param keyword_similarity_threshold: The threshold for the keyword list similarity.
         :param disable_thresholds: Whether to honor any threshold values.
         :param model: The word2vec model. This can be passed to the CostFunction instead of reading it from disk to improve performance.
+        :param precalculated_query_dataset_dict: A dictionary with precalculated query-dataset values for a given frozen subset.
+        :param precalculated_inter_dataset_dict: A dictionary with precalculated inter-dataset values for a given frozen subset.
+        :param precalculated_keyword_similarity_dict: A dictionary with precalculated keyword similarity values for a given frozen subset.
         """
         super().__init__(distance_metric, similarity_metric, alpha, beta, omega, query_distance_threshold,
                          dataset_distance_threshold, keyword_similarity_threshold, disable_thresholds, model,
