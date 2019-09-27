@@ -1,3 +1,4 @@
+import csv
 import logging
 import os
 import pickle
@@ -5,6 +6,7 @@ import typing
 
 import word2vec
 
+from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.logging_utils import dataset_comprehension
 from src.utils.typing_definitions import dataset_type
 
@@ -69,4 +71,36 @@ def load_pickle(file_name, path_relative_to_project_root: bool = True) -> datase
         file_path = file_name
     with open(file_path, mode='rb') as file:
         dataset: dataset_type = pickle.load(file)
+    return dataset
+
+
+def load_csv(file_name, x_coordinate_index, y_coordinate_index, keywords_index, keywords_delimiter=' ',
+             max_read_length=-1, delimiter=',', newline='', quotechar='"',
+             path_relative_to_project_root: bool = True) -> dataset_type:
+    dataset: dataset_type = []
+    max_read_length -= 1  # because the length doesn't start counting at 0
+    if path_relative_to_project_root:
+        file_path = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '../../../' + file_name)
+    else:
+        file_path = file_name
+    with open(file_path, mode='rt', newline=newline) as csvfile:
+        reader = csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)
+        for row in reader:
+            try:
+                current_coordinate_x = float(row[x_coordinate_index])
+                current_coordinate_y = float(row[y_coordinate_index])
+            except:
+                if max_read_length > 0:
+                    max_read_length += 1
+                continue
+            raw_keyword_list = row[keywords_index].split(keywords_delimiter)
+            current_keywords: typing.List[str] = []
+            for keyword in raw_keyword_list:
+                stripped_keyword = keyword.strip()
+                if len(stripped_keyword) > 0:
+                    current_keywords.append(stripped_keyword)
+            current_keyword_coordinate = KeywordCoordinate(current_coordinate_x, current_coordinate_y, current_keywords)
+            dataset.append(current_keyword_coordinate)
+            if len(dataset) == max_read_length:
+                return dataset
     return dataset

@@ -154,9 +154,9 @@ def word2vec_cosine_similarity(wordlist1: typing.List[str], wordlist2: typing.Li
     logger.debug('calculating for wordlist 1 {} and wordlist 2 {}'.format(wordlist1, wordlist2))
     word_vector_list1: typing.List[np.array] = []
     for element in wordlist1:
-        logger.debug('getting vector for word {}'.format(element))
+        logger.debug('getting vector for word {}'.format(element.lower()))
         try:
-            word_vector_list1.append(model.get_vector(element))
+            word_vector_list1.append(model.get_vector(element.lower()))
         except:
             logger.warning('the word {} is not part of the vocabulary and will therefore not be taken into account'.format(element))
     logger.debug('vector 1 {}'.format(word_vector_list1))
