@@ -2,6 +2,7 @@ import os
 from unittest import TestCase
 
 from src.utils.data_generator import DataGenerator
+from src.utils.data_handler import load_pickle
 
 
 class TestDataGenerator(TestCase):
@@ -69,20 +70,12 @@ class TestDataGenerator(TestCase):
         physical_max_y = 50.0
         dg = DataGenerator(possible_keywords=possible_keywords, keywords_min=keywords_min, keywords_max=keywords_max, physical_min_x=physical_min_x, physical_max_x=physical_max_x, physical_min_y=physical_min_y, physical_max_y=physical_max_y)
         result_length = 5
-        result = dg.generate(result_length)
         file_name = 'test/test.pickle'
-        dg.write_pickle(result, file_name, True)
-        loaded_result = dg.load_pickle(file_name)
+        generated_result = dg.generate_pickle(result_length, file_name, True)
+        loaded_result = load_pickle(file_name)
         self.assertEqual(len(loaded_result), result_length)
         for index in range(len(loaded_result)):
-            self.assertAlmostEqual(loaded_result[index].coordinates.x, result[index].coordinates.x)
-            self.assertAlmostEqual(loaded_result[index].coordinates.y, result[index].coordinates.y)
-            self.assertListEqual(loaded_result[index].keywords, result[index].keywords)
-        generated_result = dg.generate_pickle(result_length, file_name, True)
-        loaded_result2 = dg.load_pickle(file_name)
-        self.assertEqual(len(loaded_result2), result_length)
-        for index in range(len(loaded_result2)):
-            self.assertAlmostEqual(loaded_result2[index].coordinates.x, generated_result[index].coordinates.x)
-            self.assertAlmostEqual(loaded_result2[index].coordinates.y, generated_result[index].coordinates.y)
-            self.assertListEqual(loaded_result2[index].keywords, generated_result[index].keywords)
+            self.assertAlmostEqual(loaded_result[index].coordinates.x, generated_result[index].coordinates.x)
+            self.assertAlmostEqual(loaded_result[index].coordinates.y, generated_result[index].coordinates.y)
+            self.assertListEqual(loaded_result[index].keywords, generated_result[index].keywords)
         os.remove(os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '../../../' + file_name))
