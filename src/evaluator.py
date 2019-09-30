@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import concurrent.futures
 import copy
 import logging
 import logging.config
@@ -38,9 +39,13 @@ class Evaluator:
         """
         logger = logging.getLogger(__name__)
         logger.info('starting evaluation for solvers {}'.format(list_comprehension(self.solvers)))
-        for solver in self.solvers:
-            result = solver.solve()
-            self.results.append((result, solver))
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            future_list = []
+            for solver in self.solvers:
+                future = executor.submit(solver.solve)
+                future_list.append(future)
+            for index in range(len(future_list)):
+                self.results.append((future_list[index].result(), self.solvers[index]))
         logger.info('finished evaluation with results {}'.format(solution_list_comprehension(self.results)))
 
     def get_results(self) -> typing.List[typing.Tuple[solution_type, Solver]]:
