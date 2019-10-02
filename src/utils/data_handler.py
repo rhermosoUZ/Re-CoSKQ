@@ -1,5 +1,7 @@
 import csv
 import logging
+import math
+import multiprocessing as mp
 import os
 import pickle
 import typing
@@ -104,3 +106,23 @@ def load_csv(file_name, x_coordinate_index, y_coordinate_index, keywords_index, 
             if len(dataset) == max_read_length:
                 return dataset
     return dataset
+
+
+def split_subsets(subsets, scaling_factor_number_of_processes: int = 2) -> typing.List[typing.Tuple]:
+    min_number_of_subsets = mp.cpu_count() * scaling_factor_number_of_processes
+    length_of_input_subsets = len(subsets)
+    length_per_subset = math.floor(length_of_input_subsets / min_number_of_subsets)
+    if length_per_subset == 0:
+        length_per_subset = 1
+    mod_length_jobs = length_of_input_subsets % length_per_subset
+    if mod_length_jobs == 0:
+        total_number_of_subsets = length_of_input_subsets // length_per_subset
+    else:
+        total_number_of_subsets = (length_of_input_subsets // length_per_subset) + 1
+    result: typing.List[typing.Tuple] = []
+    for count in range(total_number_of_subsets):
+        start = count * length_per_subset
+        end = (count + 1) * length_per_subset
+        new_subset = tuple(subsets[start:end])
+        result.append(new_subset)
+    return result

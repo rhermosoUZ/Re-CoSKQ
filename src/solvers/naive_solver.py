@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import concurrent.futures
 import logging
-import math
+import multiprocessing as mp
 import typing
 
 from src.costfunctions.costfunction import CostFunction
@@ -9,6 +10,7 @@ from src.metrics.distance_metrics import normalize_data, denormalize_result_data
 from src.metrics.similarity_metrics import find_subsets
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.solvers.solver import Solver
+from src.utils.data_handler import split_subsets
 from src.utils.logging_utils import dataset_comprehension, result_list_comprehension
 from src.utils.typing_definitions import dataset_type
 from src.utils.typing_definitions import solution_type
@@ -38,26 +40,47 @@ class NaiveSolver(Solver):
         :return: A list with tuples. Every tuple contains a cost and the corresponding subset of KeywordCoordinates.
         """
         logger = logging.getLogger(__name__)
-        logger.info('solving for query {} and dataset {} using cost function {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.result_length))
+        logger.info('solving for query {} and dataset {} using cost function {} and result length {}'.format(self.query,
+                                                                                                             dataset_comprehension(
+                                                                                                                 self.data),
+                                                                                                             self.cost_function,
+                                                                                                             self.result_length))
         result_list: typing.List[solution_type] = []
-        if(self.normalize_data):
-            query, data, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y = normalize_data(self.query, self.data)
+        if (self.normalize_data):
+            query, data, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y = normalize_data(
+                self.query, self.data)
         else:
             query = self.query
             data = self.data
+        list_of_subsets = []
         for index in range(len(data)):
-            list_of_subsets = find_subsets(data, index + 1)
-            for subset in list_of_subsets:
-                current_cost = self.cost_function.solve(query, subset)
-                logger.debug('calculated current cost {}'.format(current_cost))
-                if current_cost == math.inf:
-                    continue
-                if len(result_list) < self.result_length or current_cost < result_list[len(result_list) - 1][0]:
-                    result_list.append((current_cost, subset))
-                    logger.debug('appended ({}, {}) to result'.format(current_cost, dataset_comprehension(subset)))
-                    result_list.sort(key=lambda x: x[0])
-                    logger.debug('sorted result {}'.format(result_list_comprehension(result_list)))
-                    result_list = result_list[:self.result_length]
-        denormalized_result_list = denormalize_result_data(result_list, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y)
-        logger.info('solved for {} with length {}'.format(result_list_comprehension(denormalized_result_list), self.result_length))
+            new_subsets = find_subsets(data, index + 1)
+            for subset in new_subsets:
+                list_of_subsets.append(subset)
+        factor_number_of_processes: int = 2
+        list_of_split_subsets = split_subsets(list_of_subsets,
+                                              scaling_factor_number_of_processes=factor_number_of_processes)
+        with concurrent.futures.ProcessPoolExecutor(
+                max_workers=mp.cpu_count() * factor_number_of_processes) as executor:
+            future_list = []
+            for subsets in list_of_split_subsets:
+                future = executor.submit(get_cost_for_subset, query, subsets, self.cost_function)
+                future_list.append(future)
+            for future in future_list:
+                for solution in future.result():
+                    result_list.append(solution)
+        result_list.sort(key=lambda x: x[0])
+        result_list = result_list[:self.result_length]
+        denormalized_result_list = denormalize_result_data(result_list, self.denormalize_max_x, self.denormalize_min_x,
+                                                           self.denormalize_max_y, self.denormalize_min_y)
+        logger.info('solved for {} with length {}'.format(result_list_comprehension(denormalized_result_list),
+                                                          self.result_length))
         return denormalized_result_list
+
+
+def get_cost_for_subset(query, subsets, costfunction) -> typing.List[solution_type]:
+    results: typing.List[solution_type] = []
+    for subset in subsets:
+        current_result = costfunction.solve(query, subset)
+        results.append((current_result, subset))
+    return results
