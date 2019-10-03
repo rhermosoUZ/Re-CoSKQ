@@ -5,10 +5,10 @@ import os
 import typing
 
 import numpy as np
-import word2vec
 
 from src.metrics.similarity_metrics import create_combined_keyword_vector
 from src.model.keyword_coordinate import KeywordCoordinate
+from src.utils.data_handler import load_pickle
 from src.utils.logging_utils import dataset_comprehension
 from src.utils.typing_definitions import distance_function_type, similarity_function_type, dataset_type, \
     precalculated_dict_type
@@ -58,13 +58,15 @@ class CostFunction:
         if self.similarity_metric.__name__ == 'word2vec_cosine_similarity':
             try:
                 if model is None:
-                    model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../model.bin')
+                    model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../model.pickle')
                     logger.debug('loading model from path {}'.format(model_path))
-                    self.model = word2vec.load(model_path)
+                    self.model = load_pickle(model_path)
                 else:
                     logger.debug('loading model {} from parameter'.format(model))
                     self.model = model
-                    if type(self.model.vocab) != np.ndarray:
+                    key, value = self.model.popitem()
+                    self.model[key] = value
+                    if type(value) != np.ndarray:
                         logger.error('Model seems to be corrupt.')
                         raise ValueError('Model seems to be corrupt.')
             except:

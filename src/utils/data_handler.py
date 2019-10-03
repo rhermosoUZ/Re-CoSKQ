@@ -6,14 +6,11 @@ import os
 import pickle
 import typing
 
-import word2vec
-
 from src.model.keyword_coordinate import KeywordCoordinate
-from src.utils.logging_utils import dataset_comprehension
 from src.utils.typing_definitions import dataset_type
 
 
-def load_word2vec_model(file_name='model.bin'):
+def load_word2vec_model(file_name='model.pickle'):
     """
     Loads a word2vec model given a file name from inside the project directory.
     :param file_name: The name of the file
@@ -23,7 +20,7 @@ def load_word2vec_model(file_name='model.bin'):
     model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../' + file_name)
     logger.debug('loading model from path {}'.format(model_path))
     try:
-        model = word2vec.load(model_path)
+        model = load_pickle(file_name)
     except:
         logger.error('Could not load model from path {}'.format(model_path))
         raise ValueError('Could not load model from path {}'.format(model_path))
@@ -54,7 +51,7 @@ def write_pickle(data: dataset_type, file_name: str, file_allow_overwrite: bool 
     logger.debug('file mode set to {}'.format(mode))
     with open(file_path, mode=mode) as file:
         logger.debug(
-            'opened file {} and generating pickle dump of data {}'.format(file_path, dataset_comprehension(data)))
+            'opened file {} and generating pickle dump of data {}'.format(file_path, data))
         pickle.dump(data, file, protocol=pickle_protocol_version)
 
 
@@ -126,3 +123,16 @@ def split_subsets(subsets, scaling_factor_number_of_processes: int = 2) -> typin
         new_subset = tuple(subsets[start:end])
         result.append(new_subset)
     return result
+
+
+def calculate_model_subset(query, data, model):
+    new_model = dict()
+    keywords = set()
+    for kw in query.keywords:
+        keywords.add(kw)
+    for kwc in data:
+        for kw in kwc.keywords:
+            keywords.add(kw)
+    for kw in keywords:
+        new_model[kw] = model[kw]
+    return new_model
