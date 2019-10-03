@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import concurrent.futures
 import logging
+import math
 import multiprocessing as mp
 import typing
 
@@ -19,7 +20,9 @@ class Solver:
     """
     The Solver solves a given CostFunction for a given query and dataset.
     """
-    def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction, normalize=True, result_length=10):
+
+    def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction,
+                 normalize: bool = True, result_length: int = 10, max_subset_size: int = math.inf):
         """
         Constructs a new Solver object. The Solver class should never be directly instantiated. Instead use a class that inherits from the Solver class and implements the solve() method.
         :param query: The query for which to solve for
@@ -37,6 +40,7 @@ class Solver:
         self.denormalize_min_x: float = 0.0
         self.denormalize_max_y: float = 0.0
         self.denormalize_min_y: float = 0.0
+        self.max_subset_size = max_subset_size
         logging.getLogger(__name__).debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
     def solve(self) -> typing.List[solution_type]:
@@ -64,11 +68,7 @@ class Solver:
         else:
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        list_of_subsets = []
-        for index in range(len(data)):
-            new_subsets = find_subsets(data, index + 1)
-            for subset in new_subsets:
-                list_of_subsets.append(subset)
+        list_of_subsets = self.get_all_subsets(data)
         factor_number_of_processes: int = 2
         split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
         results = []
@@ -93,11 +93,7 @@ class Solver:
         else:
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        list_of_subsets = []
-        for index in range(len(data)):
-            new_subsets = find_subsets(data, index + 1)
-            for subset in new_subsets:
-                list_of_subsets.append(subset)
+        list_of_subsets = self.get_all_subsets(data)
         factor_number_of_processes: int = 2
         split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
         results = []
@@ -134,11 +130,7 @@ class Solver:
             query = self.query
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        list_of_subsets = []
-        for index in range(len(data)):
-            new_subsets = find_subsets(data, index + 1)
-            for subset in new_subsets:
-                list_of_subsets.append(subset)
+        list_of_subsets = self.get_all_subsets(data)
         factor_number_of_processes: int = 2
         split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
         results = []
@@ -165,11 +157,7 @@ class Solver:
             query = self.query
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        list_of_subsets = []
-        for index in range(len(data)):
-            new_subsets = find_subsets(data, index + 1)
-            for subset in new_subsets:
-                list_of_subsets.append(subset)
+        list_of_subsets = self.get_all_subsets(data)
         factor_number_of_processes: int = 2
         split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
         results = []
@@ -203,11 +191,7 @@ class Solver:
             query = self.query
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        list_of_subsets = []
-        for index in range(len(data)):
-            new_subsets = find_subsets(data, index + 1)
-            for subset in new_subsets:
-                list_of_subsets.append(subset)
+        list_of_subsets = self.get_all_subsets(data)
         factor_number_of_processes: int = 2
         split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
         results = []
@@ -220,6 +204,15 @@ class Solver:
             for subset in result_list.result():
                 result_dict[frozenset(subset[1])] = subset[0]
         return result_dict
+
+    def get_all_subsets(self, data):
+        max_length = min(len(data), self.max_subset_size)
+        list_of_subsets = []
+        for index in range(max_length):
+            new_subsets = find_subsets(data, index + 1)
+            for subset in new_subsets:
+                list_of_subsets.append(subset)
+        return list_of_subsets
 
     def __str__(self):
         return '{}(query: {}, dataset: {}, cost function: {}, result length {})'.format(type(self).__name__, self.query, dataset_comprehension(self.data), self.cost_function, self.result_length)

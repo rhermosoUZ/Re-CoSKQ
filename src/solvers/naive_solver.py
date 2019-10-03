@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import concurrent.futures
 import logging
+import math
 import multiprocessing as mp
 import typing
 
 from src.costfunctions.costfunction import CostFunction
 from src.metrics.distance_metrics import normalize_data, denormalize_result_data
-from src.metrics.similarity_metrics import find_subsets
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.solvers.solver import Solver
 from src.utils.data_handler import split_subsets
@@ -20,7 +20,9 @@ class NaiveSolver(Solver):
     """
     The NaiveSolver does not use any kind of heuristic. It calculates the cost for every possibility and returns the best results.
     """
-    def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction, normalize=True, result_length=10):
+
+    def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction,
+                 normalize: bool = True, result_length: int = 10, max_subset_size: int = math.inf):
         """
         Constructs a new NaiveSolver object.
         :param query: The query for which to solve for
@@ -31,7 +33,7 @@ class NaiveSolver(Solver):
         """
         logger = logging.getLogger(__name__)
         logger.debug('creating with query {}, data {}, cost function {}, normalization {} and result length {}'.format(query, dataset_comprehension(data), cost_function, normalize, result_length))
-        super().__init__(query, data, cost_function, normalize, result_length)
+        super().__init__(query, data, cost_function, normalize, result_length, max_subset_size)
         logger.debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
     def solve(self) -> typing.List[solution_type]:
@@ -52,11 +54,7 @@ class NaiveSolver(Solver):
         else:
             query = self.query
             data = self.data
-        list_of_subsets = []
-        for index in range(len(data)):
-            new_subsets = find_subsets(data, index + 1)
-            for subset in new_subsets:
-                list_of_subsets.append(subset)
+        list_of_subsets = self.get_all_subsets(data)
         factor_number_of_processes: int = 2
         list_of_split_subsets = split_subsets(list_of_subsets,
                                               scaling_factor_number_of_processes=factor_number_of_processes)
