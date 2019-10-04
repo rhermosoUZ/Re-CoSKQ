@@ -30,6 +30,7 @@ class NaiveSolver(Solver):
         :param cost_function: The cost function to determine subset costs
         :param normalize: If the data should be normalized before being processed. The data will be denormalized before being returned.
         :param result_length: The size of the results (Top-N)
+        :param max_subset_size: The maximum size of any subset used to calculate the solution
         """
         logger = logging.getLogger(__name__)
         logger.debug('creating with query {}, data {}, cost function {}, normalization {} and result length {}'.format(query, dataset_comprehension(data), cost_function, normalize, result_length))
@@ -77,6 +78,13 @@ class NaiveSolver(Solver):
 
 
 def get_cost_for_subset(query, subsets, costfunction) -> typing.List[solution_type]:
+    """
+    Calculates the costs of all the subsets for a given query and cost function.
+    :param query: The query
+    :param subsets: The list of subsets
+    :param costfunction: The costfunction
+    :return: A list of solutions. Each solution being a cost and the corresponding subset
+    """
     results: typing.List[solution_type] = []
     for subset in subsets:
         current_result = costfunction.solve(query, subset)

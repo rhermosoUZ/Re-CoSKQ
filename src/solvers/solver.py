@@ -30,6 +30,7 @@ class Solver:
         :param cost_function: The cost function to determine subset costs
         :param normalize: If the data should be normalized before being processed. The data will be denormalized before being returned.
         :param result_length: The size of the results (Top-N)
+        :param max_subset_size: The maximum size of any subset used to calculate the solution
         """
         self.query: KeywordCoordinate = query
         self.data: dataset_type = data
@@ -206,6 +207,11 @@ class Solver:
         return result_dict
 
     def get_all_subsets(self, data):
+        """
+        Calculates all the possible subsets for the given data. Takes the set maximum length for subsets into account.
+        :param data: The data
+        :return: A list of all possible subsets
+        """
         max_length = min(len(data), self.max_subset_size)
         list_of_subsets = []
         for index in range(max_length):

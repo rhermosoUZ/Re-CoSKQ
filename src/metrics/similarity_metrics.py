@@ -209,5 +209,11 @@ def find_subsets(input_set: dataset_type, subset_size: int):
 
 
 def get_word_vector(word: str, model):
+    """
+    Returns the word vector for a given word and model.
+    :param word: The word
+    :param model: The model
+    :return: The vector representation of the word
+    """
     word_lower = word.lower()
     return model[word_lower]
