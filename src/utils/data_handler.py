@@ -1,17 +1,16 @@
 import csv
 import logging
+import math
+import multiprocessing as mp
 import os
 import pickle
 import typing
 
-import word2vec
-
 from src.model.keyword_coordinate import KeywordCoordinate
-from src.utils.logging_utils import dataset_comprehension
 from src.utils.typing_definitions import dataset_type
 
 
-def load_word2vec_model(file_name='model.bin'):
+def load_word2vec_model(file_name='model.pickle'):
     """
     Loads a word2vec model given a file name from inside the project directory.
     :param file_name: The name of the file
@@ -21,7 +20,7 @@ def load_word2vec_model(file_name='model.bin'):
     model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../' + file_name)
     logger.debug('loading model from path {}'.format(model_path))
     try:
-        model = word2vec.load(model_path)
+        model = load_pickle(file_name)
     except:
         logger.error('Could not load model from path {}'.format(model_path))
         raise ValueError('Could not load model from path {}'.format(model_path))
@@ -52,7 +51,7 @@ def write_pickle(data: dataset_type, file_name: str, file_allow_overwrite: bool 
     logger.debug('file mode set to {}'.format(mode))
     with open(file_path, mode=mode) as file:
         logger.debug(
-            'opened file {} and generating pickle dump of data {}'.format(file_path, dataset_comprehension(data)))
+            'opened file {} and generating pickle dump of data {}'.format(file_path, data))
         pickle.dump(data, file, protocol=pickle_protocol_version)
 
 
@@ -77,6 +76,20 @@ def load_pickle(file_name, path_relative_to_project_root: bool = True) -> datase
 def load_csv(file_name, x_coordinate_index, y_coordinate_index, keywords_index, keywords_delimiter=' ',
              max_read_length=-1, delimiter=',', newline='', quotechar='"',
              path_relative_to_project_root: bool = True) -> dataset_type:
+    """
+    Loads a csv file.
+    :param file_name: The file name of the csv file. The file is usually in the project folder. Otherwise use the path_relative_to_project_root flag.
+    :param x_coordinate_index: The index of the x coordinates
+    :param y_coordinate_index: The index of the y coordinates
+    :param keywords_index: The index of the keywords
+    :param keywords_delimiter: The delimiter of the keywords
+    :param max_read_length: The maximum number of lines to read
+    :param delimiter: The csv cell delimiter
+    :param newline: The newline delimiter
+    :param quotechar: The quotechar symbol
+    :param path_relative_to_project_root: The flag if the file name is relative to the project folder
+    :return: The dataset of the csv
+    """
     dataset: dataset_type = []
     max_read_length -= 1  # because the length doesn't start counting at 0
     if path_relative_to_project_root:
@@ -104,3 +117,49 @@ def load_csv(file_name, x_coordinate_index, y_coordinate_index, keywords_index, 
             if len(dataset) == max_read_length:
                 return dataset
     return dataset
+
+
+def split_subsets(subsets, scaling_factor_number_of_processes: int = 2) -> typing.List[typing.Tuple]:
+    """
+    Calculates the split subsets. This is done in preparation for multiprocessing.
+    :param subsets: The subsets
+    :param scaling_factor_number_of_processes: The scaling factor for the number of processes.
+    :return: A list with the split subsets. It has a length of scaling factor * number of processors
+    """
+    min_number_of_subsets = mp.cpu_count() * scaling_factor_number_of_processes
+    length_of_input_subsets = len(subsets)
+    length_per_subset = math.floor(length_of_input_subsets / min_number_of_subsets)
+    if length_per_subset == 0:
+        length_per_subset = 1
+    mod_length_jobs = length_of_input_subsets % length_per_subset
+    if mod_length_jobs == 0:
+        total_number_of_subsets = length_of_input_subsets // length_per_subset
+    else:
+        total_number_of_subsets = (length_of_input_subsets // length_per_subset) + 1
+    result: typing.List[typing.Tuple] = []
+    for count in range(total_number_of_subsets):
+        start = count * length_per_subset
+        end = (count + 1) * length_per_subset
+        new_subset = tuple(subsets[start:end])
+        result.append(new_subset)
+    return result
+
+
+def calculate_model_subset(query, data, model):
+    """
+    Calculates the required subset of word2vec model data. This can significantly decrease memory allocation overhead.
+    :param query: The query
+    :param data: The data
+    :param model: The model
+    :return: A model with only the required data
+    """
+    new_model = dict()
+    keywords = set()
+    for kw in query.keywords:
+        keywords.add(kw)
+    for kwc in data:
+        for kw in kwc.keywords:
+            keywords.add(kw)
+    for kw in keywords:
+        new_model[kw] = model[kw]
+    return new_model

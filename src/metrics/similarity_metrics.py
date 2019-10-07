@@ -156,7 +156,7 @@ def word2vec_cosine_similarity(wordlist1: typing.List[str], wordlist2: typing.Li
     for element in wordlist1:
         logger.debug('getting vector for word {}'.format(element.lower()))
         try:
-            word_vector_list1.append(model.get_vector(element.lower()))
+            word_vector_list1.append(get_word_vector(element, model))
         except:
             logger.warning('the word {} is not part of the vocabulary and will therefore not be taken into account'.format(element))
     logger.debug('vector 1 {}'.format(word_vector_list1))
@@ -167,7 +167,7 @@ def word2vec_cosine_similarity(wordlist1: typing.List[str], wordlist2: typing.Li
     for element in wordlist2:
         logger.debug('getting vector for word {}'.format(element))
         try:
-            word_vector_list2.append(model.get_vector(element))
+            word_vector_list2.append(get_word_vector(element, model))
         except:
             logger.warning('the word {} is not part of the vocabulary and will therefore not be taken into account'.format(element))
     logger.debug('vector 2 {}'.format(word_vector_list2))
@@ -206,3 +206,14 @@ def find_subsets(input_set: dataset_type, subset_size: int):
         solution = set(itertools.combinations(input_set, subset_size))
     logger.debug('found {}'.format(sets_of_set_comprehension(solution)))
     return solution
+
+
+def get_word_vector(word: str, model):
+    """
+    Returns the word vector for a given word and model.
+    :param word: The word
+    :param model: The model
+    :return: The vector representation of the word
+    """
+    word_lower = word.lower()
+    return model[word_lower]

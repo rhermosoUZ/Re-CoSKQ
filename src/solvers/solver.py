@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+import concurrent.futures
 import logging
+import math
+import multiprocessing as mp
 import typing
 
 from src.costfunctions.costfunction import CostFunction
 from src.metrics.distance_metrics import normalize_data
 from src.metrics.similarity_metrics import find_subsets
 from src.model.keyword_coordinate import KeywordCoordinate
+from src.utils.data_handler import split_subsets
 from src.utils.logging_utils import dataset_comprehension
 from src.utils.typing_definitions import dataset_type, precalculated_dict_type
 from src.utils.typing_definitions import solution_type
@@ -16,7 +20,9 @@ class Solver:
     """
     The Solver solves a given CostFunction for a given query and dataset.
     """
-    def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction, normalize=True, result_length=10):
+
+    def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction,
+                 normalize: bool = True, result_length: int = 10, max_subset_size: int = math.inf):
         """
         Constructs a new Solver object. The Solver class should never be directly instantiated. Instead use a class that inherits from the Solver class and implements the solve() method.
         :param query: The query for which to solve for
@@ -24,6 +30,7 @@ class Solver:
         :param cost_function: The cost function to determine subset costs
         :param normalize: If the data should be normalized before being processed. The data will be denormalized before being returned.
         :param result_length: The size of the results (Top-N)
+        :param max_subset_size: The maximum size of any subset used to calculate the solution
         """
         self.query: KeywordCoordinate = query
         self.data: dataset_type = data
@@ -34,6 +41,7 @@ class Solver:
         self.denormalize_min_x: float = 0.0
         self.denormalize_max_y: float = 0.0
         self.denormalize_min_y: float = 0.0
+        self.max_subset_size = max_subset_size
         logging.getLogger(__name__).debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
     def solve(self) -> typing.List[solution_type]:
@@ -61,11 +69,18 @@ class Solver:
         else:
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        for index in range(len(data)):
-            list_of_subsets = find_subsets(data, index + 1)
-            for subset in list_of_subsets:
-                current_result = self.cost_function.get_maximum_for_dataset(subset)
-                result_dict[frozenset(subset)] = current_result
+        list_of_subsets = self.get_all_subsets(data)
+        factor_number_of_processes: int = 2
+        split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
+        results = []
+        with concurrent.futures.ProcessPoolExecutor(
+                max_workers=mp.cpu_count() * factor_number_of_processes) as executor:
+            for subset in split_ss:
+                future = executor.submit(get_max_inter_dataset_distances, self.cost_function, subset)
+                results.append(future)
+        for result_list in results:
+            for subset in result_list.result():
+                result_dict[frozenset(subset[1])] = subset[0]
         return result_dict
 
     def get_min_inter_dataset_distance(self) -> precalculated_dict_type:
@@ -79,11 +94,18 @@ class Solver:
         else:
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        for index in range(len(data)):
-            list_of_subsets = find_subsets(data, index + 1)
-            for subset in list_of_subsets:
-                current_result = self.cost_function.get_minimum_for_dataset(subset)
-                result_dict[frozenset(subset)] = current_result
+        list_of_subsets = self.get_all_subsets(data)
+        factor_number_of_processes: int = 2
+        split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
+        results = []
+        with concurrent.futures.ProcessPoolExecutor(
+                max_workers=mp.cpu_count() * factor_number_of_processes) as executor:
+            for subset in split_ss:
+                future = executor.submit(get_min_inter_dataset_distances, self.cost_function, subset)
+                results.append(future)
+        for result_list in results:
+            for subset in result_list.result():
+                result_dict[frozenset(subset[1])] = subset[0]
         return result_dict
 
     def get_query_dataset_distance(self) -> precalculated_dict_type:
@@ -109,11 +131,18 @@ class Solver:
             query = self.query
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        for index in range(len(data)):
-            list_of_subsets = find_subsets(data, index + 1)
-            for subset in list_of_subsets:
-                current_result = self.cost_function.get_maximum_for_query(query, subset)
-                result_dict[frozenset(subset)] = current_result
+        list_of_subsets = self.get_all_subsets(data)
+        factor_number_of_processes: int = 2
+        split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
+        results = []
+        with concurrent.futures.ProcessPoolExecutor(
+                max_workers=mp.cpu_count() * factor_number_of_processes) as executor:
+            for subset in split_ss:
+                future = executor.submit(get_max_query_dataset_distances, self.cost_function, query, subset)
+                results.append(future)
+        for result_list in results:
+            for subset in result_list.result():
+                result_dict[frozenset(subset[1])] = subset[0]
         return result_dict
 
     def get_min_query_dataset_distance(self) -> precalculated_dict_type:
@@ -129,11 +158,18 @@ class Solver:
             query = self.query
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        for index in range(len(data)):
-            list_of_subsets = find_subsets(data, index + 1)
-            for subset in list_of_subsets:
-                current_result = self.cost_function.get_minimum_for_query(query, subset)
-                result_dict[frozenset(subset)] = current_result
+        list_of_subsets = self.get_all_subsets(data)
+        factor_number_of_processes: int = 2
+        split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
+        results = []
+        with concurrent.futures.ProcessPoolExecutor(
+                max_workers=mp.cpu_count() * factor_number_of_processes) as executor:
+            for subset in split_ss:
+                future = executor.submit(get_min_query_dataset_distances, self.cost_function, query, subset)
+                results.append(future)
+        for result_list in results:
+            for subset in result_list.result():
+                result_dict[frozenset(subset[1])] = subset[0]
         return result_dict
 
     def get_keyword_similarity(self) -> precalculated_dict_type:
@@ -156,12 +192,106 @@ class Solver:
             query = self.query
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        for index in range(len(data)):
-            list_of_subsets = find_subsets(data, index + 1)
-            for subset in list_of_subsets:
-                current_result = self.cost_function.get_maximum_keyword_distance(query, subset)
-                result_dict[frozenset(subset)] = current_result
+        list_of_subsets = self.get_all_subsets(data)
+        factor_number_of_processes: int = 2
+        split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
+        results = []
+        with concurrent.futures.ProcessPoolExecutor(
+                max_workers=mp.cpu_count() * factor_number_of_processes) as executor:
+            for subset in split_ss:
+                future = executor.submit(get_max_keyword_similarity, self.cost_function, query, subset)
+                results.append(future)
+        for result_list in results:
+            for subset in result_list.result():
+                result_dict[frozenset(subset[1])] = subset[0]
         return result_dict
+
+    def get_all_subsets(self, data):
+        """
+        Calculates all the possible subsets for the given data. Takes the set maximum length for subsets into account.
+        :param data: The data
+        :return: A list of all possible subsets
+        """
+        max_length = min(len(data), self.max_subset_size)
+        list_of_subsets = []
+        for index in range(max_length):
+            new_subsets = find_subsets(data, index + 1)
+            for subset in new_subsets:
+                list_of_subsets.append(subset)
+        return list_of_subsets
 
     def __str__(self):
         return '{}(query: {}, dataset: {}, cost function: {}, result length {})'.format(type(self).__name__, self.query, dataset_comprehension(self.data), self.cost_function, self.result_length)
+
+
+def get_max_inter_dataset_distances(costfunction: CostFunction, subsets):
+    """
+    This function gets executed inside every maximum inter-dataset distance process.
+    :param costfunction: The CostFunction
+    :param subsets: The subsets for the process
+    :return: A list with tuples of the costs and their corresponding subset
+    """
+    results = []
+    for subset in subsets:
+        current_cost = costfunction.get_maximum_for_dataset(subset)
+        results.append((current_cost, subset))
+    return results
+
+
+def get_min_inter_dataset_distances(costfunction: CostFunction, subsets):
+    """
+    This function gets executed inside every minimum inter-dataset distance process.
+    :param costfunction: The CostFunction
+    :param subsets: The subsets for the process
+    :return: A list with tuples of the costs and their corresponding subset
+    """
+    results = []
+    for subset in subsets:
+        current_cost = costfunction.get_minimum_for_dataset(subset)
+        results.append((current_cost, subset))
+    return results
+
+
+def get_max_query_dataset_distances(costfunction: CostFunction, query, subsets):
+    """
+    This function gets executed inside every maximum query-dataset distance process.
+    :param costfunction: The CostFunction
+    :param query: The Query
+    :param subsets: The subsets for the process
+    :return: A list with tuples of the costs and their corresponding subset
+    """
+    results = []
+    for subset in subsets:
+        current_cost = costfunction.get_maximum_for_query(query, subset)
+        results.append((current_cost, subset))
+    return results
+
+
+def get_min_query_dataset_distances(costfunction: CostFunction, query, subsets):
+    """
+    This function gets executed inside every minimum query-dataset distance process.
+    :param costfunction: The CostFunction
+    :param query: The Query
+    :param subsets: The subsets for the process
+    :return: A list with tuples of the costs and their corresponding subset
+    """
+    results = []
+    for subset in subsets:
+        current_cost = costfunction.get_minimum_for_query(query, subset)
+        results.append((current_cost, subset))
+    return results
+
+
+def get_max_keyword_similarity(costfunction: CostFunction, query, subsets):
+    """
+    This function gets executed inside every maximum keyword similarity process.
+    :param costfunction: The CostFunction
+    :param query: The Query
+    :param subsets: The subsets for the process
+    :return: A list with tuples of the costs and their corresponding subset
+    """
+    results = []
+    for subset in subsets:
+        current_cost = costfunction.get_maximum_keyword_distance(query, subset)
+        results.append((current_cost, subset))
+    return results

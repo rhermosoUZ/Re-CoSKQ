@@ -8,7 +8,7 @@ from src.metrics.similarity_metrics import separated_cosine_similarity, combined
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.solvers.naive_solver import NaiveSolver
 from src.utils.data_generator import DataGenerator
-from src.utils.data_handler import load_word2vec_model
+from src.utils.data_handler import load_word2vec_model, calculate_model_subset
 
 
 class TestNaiveSolver(TestCase):
@@ -113,7 +113,7 @@ class TestNaiveSolver(TestCase):
         kwc2 = KeywordCoordinate(3, 3, ['food', 'family'])
         kwc3 = KeywordCoordinate(2, 2, ['outdoor'])
         data = [kwc1, kwc2, kwc3]
-        model = load_word2vec_model()
+        model = calculate_model_subset(query, data, load_word2vec_model())
         cf = Type3(euclidean_distance, word2vec_cosine_similarity, 0.3, 0.3, 0.4, disable_thresholds=True, model=model)
         ns = NaiveSolver(query, data, cf)
         result = ns.solve()
@@ -187,7 +187,7 @@ class TestNaiveSolver(TestCase):
         dg = DataGenerator(possible_keywords)
         query: KeywordCoordinate = dg.generate(1)[0]
         data = dg.generate(5)
-        model = load_word2vec_model()
+        model = calculate_model_subset(query, data, load_word2vec_model())
         cf = Type1(euclidean_distance, word2vec_cosine_similarity, 0.3, 0.3, 0.4, disable_thresholds=True, model=model)
         ns = NaiveSolver(query, data, cf, result_length=100)
         result = ns.solve()
