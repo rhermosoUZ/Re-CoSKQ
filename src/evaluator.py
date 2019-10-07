@@ -33,19 +33,25 @@ class Evaluator:
         self.solvers.append(solver)
         logging.getLogger(__name__).info('added solver {}'.format(solver))
 
-    def evaluate(self) -> typing.NoReturn:
+    def evaluate(self, evaluate_all_solvers_concurrently=False) -> typing.NoReturn:
         """
         Starts the evaluation of all added solvers.
+        :param evaluate_all_solvers_concurrently: Flag for evaluation if all passed solvers should be evaluated concurrently. WARNING: This potentially requires a lot of memory.
         """
         logger = logging.getLogger(__name__)
         logger.info('starting evaluation for solvers {}'.format(list_comprehension(self.solvers)))
-        with concurrent.futures.ProcessPoolExecutor() as executor:
-            future_list = []
+        if evaluate_all_solvers_concurrently:
+            with concurrent.futures.ProcessPoolExecutor() as executor:
+                future_list = []
+                for solver in self.solvers:
+                    future = executor.submit(solver.solve)
+                    future_list.append(future)
+                for index in range(len(future_list)):
+                    self.results.append((future_list[index].result(), self.solvers[index]))
+        else:
             for solver in self.solvers:
-                future = executor.submit(solver.solve)
-                future_list.append(future)
-            for index in range(len(future_list)):
-                self.results.append((future_list[index].result(), self.solvers[index]))
+                current_result = solver.solve()
+                self.results.append((current_result, solver))
         logger.info('finished evaluation with results {}'.format(solution_list_comprehension(self.results)))
 
     def get_results(self) -> typing.List[typing.Tuple[solution_type, Solver]]:
