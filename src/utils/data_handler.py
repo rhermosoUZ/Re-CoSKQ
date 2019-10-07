@@ -27,7 +27,7 @@ def load_word2vec_model(file_name='model.pickle'):
     return model
 
 
-def write_pickle(data: dataset_type, file_name: str, file_allow_overwrite: bool = False,
+def write_pickle(data, file_name: str, file_allow_overwrite: bool = False,
                  file_only_overwrite_dot_pickle_files: bool = True,
                  pickle_protocol_version: int = 4) -> typing.NoReturn:
     """
@@ -55,7 +55,7 @@ def write_pickle(data: dataset_type, file_name: str, file_allow_overwrite: bool 
         pickle.dump(data, file, protocol=pickle_protocol_version)
 
 
-def load_pickle(file_name, path_relative_to_project_root: bool = True) -> dataset_type:
+def load_pickle(file_name, path_relative_to_project_root: bool = True):
     """
     Loads a pickle and returns the unpickled dataset.
     :param file_name: The name of the file
@@ -161,5 +161,5 @@ def calculate_model_subset(query, data, model):
         for kw in kwc.keywords:
             keywords.add(kw)
     for kw in keywords:
-        new_model[kw] = model[kw]
+        new_model[kw.lower()] = model[kw.lower()]
     return new_model
