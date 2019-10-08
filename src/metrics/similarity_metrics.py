@@ -91,7 +91,7 @@ def create_keyword_vector(keyword_list1: keyword_dataset_type, keyword_list2: ke
     return solution
 
 
-def create_combined_keyword_vector(query: KeywordCoordinate, dataset: dataset_type) -> typing.List[str]:
+def create_combined_keyword_vector(query: KeywordCoordinate, dataset: dataset_type) -> keyword_dataset_type:
     """
     Creates a combined keyword vector of the query and the dataset. This vector contains all the keywords that appear in either the query or dataset.
     :param query: The query
@@ -100,7 +100,7 @@ def create_combined_keyword_vector(query: KeywordCoordinate, dataset: dataset_ty
     """
     logger = logging.getLogger(__name__ + '.create_combined_keyword_vector')
     logger.debug('calculating for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
-    result_keyword_list: typing.List[str] = []
+    result_keyword_list: keyword_dataset_type = []
     for string in query.keywords:
         result_keyword_list.append(string)
     for kwc in dataset:
@@ -110,7 +110,8 @@ def create_combined_keyword_vector(query: KeywordCoordinate, dataset: dataset_ty
     return result
 
 
-def separated_cosine_similarity(query_keyword_list, data_keyword_list) -> float:
+def separated_cosine_similarity(query_keyword_list: keyword_dataset_type,
+                                data_keyword_list: keyword_dataset_type) -> float:
     """
     Calculates the cosine similarity between the keyword list of a query and the keyword list of a data point.
     :param query_keyword_list: The keyword list of the query
@@ -125,7 +126,8 @@ def separated_cosine_similarity(query_keyword_list, data_keyword_list) -> float:
     return solution
 
 
-def combined_cosine_similarity(query_keyword_list, data_keyword_list, dataset_keyword_list) -> float:
+def combined_cosine_similarity(query_keyword_list: keyword_dataset_type, data_keyword_list: keyword_dataset_type,
+                               dataset_keyword_list: keyword_dataset_type) -> float:
     """
     Calculates the cosine similarity between the keyword list of a query and the keyword list of a data point. This happens using a baseline keyword list of the entire dataset.
     :param query_keyword_list: The keyword list of the query
@@ -142,7 +144,7 @@ def combined_cosine_similarity(query_keyword_list, data_keyword_list, dataset_ke
     return solution
 
 
-def word2vec_cosine_similarity(wordlist1: typing.List[str], wordlist2: typing.List[str], model) -> float:
+def word2vec_cosine_similarity(wordlist1: keyword_dataset_type, wordlist2: keyword_dataset_type, model) -> float:
     """
     Calculates the cosine similarity between lists of words based on their word2vec vectors.
     :param wordlist1: The first word list

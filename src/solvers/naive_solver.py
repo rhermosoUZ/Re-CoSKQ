@@ -4,7 +4,6 @@ import concurrent.futures
 import logging
 import math
 import multiprocessing as mp
-import typing
 
 from src.costfunctions.costfunction import CostFunction
 from src.metrics.distance_metrics import normalize_data, denormalize_result_data
@@ -12,8 +11,7 @@ from src.model.keyword_coordinate import KeywordCoordinate
 from src.solvers.solver import Solver
 from src.utils.data_handler import split_subsets
 from src.utils.logging_utils import dataset_comprehension, result_list_comprehension
-from src.utils.typing_definitions import dataset_type
-from src.utils.typing_definitions import solution_type
+from src.utils.typing_definitions import dataset_type, solution_list
 
 
 class NaiveSolver(Solver):
@@ -37,7 +35,7 @@ class NaiveSolver(Solver):
         super().__init__(query, data, cost_function, normalize, result_length, max_subset_size)
         logger.debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
-    def solve(self) -> typing.List[solution_type]:
+    def solve(self) -> solution_list:
         """
         Implements the solution algorithm.
         :return: A list with tuples. Every tuple contains a cost and the corresponding subset of KeywordCoordinates.
@@ -48,7 +46,7 @@ class NaiveSolver(Solver):
                                                                                                                  self.data),
                                                                                                              self.cost_function,
                                                                                                              self.result_length))
-        result_list: typing.List[solution_type] = []
+        result_list: solution_list = []
         if (self.normalize_data):
             query, data, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y = normalize_data(
                 self.query, self.data)
@@ -77,7 +75,7 @@ class NaiveSolver(Solver):
         return denormalized_result_list
 
 
-def get_cost_for_subset(query, subsets, costfunction) -> typing.List[solution_type]:
+def get_cost_for_subset(query, subsets, costfunction) -> solution_list:
     """
     Calculates the costs of all the subsets for a given query and cost function.
     :param query: The query
@@ -85,7 +83,7 @@ def get_cost_for_subset(query, subsets, costfunction) -> typing.List[solution_ty
     :param costfunction: The costfunction
     :return: A list of solutions. Each solution being a cost and the corresponding subset
     """
-    results: typing.List[solution_type] = []
+    results: solution_list = []
     for subset in subsets:
         current_result = costfunction.solve(query, subset)
         results.append((current_result, subset))

@@ -6,7 +6,7 @@ import typing
 from src.model.coordinate import Coordinate
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.logging_utils import dataset_comprehension, result_list_comprehension
-from src.utils.typing_definitions import solution_type
+from src.utils.typing_definitions import dataset_type, solution_list
 
 
 def euclidean_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> float:
@@ -37,7 +37,8 @@ def manhattan_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> floa
     return solution
 
 
-def normalize_data(query: KeywordCoordinate, dataset: typing.List[KeywordCoordinate]) -> typing.Tuple[KeywordCoordinate, typing.List[KeywordCoordinate], float, float, float, float]:
+def normalize_data(query: KeywordCoordinate, dataset: dataset_type) -> typing.Tuple[
+    KeywordCoordinate, typing.List[KeywordCoordinate], float, float, float, float]:
     """
     Calculates the normalizes query, dataset and parameters to undo this normalization.
     :param query: The query
@@ -66,7 +67,8 @@ def normalize_data(query: KeywordCoordinate, dataset: typing.List[KeywordCoordin
     return (data[-1:][0], data[:-1], max_x, min_x, max_y, min_y)
 
 
-def denormalize_result_data(result_list: typing.List[solution_type], max_x: float, min_x: float, max_y: float, min_y: float) -> typing.List[solution_type]:
+def denormalize_result_data(result_list: solution_list, max_x: float, min_x: float, max_y: float,
+                            min_y: float) -> solution_list:
     """
     Calculates the denormalized results.
     :param result_list: The normalized results
@@ -78,7 +80,7 @@ def denormalize_result_data(result_list: typing.List[solution_type], max_x: floa
     """
     logger = logging.getLogger(__name__ + '.denormalize_result_data')
     logger.debug('calculation for result {}, max_x {}, min_x {}, max_y {} and min_y {}'.format(result_list_comprehension(result_list), max_x, min_x, max_y, min_y))
-    result: typing.List[solution_type] = []
+    result: solution_list = []
     for solution_tuple in result_list:
         solution_tuple_copy = copy.deepcopy(solution_tuple)
         for kwc in solution_tuple_copy[1]:

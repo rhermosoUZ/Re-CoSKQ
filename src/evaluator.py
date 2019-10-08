@@ -35,7 +35,7 @@ class Evaluator:
         self.solvers.append(solver)
         logging.getLogger(__name__).info('added solver {}'.format(solver))
 
-    def reset(self):
+    def reset(self) -> typing.NoReturn:
         """
         Resets the state of the Evaluator. This clears all the solvers, results and timings.
         """
@@ -43,7 +43,7 @@ class Evaluator:
         self.results: typing.List[typing.Tuple[solution_type, Solver]] = []
         self.timings: typing.List[float] = []
 
-    def evaluate(self, evaluate_all_solvers_concurrently=False) -> typing.NoReturn:
+    def evaluate(self, evaluate_all_solvers_concurrently: bool = False) -> typing.NoReturn:
         """
         Starts the evaluation of all added solvers.
         :param evaluate_all_solvers_concurrently: Flag for evaluation if all passed solvers should be evaluated concurrently. WARNING: This potentially requires a lot of memory.
@@ -77,7 +77,7 @@ class Evaluator:
         logging.getLogger(__name__).debug('getting results {}'.format(solution_list_comprehension(self.results)))
         return copy.deepcopy(self.results)
 
-    def get_timings(self):
+    def get_timings(self) -> typing.List[typing.Tuple[float, Solver]]:
         """
         Retrieves the timings of the solutions of all the added solvers.
         :return: A list with tuples. Every tuple contains the timing and the used solver.

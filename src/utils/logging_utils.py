@@ -1,7 +1,7 @@
 import typing
 
 from src.model.keyword_coordinate import KeywordCoordinate
-from src.utils.typing_definitions import dataset_type
+from src.utils.typing_definitions import dataset_type, solution_list
 
 
 def dataset_comprehension(dataset: dataset_type) -> str:
@@ -36,7 +36,7 @@ def solution_list_comprehension(solution_list: typing.List[typing.Tuple]) -> str
     return result
 
 
-def result_list_comprehension(result_list: typing.List[typing.Tuple[float, typing.List[KeywordCoordinate]]]) -> str:
+def result_list_comprehension(result_list: solution_list) -> str:
     """
     Unrolls a result list for easily comprehensible log entries.
     :param result_list: The result list

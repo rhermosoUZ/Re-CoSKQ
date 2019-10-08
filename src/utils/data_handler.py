@@ -7,7 +7,7 @@ import pickle
 import typing
 
 from src.model.keyword_coordinate import KeywordCoordinate
-from src.utils.typing_definitions import dataset_type
+from src.utils.typing_definitions import dataset_type, keyword_dataset_type
 
 
 def load_word2vec_model(file_name='model.pickle'):
@@ -55,7 +55,7 @@ def write_pickle(data, file_name: str, file_allow_overwrite: bool = False,
         pickle.dump(data, file, protocol=pickle_protocol_version)
 
 
-def load_pickle(file_name, path_relative_to_project_root: bool = True):
+def load_pickle(file_name: str, path_relative_to_project_root: bool = True):
     """
     Loads a pickle and returns the unpickled dataset.
     :param file_name: The name of the file
@@ -73,8 +73,9 @@ def load_pickle(file_name, path_relative_to_project_root: bool = True):
     return dataset
 
 
-def load_csv(file_name, x_coordinate_index, y_coordinate_index, keywords_index, keywords_delimiter=' ',
-             max_read_length=-1, delimiter=',', newline='', quotechar='"',
+def load_csv(file_name: str, x_coordinate_index: int, y_coordinate_index: int, keywords_index: int,
+             keywords_delimiter: str = ' ',
+             max_read_length: int = -1, delimiter: str = ',', newline: str = '', quotechar: str = '"',
              path_relative_to_project_root: bool = True) -> dataset_type:
     """
     Loads a csv file.
@@ -107,7 +108,7 @@ def load_csv(file_name, x_coordinate_index, y_coordinate_index, keywords_index, 
                     max_read_length += 1
                 continue
             raw_keyword_list = row[keywords_index].split(keywords_delimiter)
-            current_keywords: typing.List[str] = []
+            current_keywords: keyword_dataset_type = []
             for keyword in raw_keyword_list:
                 stripped_keyword = keyword.strip()
                 if len(stripped_keyword) > 0:
@@ -145,7 +146,7 @@ def split_subsets(subsets, scaling_factor_number_of_processes: int = 2) -> typin
     return result
 
 
-def calculate_model_subset(query, data, model):
+def calculate_model_subset(query: KeywordCoordinate, data: dataset_type, model):
     """
     Calculates the required subset of word2vec model data. This can significantly decrease memory allocation overhead.
     :param query: The query

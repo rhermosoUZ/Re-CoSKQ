@@ -4,7 +4,6 @@ import concurrent.futures
 import logging
 import math
 import multiprocessing as mp
-import typing
 
 from src.costfunctions.costfunction import CostFunction
 from src.metrics.distance_metrics import normalize_data
@@ -12,8 +11,7 @@ from src.metrics.similarity_metrics import find_subsets
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.data_handler import split_subsets
 from src.utils.logging_utils import dataset_comprehension
-from src.utils.typing_definitions import dataset_type, precalculated_dict_type
-from src.utils.typing_definitions import solution_type
+from src.utils.typing_definitions import dataset_type, precalculated_dict_type, solution_list
 
 
 class Solver:
@@ -44,7 +42,7 @@ class Solver:
         self.max_subset_size = max_subset_size
         logging.getLogger(__name__).debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
-    def solve(self) -> typing.List[solution_type]:
+    def solve(self) -> solution_list:
         """
         Implements the solution algorithm. Any solution class needs to implement this.
         :return: A list with tuples. Every tuple contains a cost and the corresponding subset of KeywordCoordinates.
@@ -252,7 +250,7 @@ def get_min_inter_dataset_distances(costfunction: CostFunction, subsets):
     return results
 
 
-def get_max_query_dataset_distances(costfunction: CostFunction, query, subsets):
+def get_max_query_dataset_distances(costfunction: CostFunction, query: KeywordCoordinate, subsets):
     """
     This function gets executed inside every maximum query-dataset distance process.
     :param costfunction: The CostFunction
@@ -267,7 +265,7 @@ def get_max_query_dataset_distances(costfunction: CostFunction, query, subsets):
     return results
 
 
-def get_min_query_dataset_distances(costfunction: CostFunction, query, subsets):
+def get_min_query_dataset_distances(costfunction: CostFunction, query: KeywordCoordinate, subsets):
     """
     This function gets executed inside every minimum query-dataset distance process.
     :param costfunction: The CostFunction
@@ -282,7 +280,7 @@ def get_min_query_dataset_distances(costfunction: CostFunction, query, subsets):
     return results
 
 
-def get_max_keyword_similarity(costfunction: CostFunction, query, subsets):
+def get_max_keyword_similarity(costfunction: CostFunction, query: KeywordCoordinate, subsets):
     """
     This function gets executed inside every maximum keyword similarity process.
     :param costfunction: The CostFunction

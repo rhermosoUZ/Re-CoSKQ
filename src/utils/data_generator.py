@@ -1,18 +1,20 @@
 import logging
 import random
-import typing
 
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.data_handler import write_pickle
 from src.utils.logging_utils import dataset_comprehension
-from src.utils.typing_definitions import dataset_type
+from src.utils.typing_definitions import dataset_type, keyword_dataset_type
 
 
 class DataGenerator:
     """
     The DataGenerator class offers convenience functions to generate data and save it to disk.
     """
-    def __init__(self, possible_keywords: typing.List[str], keywords_min: int = 1, keywords_max: int = 5, physical_min_x: float = 0.0, physical_max_x: float = 100.0, physical_min_y: float = 0.0, physical_max_y: float = 100.0):
+
+    def __init__(self, possible_keywords: keyword_dataset_type, keywords_min: int = 1, keywords_max: int = 5,
+                 physical_min_x: float = 0.0, physical_max_x: float = 100.0, physical_min_y: float = 0.0,
+                 physical_max_y: float = 100.0):
         """
         Instantiates a new DataGenerator object.
         :param possible_keywords: A list of all the possible keywords
@@ -44,7 +46,7 @@ class DataGenerator:
         dataset: dataset_type = []
         for data_counter in range(data_size):
             possible_keywords_copy = self.possible_keywords.copy()
-            current_keywords: typing.List[str] = []
+            current_keywords: keyword_dataset_type = []
             current_x = random.randint(self.physical_min_x, self.physical_max_x)
             current_y = random.randint(self.physical_min_y, self.physical_max_y)
             number_of_keywords = random.randint(self.keywords_min, self.keywords_max)

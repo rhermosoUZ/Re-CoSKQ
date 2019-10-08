@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import os
-import typing
 
 import numpy as np
 
@@ -11,7 +10,7 @@ from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.data_handler import load_pickle
 from src.utils.logging_utils import dataset_comprehension
 from src.utils.typing_definitions import distance_function_type, similarity_function_type, dataset_type, \
-    precalculated_dict_type
+    precalculated_dict_type, keyword_dataset_type
 
 
 class CostFunction:
@@ -220,7 +219,7 @@ class CostFunction:
         combination = False
         latentfactors = False
         if self.similarity_metric.__name__ == 'combined_cosine_similarity':
-            combined_keyword_vector: typing.List[str] = create_combined_keyword_vector(query, dataset)
+            combined_keyword_vector: keyword_dataset_type = create_combined_keyword_vector(query, dataset)
             combination = True
         elif self.similarity_metric.__name__ == 'word2vec_cosine_similarity':
             latentfactors = True
