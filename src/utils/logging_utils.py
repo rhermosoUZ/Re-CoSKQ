@@ -52,6 +52,15 @@ def result_list_comprehension(result_list: typing.List[typing.Tuple[float, typin
     return result
 
 
+def timing_list_comprehension(timings: typing.List[typing.Tuple]) -> str:
+    result = '['
+    for element in timings:
+        result += '({}, {}), '.format(element[0], element[1])
+    result = result[:-2]
+    result += ']'
+    return result
+
+
 def sets_of_set_comprehension(dataset: typing.Set[typing.Set[KeywordCoordinate]]) -> str:
     """
     Unrolls sets of a set for easily comprehensible log entries.
