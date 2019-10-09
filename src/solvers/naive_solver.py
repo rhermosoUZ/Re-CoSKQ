@@ -47,7 +47,7 @@ class NaiveSolver(Solver):
                                                                                                              self.cost_function,
                                                                                                              self.result_length))
         result_list: solution_list = []
-        if (self.normalize_data):
+        if self.normalize_data:
             query, data, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y = normalize_data(
                 self.query, self.data)
         else:
@@ -61,7 +61,7 @@ class NaiveSolver(Solver):
                 max_workers=mp.cpu_count() * factor_number_of_processes) as executor:
             future_list = []
             for subsets in list_of_split_subsets:
-                future = executor.submit(get_cost_for_subset, query, subsets, self.cost_function)
+                future = executor.submit(self.get_cost_for_subset, query, subsets)
                 future_list.append(future)
             for future in future_list:
                 for solution in future.result():
@@ -74,17 +74,20 @@ class NaiveSolver(Solver):
                                                           self.result_length))
         return denormalized_result_list
 
-
-def get_cost_for_subset(query, subsets, costfunction) -> solution_list:
-    """
-    Calculates the costs of all the subsets for a given query and cost function.
-    :param query: The query
-    :param subsets: The list of subsets
-    :param costfunction: The costfunction
-    :return: A list of solutions. Each solution being a cost and the corresponding subset
-    """
-    results: solution_list = []
-    for subset in subsets:
-        current_result = costfunction.solve(query, subset)
-        results.append((current_result, subset))
-    return results
+    def get_cost_for_subset(self, query, subsets) -> solution_list:
+        """
+        Calculates the costs of all the subsets for a given query and cost function.
+        :param query: The query
+        :param subsets: The list of subsets
+        :param costfunction: The costfunction
+        :return: A list of solutions. Each solution being a cost and the corresponding subset
+        """
+        results: solution_list = []
+        for subset in subsets:
+            denormalized_result = denormalize_result_data([(0.0, subset)], self.denormalize_max_x,
+                                                          self.denormalize_min_x, self.denormalize_max_y,
+                                                          self.denormalize_min_y)
+            denormalized_subset = denormalized_result[0][1]
+            current_result = self.cost_function.solve(query, subset, denormalized_subset)
+            results.append((current_result, subset))
+        return results

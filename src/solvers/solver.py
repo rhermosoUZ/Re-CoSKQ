@@ -6,7 +6,7 @@ import math
 import multiprocessing as mp
 
 from src.costfunctions.costfunction import CostFunction
-from src.metrics.distance_metrics import normalize_data
+from src.metrics.distance_metrics import normalize_data, denormalize_result_data
 from src.metrics.similarity_metrics import find_subsets
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.data_handler import split_subsets
@@ -61,9 +61,13 @@ class Solver:
         Calculates a dictionary of the maximum inter-dataset cost for all subsets.
         :return: The Dictionary with frozen subsets as keys and the corresponding cost value as values.
         """
-        if (self.normalize_data):
+        if self.normalize_data:
             norm_data = normalize_data(self.query, self.data)
             data = norm_data[1]
+            denorm_x_max = norm_data[2]
+            denorm_x_min = norm_data[3]
+            denorm_y_max = norm_data[4]
+            denorm_y_min = norm_data[5]
         else:
             data = self.data
         result_dict: precalculated_dict_type = dict()
@@ -78,7 +82,14 @@ class Solver:
                 results.append(future)
         for result_list in results:
             for subset in result_list.result():
-                result_dict[frozenset(subset[1])] = subset[0]
+                if self.normalize_data:
+                    denormalized_result = denormalize_result_data([(0.0, subset[1])], denorm_x_max, denorm_x_min,
+                                                                  denorm_y_max, denorm_y_min)
+                    denormalized_subset = denormalized_result[0][1]
+                    dict_key = denormalized_subset
+                else:
+                    dict_key = subset[1]
+                result_dict[frozenset(dict_key)] = subset[0]
         return result_dict
 
     def get_min_inter_dataset_distance(self) -> precalculated_dict_type:
@@ -86,9 +97,13 @@ class Solver:
         Calculates a dictionary of the minimum inter-dataset cost for all subsets.
         :return: The Dictionary with frozen subsets as keys and the corresponding cost value as values.
         """
-        if (self.normalize_data):
+        if self.normalize_data:
             norm_data = normalize_data(self.query, self.data)
             data = norm_data[1]
+            denorm_x_max = norm_data[2]
+            denorm_x_min = norm_data[3]
+            denorm_y_max = norm_data[4]
+            denorm_y_min = norm_data[5]
         else:
             data = self.data
         result_dict: precalculated_dict_type = dict()
@@ -103,7 +118,14 @@ class Solver:
                 results.append(future)
         for result_list in results:
             for subset in result_list.result():
-                result_dict[frozenset(subset[1])] = subset[0]
+                if self.normalize_data:
+                    denormalized_result = denormalize_result_data([(0.0, subset[1])], denorm_x_max, denorm_x_min,
+                                                                  denorm_y_max, denorm_y_min)
+                    denormalized_subset = denormalized_result[0][1]
+                    dict_key = denormalized_subset
+                else:
+                    dict_key = subset[1]
+                result_dict[frozenset(dict_key)] = subset[0]
         return result_dict
 
     def get_query_dataset_distance(self) -> precalculated_dict_type:
@@ -121,7 +143,7 @@ class Solver:
         Calculates a dictionary of the maximum query-dataset cost for all subsets.
         :return: The Dictionary with frozen subsets as keys and the corresponding cost value as values.
         """
-        if (self.normalize_data):
+        if self.normalize_data:
             norm_data = normalize_data(self.query, self.data)
             query = norm_data[0]
             data = norm_data[1]
@@ -148,7 +170,7 @@ class Solver:
         Calculates a dictionary of the minimum query-dataset cost for all subsets.
         :return: The Dictionary with frozen subsets as keys and the corresponding cost value as values.
         """
-        if (self.normalize_data):
+        if self.normalize_data:
             norm_data = normalize_data(self.query, self.data)
             query = norm_data[0]
             data = norm_data[1]
@@ -182,7 +204,7 @@ class Solver:
         Calculates a dictionary of the maximum keyword-similarity cost for all subsets.
         :return: The Dictionary with frozen subsets as keys and the corresponding cost value as values.
         """
-        if (self.normalize_data):
+        if self.normalize_data:
             norm_data = normalize_data(self.query, self.data)
             query = norm_data[0]
             data = norm_data[1]

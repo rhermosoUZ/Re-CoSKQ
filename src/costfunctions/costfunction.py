@@ -75,23 +75,28 @@ class CostFunction:
             self.distance_metric.__name__, self.similarity_metric.__name__, self.alpha, self.beta, self.omega))
 
     # TODO check if minimum and maximum functions can be refactored into one
-    def get_maximum_for_dataset(self, dataset: dataset_type) -> float:
+    def get_maximum_for_dataset(self, dataset: dataset_type, denormalized_dataset: dataset_type = None) -> float:
         """
         Calculates the maximum inter-dataset distance cost.
         :param dataset: The dataset.
+        :param denormalized_dataset: The normalized_dataset. This is used for the matching of precalculated values.
         :return: Maximum inter-dataset distance cost.
         """
         logger = logging.getLogger(__name__)
         logger.debug('finding maximum distance for dataset {}'.format(dataset_comprehension(dataset)))
         if self.precalculated_inter_dataset_dict is not None:
             logger.debug('querying precalculated set')
-            precalculated_result = self.precalculated_inter_dataset_dict.get(frozenset(dataset))
+            if denormalized_dataset is not None:
+                dataset_key = denormalized_dataset
+            else:
+                dataset_key = dataset
+            precalculated_result = self.precalculated_inter_dataset_dict.get(frozenset(dataset_key))
             if precalculated_result is not None:
                 logger.debug('found precalculated value {}'.format(precalculated_result))
                 return precalculated_result
             else:
                 logger.warning(
-                    'could not find precalculated value in given precalculated set. This suggests an erroneous or a wrong dict has been passed into the CostFunction.')
+                    'could not find the maximum precalculated inter-dataset value in the given precalculated set. This suggests an erroneous or a wrong dict has been passed into the CostFunction.')
         else:
             logger.debug('No precalculated inter-dataset dict found')
         current_maximum: float = 0.0
@@ -101,26 +106,31 @@ class CostFunction:
                                                      dataset[index1 + index2 + 1].coordinates)
                 if current_value > current_maximum:
                     current_maximum = current_value
-        logger.info('found maximum distance for dataset of {}'.format(current_maximum))
+        logger.debug('found maximum distance for dataset of {}'.format(current_maximum))
         return current_maximum
 
-    def get_minimum_for_dataset(self, dataset: dataset_type) -> float:
+    def get_minimum_for_dataset(self, dataset: dataset_type, denormalized_dataset: dataset_type = None) -> float:
         """
         Calculates the minimum inter-dataset distance cost.
-        :param dataset: The dataset.I
+        :param dataset: The dataset.
+        :param denormalized_dataset: The normalized_dataset. This is used for the matching of precalculated values.
         :return: Minimum inter-dataset distance cost.
         """
         logger = logging.getLogger(__name__)
         logger.debug('finding minimum distance for dataset {}'.format(dataset_comprehension(dataset)))
         if self.precalculated_inter_dataset_dict is not None:
             logger.debug('querying precalculated set')
-            precalculated_result = self.precalculated_inter_dataset_dict.get(frozenset(dataset))
+            if denormalized_dataset is not None:
+                dataset_key = denormalized_dataset
+            else:
+                dataset_key = dataset
+            precalculated_result = self.precalculated_inter_dataset_dict.get(frozenset(dataset_key))
             if precalculated_result is not None:
                 logger.debug('found precalculated value {}'.format(precalculated_result))
                 return precalculated_result
             else:
                 logger.warning(
-                    'could not find precalculated value in given precalculated set. This suggests an erroneous or a wrong dict has been passed into the CostFunction.')
+                    'could not find the minimum precalculated inter-dataset value in the given precalculated set. This suggests an erroneous or a wrong dict has been passed into the CostFunction.')
         else:
             logger.debug('No precalculated inter-dataset dict found')
         current_minimum: float = 9999999.9
@@ -133,7 +143,7 @@ class CostFunction:
                                                      dataset[index1 + index2 + 1].coordinates)
                 if current_value < current_minimum:
                     current_minimum = current_value
-        logger.info('found minimum distance for dataset of {}'.format(current_minimum))
+        logger.debug('found minimum distance for dataset of {}'.format(current_minimum))
         return current_minimum
 
     def get_maximum_for_query(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
@@ -154,7 +164,7 @@ class CostFunction:
                 return precalculated_result
             else:
                 logger.warning(
-                    'could not find precalculated value in given precalculated set. This suggests an erroneous or a wrong dict has been passed into the CostFunction.')
+                    'could not find the maximum precalculated query-dataset value in the given precalculated set. This suggests an erroneous or a wrong dict has been passed into the CostFunction.')
         else:
             logger.debug('No precalculated query-dataset dict found')
         current_maximum = 0
@@ -162,7 +172,7 @@ class CostFunction:
             current_value = self.distance_metric(query.coordinates, dataset[index].coordinates)
             if current_value > current_maximum:
                 current_maximum = current_value
-        logger.info('found maximum distance for query and dataset of {}'.format(current_maximum))
+        logger.debug('found maximum distance for query and dataset of {}'.format(current_maximum))
         return current_maximum
 
     def get_minimum_for_query(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
@@ -183,7 +193,7 @@ class CostFunction:
                 return precalculated_result
             else:
                 logger.warning(
-                    'could not find precalculated value in given precalculated set. This suggests an erroneous or a wrong dict has been passed into the CostFunction.')
+                    'could not find the minimum precalculated query-dataset value in the given precalculated set. This suggests an erroneous or a wrong dict has been passed into the CostFunction.')
         else:
             logger.debug('No precalculated query-dataset dict found')
         current_minimum = 99999999
@@ -191,7 +201,7 @@ class CostFunction:
             current_value = self.distance_metric(query.coordinates, dataset[index].coordinates)
             if current_value < current_minimum:
                 current_minimum = current_value
-        logger.info('found minimum distance for query and dataset of {}'.format(current_minimum))
+        logger.debug('found minimum distance for query and dataset of {}'.format(current_minimum))
         return current_minimum
 
     def get_maximum_keyword_distance(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
@@ -212,7 +222,7 @@ class CostFunction:
                 return precalculated_result
             else:
                 logger.warning(
-                    'could not find precalculated value in given precalculated set. This suggests an erroneous or a wrong dict has been passed into the CostFunction.')
+                    'could not find the maximum precalculated keyword similarity value in the given precalculated set. This suggests an erroneous or a wrong dict has been passed into the CostFunction.')
         else:
             logger.debug('No precalculated keyword-similarity dict found')
         current_maximum = 0
@@ -232,14 +242,16 @@ class CostFunction:
                 current_value = self.similarity_metric(query.keywords, element.keywords)
             if current_value > current_maximum:
                 current_maximum = current_value
-        logger.info('found maximum similarity cost for query and dataset of {}'.format(current_maximum))
+        logger.debug('found maximum similarity cost for query and dataset of {}'.format(current_maximum))
         return current_maximum
 
-    def solve(self, query: KeywordCoordinate, dataset: dataset_type) -> float:
+    def solve(self, query: KeywordCoordinate, dataset: dataset_type,
+              denormalized_dataset: dataset_type = None) -> float:
         """
         Implements the solution algorithm. Any costfunction class needs to implement this.
         :param query: The query
         :param dataset: The dataset
+        :param denormalized_dataset: The normalized_dataset. This is used for the matching of precalculated values.
         :return: The cost
         """
         pass

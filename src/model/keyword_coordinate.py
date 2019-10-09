@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import math
 import typing
 
 from src.model.coordinate import Coordinate
@@ -20,7 +21,9 @@ class KeywordCoordinate:
         logger.debug('created at ({}, {}) with the keywords {}'.format(self.coordinates.x, self.coordinates.y, self.keywords))
 
     def __eq__(self, other: KeywordCoordinate):
-        if self.coordinates.x != other.coordinates.x or self.coordinates.y != other.coordinates.y:
+        delta = 0.000000001
+        if not (math.fabs(self.coordinates.x - other.coordinates.x) < delta) or not (
+                math.fabs(self.coordinates.y - other.coordinates.y) < delta):
             return False
         if len(self.keywords) != len(other.keywords):
             return False
@@ -33,7 +36,8 @@ class KeywordCoordinate:
         return not self.__eq__(other)
 
     def __key(self):
-        return (self.coordinates.x, self.coordinates.y, tuple(self.keywords))
+        rounding = 5
+        return round(self.coordinates.x, rounding), round(self.coordinates.y, rounding), tuple(self.keywords)
 
     def __hash__(self):
         return hash(self.__key())

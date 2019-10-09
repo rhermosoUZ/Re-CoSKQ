@@ -51,7 +51,7 @@ class Evaluator:
         logger = logging.getLogger(__name__)
         logger.info('starting evaluation for solvers {}'.format(list_comprehension(self.solvers)))
         self.results: typing.List[typing.Tuple[solution_type, Solver]] = []
-        self.timings: typing.List[float] = []
+        self.timings: typing.List[typing.Tuple[float, Solver]] = []
         if evaluate_all_solvers_concurrently:
             with concurrent.futures.ProcessPoolExecutor() as executor:
                 future_list = []
