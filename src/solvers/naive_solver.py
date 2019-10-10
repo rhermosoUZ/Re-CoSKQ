@@ -21,7 +21,7 @@ class NaiveSolver(Solver):
 
     def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction,
                  normalize: bool = True, result_length: int = 10, max_subset_size: int = math.inf,
-                 max_number_of_concurrent_processes: int = mp.cpu_count()):
+                 max_number_of_concurrent_processes: int = mp.cpu_count(), rebalance_subsets: bool = True):
         """
         Constructs a new NaiveSolver object.
         :param query: The query for which to solve for
@@ -30,11 +30,12 @@ class NaiveSolver(Solver):
         :param normalize: If the data should be normalized before being processed. The data will be denormalized before being returned.
         :param result_length: The size of the results (Top-N)
         :param max_subset_size: The maximum size of any subset used to calculate the solution
+        :param rebalance_subsets: If the passed subsets should be rearranged to better distribute the workload among the processes
         """
         logger = logging.getLogger(__name__)
         logger.debug('creating with query {}, data {}, cost function {}, normalization {} and result length {}'.format(query, dataset_comprehension(data), cost_function, normalize, result_length))
         super().__init__(query, data, cost_function, normalize, result_length, max_subset_size,
-                         max_number_of_concurrent_processes)
+                         max_number_of_concurrent_processes, rebalance_subsets)
         logger.debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
     def solve(self) -> solution_list:
@@ -56,7 +57,8 @@ class NaiveSolver(Solver):
             query = self.query
             data = self.data
         list_of_subsets = self.get_all_subsets(data)
-        list_of_split_subsets = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes)
+        list_of_split_subsets = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes,
+                                              self.rebalance_subsets)
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self.max_number_of_concurrent_processes) as executor:
             future_list = []

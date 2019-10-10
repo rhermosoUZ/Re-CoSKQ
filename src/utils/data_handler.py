@@ -119,14 +119,39 @@ def load_csv(file_name: str, x_coordinate_index: int, y_coordinate_index: int, k
     return dataset
 
 
-def split_subsets(subsets, min_number_of_subsets) -> typing.List[typing.Tuple]:
+def rebalance_subsets(subsets: typing.List, min_number_of_subsets) -> typing.List:
+    """
+    Rearranges the passed in subset given the wanted number of subsets.
+    :param subsets: The Subsets
+    :param min_number_of_subsets:  The wanted number of subsets
+    :return: The rearranged list of subsets
+    """
+    length_subsets = len(subsets)
+    rebalanced_subsets = []
+    for offset in range(min_number_of_subsets):
+        for index_counter in range(length_subsets // min_number_of_subsets + 1):
+            current_index = offset + index_counter * min_number_of_subsets
+            try:
+                current_pick = subsets[current_index]
+                rebalanced_subsets.append(current_pick)
+            except IndexError:
+                pass
+    return rebalanced_subsets
+
+
+def split_subsets(subsets, min_number_of_subsets: int, rebalance: bool = True) -> typing.List[typing.Tuple]:
     """
     Calculates the split subsets. This is done in preparation for multiprocessing.
     :param subsets: The subsets
     :param min_number_of_subsets: The minimum number for the targeted number of processes. This is usually the equal to the number of available CPU cores.
+    :param rebalance: If the passed subsets should be rearranged to better distribute the workload among the processes.
     :return: A list with the split subsets. It has a length of scaling factor * number of processors
     """
-    length_of_input_subsets = len(subsets)
+    if rebalance:
+        list_of_subsets = rebalance_subsets(subsets, min_number_of_subsets)
+    else:
+        list_of_subsets = subsets
+    length_of_input_subsets = len(list_of_subsets)
     length_per_subset = math.floor(length_of_input_subsets / min_number_of_subsets)
     if length_per_subset == 0:
         length_per_subset = 1
@@ -139,7 +164,7 @@ def split_subsets(subsets, min_number_of_subsets) -> typing.List[typing.Tuple]:
     for count in range(total_number_of_subsets):
         start = count * length_per_subset
         end = (count + 1) * length_per_subset
-        new_subset = tuple(subsets[start:end])
+        new_subset = tuple(list_of_subsets[start:end])
         result.append(new_subset)
     return result
 

@@ -21,7 +21,7 @@ class Solver:
 
     def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction,
                  normalize: bool = True, result_length: int = 10, max_subset_size: int = math.inf,
-                 max_number_of_concurrent_processes: int = mp.cpu_count()):
+                 max_number_of_concurrent_processes: int = mp.cpu_count(), rebalance_subsets: bool = True):
         """
         Constructs a new Solver object. The Solver class should never be directly instantiated. Instead use a class that inherits from the Solver class and implements the solve() method.
         :param query: The query for which to solve for
@@ -30,6 +30,7 @@ class Solver:
         :param normalize: If the data should be normalized before being processed. The data will be denormalized before being returned.
         :param result_length: The size of the results (Top-N)
         :param max_subset_size: The maximum size of any subset used to calculate the solution
+        :param rebalance_subsets: If the passed subsets should be rearranged to better distribute the workload among the processes
         """
         self.query: KeywordCoordinate = query
         self.data: dataset_type = data
@@ -42,6 +43,7 @@ class Solver:
         self.denormalize_min_y: float = 0.0
         self.max_subset_size = max_subset_size
         self.max_number_of_concurrent_processes = max_number_of_concurrent_processes
+        self.rebalance_subsets = rebalance_subsets
         logging.getLogger(__name__).debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
     def solve(self) -> solution_list:
@@ -74,7 +76,7 @@ class Solver:
             data = self.data
         result_dict: precalculated_dict_type = dict()
         list_of_subsets = self.get_all_subsets(data)
-        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes)
+        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self.max_number_of_concurrent_processes) as executor:
@@ -109,7 +111,7 @@ class Solver:
             data = self.data
         result_dict: precalculated_dict_type = dict()
         list_of_subsets = self.get_all_subsets(data)
-        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes)
+        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self.max_number_of_concurrent_processes) as executor:
@@ -152,7 +154,7 @@ class Solver:
             data = self.data
         result_dict: precalculated_dict_type = dict()
         list_of_subsets = self.get_all_subsets(data)
-        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes)
+        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self.max_number_of_concurrent_processes) as executor:
@@ -178,7 +180,7 @@ class Solver:
             data = self.data
         result_dict: precalculated_dict_type = dict()
         list_of_subsets = self.get_all_subsets(data)
-        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes)
+        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self.max_number_of_concurrent_processes) as executor:
@@ -211,7 +213,7 @@ class Solver:
             data = self.data
         result_dict: precalculated_dict_type = dict()
         list_of_subsets = self.get_all_subsets(data)
-        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes)
+        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self.max_number_of_concurrent_processes) as executor:
