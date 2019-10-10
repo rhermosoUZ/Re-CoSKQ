@@ -1,7 +1,6 @@
 import csv
 import logging
 import math
-import multiprocessing as mp
 import os
 import pickle
 import typing
@@ -120,14 +119,13 @@ def load_csv(file_name: str, x_coordinate_index: int, y_coordinate_index: int, k
     return dataset
 
 
-def split_subsets(subsets, scaling_factor_number_of_processes: int = 2) -> typing.List[typing.Tuple]:
+def split_subsets(subsets, min_number_of_subsets) -> typing.List[typing.Tuple]:
     """
     Calculates the split subsets. This is done in preparation for multiprocessing.
     :param subsets: The subsets
-    :param scaling_factor_number_of_processes: The scaling factor for the number of processes.
+    :param min_number_of_subsets: The minimum number for the targeted number of processes. This is usually the equal to the number of available CPU cores.
     :return: A list with the split subsets. It has a length of scaling factor * number of processors
     """
-    min_number_of_subsets = mp.cpu_count() * scaling_factor_number_of_processes
     length_of_input_subsets = len(subsets)
     length_per_subset = math.floor(length_of_input_subsets / min_number_of_subsets)
     if length_per_subset == 0:

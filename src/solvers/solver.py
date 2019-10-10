@@ -20,7 +20,8 @@ class Solver:
     """
 
     def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction,
-                 normalize: bool = True, result_length: int = 10, max_subset_size: int = math.inf):
+                 normalize: bool = True, result_length: int = 10, max_subset_size: int = math.inf,
+                 max_number_of_concurrent_processes: int = mp.cpu_count()):
         """
         Constructs a new Solver object. The Solver class should never be directly instantiated. Instead use a class that inherits from the Solver class and implements the solve() method.
         :param query: The query for which to solve for
@@ -40,6 +41,7 @@ class Solver:
         self.denormalize_max_y: float = 0.0
         self.denormalize_min_y: float = 0.0
         self.max_subset_size = max_subset_size
+        self.max_number_of_concurrent_processes = max_number_of_concurrent_processes
         logging.getLogger(__name__).debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
     def solve(self) -> solution_list:
@@ -72,11 +74,10 @@ class Solver:
             data = self.data
         result_dict: precalculated_dict_type = dict()
         list_of_subsets = self.get_all_subsets(data)
-        factor_number_of_processes: int = 2
-        split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
+        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
-                max_workers=mp.cpu_count() * factor_number_of_processes) as executor:
+                max_workers=self.max_number_of_concurrent_processes) as executor:
             for subset in split_ss:
                 future = executor.submit(get_max_inter_dataset_distances, self.cost_function, subset)
                 results.append(future)
@@ -108,11 +109,10 @@ class Solver:
             data = self.data
         result_dict: precalculated_dict_type = dict()
         list_of_subsets = self.get_all_subsets(data)
-        factor_number_of_processes: int = 2
-        split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
+        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
-                max_workers=mp.cpu_count() * factor_number_of_processes) as executor:
+                max_workers=self.max_number_of_concurrent_processes) as executor:
             for subset in split_ss:
                 future = executor.submit(get_min_inter_dataset_distances, self.cost_function, subset)
                 results.append(future)
@@ -152,11 +152,10 @@ class Solver:
             data = self.data
         result_dict: precalculated_dict_type = dict()
         list_of_subsets = self.get_all_subsets(data)
-        factor_number_of_processes: int = 2
-        split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
+        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
-                max_workers=mp.cpu_count() * factor_number_of_processes) as executor:
+                max_workers=self.max_number_of_concurrent_processes) as executor:
             for subset in split_ss:
                 future = executor.submit(get_max_query_dataset_distances, self.cost_function, query, subset)
                 results.append(future)
@@ -179,11 +178,10 @@ class Solver:
             data = self.data
         result_dict: precalculated_dict_type = dict()
         list_of_subsets = self.get_all_subsets(data)
-        factor_number_of_processes: int = 2
-        split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
+        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
-                max_workers=mp.cpu_count() * factor_number_of_processes) as executor:
+                max_workers=self.max_number_of_concurrent_processes) as executor:
             for subset in split_ss:
                 future = executor.submit(get_min_query_dataset_distances, self.cost_function, query, subset)
                 results.append(future)
@@ -213,11 +211,10 @@ class Solver:
             data = self.data
         result_dict: precalculated_dict_type = dict()
         list_of_subsets = self.get_all_subsets(data)
-        factor_number_of_processes: int = 2
-        split_ss = split_subsets(list_of_subsets, factor_number_of_processes)
+        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
-                max_workers=mp.cpu_count() * factor_number_of_processes) as executor:
+                max_workers=self.max_number_of_concurrent_processes) as executor:
             for subset in split_ss:
                 future = executor.submit(get_max_keyword_similarity, self.cost_function, query, subset)
                 results.append(future)
