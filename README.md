@@ -68,6 +68,13 @@ Please refer to the following files inside the user_scripts folder:
  The difference between these two files is 
  that the first one reads the csv and  turns all read lines into a dataset, 
  while the second reads a single line of the dataset and turns it into a query.
+ 
+ This has been tested with the geoname dataset from the [Chan et al., 2018] paper.
+ 
+ The links to the datasets are the following:
+ - US Hotels: www.allstays.com
+ - US Geonames: geonames.usgs.gov
+ 
 
 #### Synthetic Data
 
@@ -97,6 +104,8 @@ Please refer to the following files inside the user_scripts folder:
  The generator file generates a binary model from a body of text.
  The pickler turns this binary file into a pickle file and strips unnecessary methods.
  And finally, the adapter removes unnecessary words from vocabulary of the model.
+ 
+ The word2vec documentation and a dataset to train the model can be found at: https://pypi.org/project/word2vec/
  
 ### Precalulating Values
 
