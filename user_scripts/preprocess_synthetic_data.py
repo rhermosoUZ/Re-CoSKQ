@@ -2,7 +2,7 @@ from src.utils.data_generator import DataGenerator
 
 if __name__ == '__main__':
     # Config
-    data_target_name = 'synthetic20_data.pickle'
+    data_target_name = 'synthetic20_dataset.pickle'
     possible_keywords = ['family', 'food', 'outdoor', 'rest', 'indoor', 'sports', 'science', 'culture', 'history']
     dataset_size = 20
     file_allow_overwrite = False

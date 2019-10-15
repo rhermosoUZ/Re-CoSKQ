@@ -3,7 +3,7 @@ from src.utils.data_handler import load_csv, write_pickle
 if __name__ == '__main__':
     # Config
     csv_file_name = 'NationalFile_20190901.txt'
-    data_target_name = 'csv_query_data20.pickle'
+    data_target_name = 'data20_query.pickle'
     x_index = 9
     y_index = 10
     keyword_index = 2

@@ -7,11 +7,11 @@ from src.utils.data_handler import load_pickle, write_pickle
 
 if __name__ == '__main__':
     # Config
-    file_name_data = 'data20.pickle'
+    file_name_data = 'data20_dataset.pickle'
     target_file_name = 'precalculated_inter_dataset_distances_data20.pickle'
     max_subset_size = 6
     cost_function = Type1(euclidean_distance, combined_cosine_similarity, 0.33, 0.33, 0.33)
-    file_allow_overwrite = False
+    file_allow_overwrite = True
 
     # Code
     data = load_pickle(file_name_data)

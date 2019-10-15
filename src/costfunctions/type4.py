@@ -9,6 +9,7 @@ from src.utils.typing_definitions import distance_function_type, similarity_func
 
 
 class Type4(CostFunction):
+    # TODO check if this works as expected.
     def __init__(self, distance_metric: distance_function_type, similarity_metric: similarity_function_type,
                  alpha: float, beta: float, omega: float, phi_1: float, phi_2: float,
                  query_distance_threshold: float = 0.7, dataset_distance_threshold: float = 0.7,

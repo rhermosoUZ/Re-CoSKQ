@@ -4,9 +4,9 @@ if __name__ == '__main__':
     # Config
     # Both files should be in the root directory of the project.
     word2vec_model_name = 'model.pickle'
-    model_pickle_file_name = 'model_data20.pickle'
-    query_file_name = 'query20.pickle'
-    data_file_name = 'data20.pickle'
+    model_pickle_file_name = 'data20_model.pickle'
+    query_file_name = 'data20_query.pickle'
+    data_file_name = 'data20_dataset.pickle'
     file_allow_overwrite = False
 
     # Code - you shouldn't have to make any changes to this

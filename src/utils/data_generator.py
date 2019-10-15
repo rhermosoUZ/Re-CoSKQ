@@ -12,7 +12,9 @@ class DataGenerator:
     The DataGenerator class offers convenience functions to generate data and save it to disk.
     """
 
-    def __init__(self, possible_keywords: keyword_dataset_type, keywords_min: int = 1, keywords_max: int = 5,
+    def __init__(self,
+                 possible_keywords: keyword_dataset_type = 'dog cat house school street country state union ocean sea river car bus computer restaurant'.split(),
+                 keywords_min: int = 1, keywords_max: int = 5,
                  physical_min_x: float = 0.0, physical_max_x: float = 100.0, physical_min_y: float = 0.0,
                  physical_max_y: float = 100.0):
         """
