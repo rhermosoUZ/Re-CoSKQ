@@ -7,7 +7,6 @@ from src.metrics.distance_metrics import euclidean_distance
 from src.metrics.similarity_metrics import combined_cosine_similarity, word2vec_cosine_similarity
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.solvers.naive_solver import NaiveSolver
-from src.utils.data_generator import DataGenerator
 from src.utils.data_handler import load_word2vec_model, load_pickle
 from src.utils.logging_utils import solution_list_comprehension, dataset_comprehension, timing_list_comprehension
 from src.utils.typing_definitions import dataset_type
@@ -16,8 +15,6 @@ if __name__ == '__main__':
     # Evaluator, instantiate it first for logging purposes
     ev = Evaluator()
 
-    pk = 'dog cat house school street country state union ocean sea river car bus computer restaurant'.split()
-    dg = DataGenerator(pk)
     query: KeywordCoordinate = load_pickle('data20_query.pickle')
     print('Query:', query)
     data: dataset_type = load_pickle('data20_dataset.pickle')
@@ -58,7 +55,7 @@ if __name__ == '__main__':
 
     # Add Solvers to Evaluator
     ev.add_solver(ns1)
-    # ev.add_solver(ns2)
+    ev.add_solver(ns2)
     ev.add_solver(ns3)
     ev.add_solver(ns4)
 
