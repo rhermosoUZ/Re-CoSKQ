@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import os
 
-import numpy as np
+import numpy as np 
 
 from src.metrics.similarity_metrics import create_combined_keyword_vector
 from src.model.keyword_coordinate import KeywordCoordinate
