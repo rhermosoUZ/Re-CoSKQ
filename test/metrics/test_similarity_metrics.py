@@ -1,7 +1,8 @@
 import os
 from unittest import TestCase
 
-import word2vec
+#import word2vec
+from gensim.models import Word2Vec
 
 import src.metrics.similarity_metrics as mt
 from src.model.keyword_coordinate import KeywordCoordinate
@@ -246,7 +247,7 @@ class TestSimilarityMetrics(TestCase):
         valid_string_list = ['outdoor', 'rest']
         partially_invalid_string_list = ['outdoor123', 'rest']
         model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../model.bin')
-        model = word2vec.load(model_path)
+        model = Word2Vec.load(model_path)
         valid_result = mt.word2vec_cosine_similarity(valid_string_list, valid_string_list, model)
         valid_result = mt.word2vec_cosine_similarity(valid_string_list, partially_invalid_string_list, model)
         valid_result = mt.word2vec_cosine_similarity(partially_invalid_string_list, valid_string_list, model)
@@ -256,7 +257,7 @@ class TestSimilarityMetrics(TestCase):
         valid_string_list = ['outdoor', 'rest']
         invalid_string_list = ['outdoor123', 'rest123']
         model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../model.bin')
-        model = word2vec.load(model_path)
+        model = Word2Vec.load(model_path)
         self.assertRaises(ValueError, mt.word2vec_cosine_similarity, valid_string_list, invalid_string_list, model)
         self.assertRaises(ValueError, mt.word2vec_cosine_similarity, invalid_string_list, valid_string_list, model)
         self.assertRaises(ValueError, mt.word2vec_cosine_similarity, invalid_string_list, invalid_string_list, model)

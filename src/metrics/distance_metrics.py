@@ -48,10 +48,15 @@ def normalize_data(query: KeywordCoordinate, dataset: dataset_type) -> typing.Tu
     logger = logging.getLogger(__name__ + '.normalize_data')
     logger.debug('calculation for query {} and dataset {}'.format(query, dataset_comprehension(dataset)))
     data = copy.deepcopy(dataset)
-    data.append(copy.deepcopy(query))
+    
+    # Cambio de Ramon (20200903)
+    # data.append(copy.deepcopy(query)) // Añade una lista a una lista que solo contiene KeywordCoordinates
+    data.append(copy.deepcopy(query[0]))
     list_of_x = []
     list_of_y = []
-    for kwc in data:
+    
+    type(data)
+    for kwc in data:  
         list_of_x.append(kwc.coordinates.x)
         list_of_y.append(kwc.coordinates.y)
     min_x = min(list_of_x)

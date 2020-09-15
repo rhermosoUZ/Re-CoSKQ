@@ -11,6 +11,8 @@ import typing
 from src.solvers.solver import Solver
 from src.utils.logging_utils import list_comprehension, solution_list_comprehension
 from src.utils.typing_definitions import solution_type
+from os import path
+from pathlib import Path
 
 
 class Evaluator:
@@ -21,7 +23,22 @@ class Evaluator:
         """
         Constructs a new Evaluator object and initializes the state of the object. Solvers can be added to the evaluator.
         """
-        logging.config.fileConfig(os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '/../logs/config/logging.config'))
+        #log_file_path = path.join(path.dirname(path.abspath(__file__)), 'logs\config\logging.config')
+        
+        #print(os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + 'logs/config/logging.config'))
+        
+        #logging.config.fileConfig(log_file_path)
+        
+        path_current = Path(os.path.abspath(os.path.dirname(os.path.abspath(__file__))))
+        path = path_current.parent
+    
+        print('*****' + str(path) + '\logs\config\logging.config')
+        logging.config.fileConfig(str(path) + '\logs\config\logging.config')
+        
+        
+        
+        #logging.config.fileConfig('C:\\Users\rhermoso\github\Re-CoSKQ\logs\config\logging.config')
+        
         self.solvers: typing.List[Solver] = []
         self.results: typing.List[typing.Tuple[solution_type, Solver]] = []
         self.timings: typing.List[typing.Tuple[float, Solver]] = []

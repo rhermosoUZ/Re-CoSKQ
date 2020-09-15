@@ -6,8 +6,8 @@ from src.utils.data_handler import load_pickle, write_pickle
 
 if __name__ == '__main__':
     # Config
-    file_name_data = 'data20_dataset.pickle'
-    file_name_query = 'data20_query.pickle'
+    file_name_data = 'synthetic20_dataset.pickle'
+    file_name_query = 'synthetic_query.pickle'
     target_file_name = 'precalculated_query_dataset_distances_data20.pickle'
     max_subset_size = 6
     cost_function = Type1(euclidean_distance, combined_cosine_similarity, 0.33, 0.33, 0.33)
@@ -15,6 +15,7 @@ if __name__ == '__main__':
 
     # Code
     data = load_pickle(file_name_data)
+    
     query = load_pickle(file_name_query)
     solver = NaiveSolver(query, data, cost_function, max_subset_size=max_subset_size)
     precalculated_query_dataset_distances = solver.get_query_dataset_distance()
