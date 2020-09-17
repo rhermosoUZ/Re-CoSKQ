@@ -57,7 +57,8 @@ class CostFunction:
         if self.similarity_metric.__name__ == 'word2vec_cosine_similarity':
             try:
                 if model is None:
-                    model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../model.pickle')
+                    model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../files/model.pickle')
+                    print('*****' + model_path)
                     logger.debug('loading model from path {}'.format(model_path))
                     self.model = load_pickle(model_path)
                 else:
@@ -65,9 +66,9 @@ class CostFunction:
                     self.model = model
                     key, value = self.model.popitem()
                     self.model[key] = value
-                    if type(value) != np.ndarray:
-                        logger.error('Model seems to be corrupt.')
-                        raise ValueError('Model seems to be corrupt.')
+                    # if type(value) != np.ndarray:
+                    #     logger.error('Model seems to be corrupt.')
+                    #     raise ValueError('Model seems to be corrupt.')
             except:
                 logger.error('Could not load model')
                 raise ValueError('Could not load model')

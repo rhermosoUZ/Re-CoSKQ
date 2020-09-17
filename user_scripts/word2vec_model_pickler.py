@@ -16,7 +16,7 @@ if __name__ == '__main__':
     #word2vec_model_name = 'model.bin'
     word2vec_model_name = 'model_test2.bin'
     model_pickle_file_name = 'model.pickle'
-    word2vec_model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../' + word2vec_model_name)
+    word2vec_model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../files/' + word2vec_model_name)
 
     # Code - you shouldn't have to make any changes to this
     keyedVectors = KeyedVectors.load(word2vec_model_path, mmap='r')
@@ -24,4 +24,6 @@ if __name__ == '__main__':
     result_dict = dict()
     for word in keyedVectors.wv.vocab:
         result_dict[word] = keyedVectors.wv.get_vector(word)
+        
+    print ()
     write_pickle(result_dict, model_pickle_file_name)

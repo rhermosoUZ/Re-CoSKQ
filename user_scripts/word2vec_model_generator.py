@@ -23,9 +23,10 @@ if __name__ == '__main__':
 
     # Code - you shouldn't have to make any changes to this
     word_phrase_file_name = 'word_phrases'
-    text_file_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../' + source_text_file_name)
-    word_phrase_file_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../' + word_phrase_file_name)
-    model_target_file_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../' + target_model_file_name)
+    print (os.path.abspath(os.path.dirname(__file__)) + '/../files/' + source_text_file_name)
+    text_file_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../files/' + source_text_file_name)
+    word_phrase_file_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../files/' + word_phrase_file_name)
+    model_target_file_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../files/' + target_model_file_name)
 
     if not try_to_reuse_word_phrase_file or not os.path.exists(word_phrase_file_path):
         #word2vec.word2phrase(text_file_path, word_phrase_file_path)

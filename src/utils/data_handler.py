@@ -16,7 +16,7 @@ def load_word2vec_model(file_name='model.pickle'):
     :return: The word2vec model
     """
     logger = logging.getLogger(__file__ + '.load_word2vec_model')
-    model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../' + file_name)
+    model_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../../files/' + file_name)
     logger.debug('loading model from path {}'.format(model_path))
     try:
         model = load_pickle(file_name)
@@ -42,7 +42,7 @@ def write_pickle(data, file_name: str, file_allow_overwrite: bool = False,
     if file_only_overwrite_dot_pickle_files == True and file_name[-7:] != '.pickle':
         logger.error('Cannot overwrite file not ending in .pickle in safe mode')
         raise ValueError('Cannot overwrite file not ending in .pickle in safe mode')
-    file_path = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '../../../' + file_name)
+    file_path = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '/../../files/' + file_name)
     if file_allow_overwrite:
         mode = 'wb'
     else:
@@ -64,7 +64,8 @@ def load_pickle(file_name: str, path_relative_to_project_root: bool = True):
     logger = logging.getLogger(__name__)
     logger.debug('loading pickle. File {} using path relative {}'.format(file_name, path_relative_to_project_root))
     if path_relative_to_project_root:
-        file_path = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '../../../' + file_name)
+        print ('*****' + os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '/../../files/' + file_name))
+        file_path = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '/../../files/' + file_name)
     else:
         file_path = file_name
     with open(file_path, mode='rb') as file:
@@ -179,8 +180,12 @@ def calculate_model_subset(query: KeywordCoordinate, data: dataset_type, model):
     """
     new_model = dict()
     keywords = set()
-    for kw in query.keywords:
-        keywords.add(kw)
+    
+    # for kw in query.keywords:
+    #     keywords.add(kw)
+    for kwc in query:
+        for kw in kwc.keywords:
+            keywords.add(kw)
     for kwc in data:
         for kw in kwc.keywords:
             keywords.add(kw)
