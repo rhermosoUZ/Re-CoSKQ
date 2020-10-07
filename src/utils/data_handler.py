@@ -94,16 +94,18 @@ def load_csv(file_name: str, x_coordinate_index: int, y_coordinate_index: int, k
     dataset: dataset_type = []
     max_read_length -= 1  # because the length doesn't start counting at 0
     if path_relative_to_project_root:
-        file_path = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '../../../' + file_name)
+        file_path = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '/../../files/' + file_name)
     else:
         file_path = file_name
     with open(file_path, mode='rt', newline=newline) as csvfile:
         reader = csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)
         for row in reader:
             try:
+                # print(row[x_coordinate_index])
                 current_coordinate_x = float(row[x_coordinate_index])
                 current_coordinate_y = float(row[y_coordinate_index])
             except:
+                print('----- Failure -----')
                 if max_read_length > 0:
                     max_read_length += 1
                 continue

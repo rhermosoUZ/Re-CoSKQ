@@ -2,16 +2,16 @@ from src.utils.data_handler import load_csv, write_pickle
 
 if __name__ == '__main__':
     # Config
-    csv_file_name = 'NationalFile_20190901.txt'
+    csv_file_name = 'Paris_dataset.csv'
     data_target_name = 'data20_dataset.pickle'
-    x_index = 9
-    y_index = 10
+    x_index = 6 # Starts in 0
+    y_index = 7
     keyword_index = 2
-    max_read_length = 20  # -1 to disable
+    max_read_length = -1 #20   # -1 to disable
     keyword_delimiter = ' '
-    csv_delimiter = '|'
+    csv_delimiter = ';'
     csv_quotechar = '"'
-    file_allow_overwrite = False
+    file_allow_overwrite = True
 
     # Code
     print('Loading CSV', csv_file_name)
