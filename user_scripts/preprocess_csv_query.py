@@ -2,14 +2,14 @@ from src.utils.data_handler import load_csv, write_pickle
 
 if __name__ == '__main__':
     # Config
-    csv_file_name = 'NationalFile_20190901.txt'
+    csv_file_name = 'user_queries.csv'
     data_target_name = 'data20_query.pickle'
-    x_index = 9
-    y_index = 10
+    x_index = 0
+    y_index = 1
     keyword_index = 2
     query_index = 22
     keyword_delimiter = ' '
-    csv_delimiter = '|'
+    csv_delimiter = ';'
     csv_quotechar = '"'
     file_allow_overwrite = True
 

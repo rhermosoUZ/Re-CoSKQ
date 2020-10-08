@@ -50,8 +50,8 @@ def normalize_data(query: KeywordCoordinate, dataset: dataset_type) -> typing.Tu
     data = copy.deepcopy(dataset)
     
     # Cambio de Ramon (20200903)
-    # data.append(copy.deepcopy(query)) // Añade una lista a una lista que solo contiene KeywordCoordinates
-    data.append(copy.deepcopy(query[0]))
+    data.append(copy.deepcopy(query)) # Añade una lista a una lista que solo contiene KeywordCoordinates
+    #data.append(copy.deepcopy(query[0]))
     list_of_x = []
     list_of_y = []
     
