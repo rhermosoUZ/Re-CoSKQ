@@ -64,7 +64,7 @@ def load_pickle(file_name: str, path_relative_to_project_root: bool = True):
     logger = logging.getLogger(__name__)
     logger.debug('loading pickle. File {} using path relative {}'.format(file_name, path_relative_to_project_root))
     if path_relative_to_project_root:
-        print ('*****' + os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '/../../files/' + file_name))
+        #print ('*****' + os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '/../../files/' + file_name))
         file_path = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '/../../files/' + file_name)
     else:
         file_path = file_name
@@ -183,11 +183,11 @@ def calculate_model_subset(query: KeywordCoordinate, data: dataset_type, model):
     new_model = dict()
     keywords = set()
     
-    # for kw in query.keywords:
-    #     keywords.add(kw)
-    for kwc in query:
-        for kw in kwc.keywords:
-            keywords.add(kw)
+    for kw in query.keywords:
+        keywords.add(kw)
+    # for kwc in query:
+    #     for kw in kwc.keywords:
+    #         keywords.add(kw)
     for kwc in data:
         for kw in kwc.keywords:
             keywords.add(kw)

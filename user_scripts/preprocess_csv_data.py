@@ -7,7 +7,7 @@ if __name__ == '__main__':
     x_index = 6 # Starts in 0
     y_index = 7
     keyword_index = 2
-    max_read_length = -1 #20   # -1 to disable
+    max_read_length = 20   # -1 to disable
     keyword_delimiter = ' '
     csv_delimiter = ';'
     csv_quotechar = '"'
