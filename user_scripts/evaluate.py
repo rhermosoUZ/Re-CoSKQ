@@ -16,6 +16,8 @@ from src.utils.typing_definitions import dataset_type
 
 if __name__ == '__main__':
     start_time = time.time()
+    RADIUS = 3000 # 3km
+    
     # Evaluator, instantiate it first for logging purposes
     ev = Evaluator()
 
@@ -23,6 +25,11 @@ if __name__ == '__main__':
     #print('Query:', query)
     data: dataset_type = load_pickle('data20_dataset.pickle')
     #print('Data:', dataset_comprehension(data))
+
+    # Let's filter out by user radius
+    dataAux = sorted(data, key=lambda x: geographic_distance(x.coordinates, query.coordinates))
+    distances = [geographic_distance(x.coordinates, query.coordinates) >= RADIUS for x in dataAux]
+    print('------ Distances: ', distances)
 
     # Load precalculated values and models
     precalculated_inter_dataset_distances_data20 = load_pickle('precalculated_inter_dataset_distances_data20.pickle')
@@ -48,6 +55,7 @@ if __name__ == '__main__':
                 precalculated_inter_dataset_dict=precalculated_inter_dataset_distances_data20,
                 precalculated_keyword_similarity_dict=precalculated_query_dataset_keyword_similarities_word2vec_data20,
                 model=word2vec_model)
+    
 
     # Choose which Solvers to use. For all possible parameters refer to the documentation.
     max_number_of_processes = mp.cpu_count()
@@ -66,9 +74,8 @@ if __name__ == '__main__':
     ev.add_solver(ns4)
 
     #Only for Debug: calculates and print physical distances between items in the dataset and the query location
-    distances = [geographic_distance(x.coordinates, query.coordinates) for x in data]
-    
-    print('------ Distances: ', distances)
+    #distances = [geographic_distance(x.coordinates, query.coordinates) for x in data]
+    # print('------ Distances: ', distances)
 
     # Run Evaluator and fetch results
     # ev.evaluate()
