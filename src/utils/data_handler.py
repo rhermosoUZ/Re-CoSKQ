@@ -192,5 +192,6 @@ def calculate_model_subset(query: KeywordCoordinate, data: dataset_type, model):
         for kw in kwc.keywords:
             keywords.add(kw)
     for kw in keywords:
-        new_model[kw.lower()] = model[kw.lower()]
+        if kw[0].isalpha(): # Whatch out! It doesn't work with symbols like &/... SOL: check if text is alphabetic
+            new_model[kw.lower()] = model[kw.lower()]
     return new_model

@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     # Code - you shouldn't have to make any changes to this
     word_phrase_file_name = 'word_phrases'
-    print (os.path.abspath(os.path.dirname(__file__)) + '/../files/' + source_text_file_name)
+    # print (os.path.abspath(os.path.dirname(__file__)) + '/../files/' + source_text_file_name)
     text_file_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../files/' + source_text_file_name)
     word_phrase_file_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../files/' + word_phrase_file_name)
     model_target_file_path = os.path.abspath(os.path.abspath(os.path.dirname(__file__)) + '/../files/' + target_model_file_name)

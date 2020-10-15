@@ -6,7 +6,7 @@ import time
 from src.costfunctions.type1 import Type1
 from src.costfunctions.type2 import Type2
 from src.evaluator import Evaluator
-from src.metrics.distance_metrics import euclidean_distance
+from src.metrics.distance_metrics import euclidean_distance, geographic_distance
 from src.metrics.similarity_metrics import combined_cosine_similarity, word2vec_cosine_similarity
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.solvers.naive_solver import NaiveSolver
@@ -62,42 +62,50 @@ if __name__ == '__main__':
 
     # Add Solvers to Evaluator
     # ev.add_solver(ns1)
-    # ev.add_solver(ns2)
     # ev.add_solver(ns3)
     ev.add_solver(ns4)
 
+    #Only for Debug: calculates and print physical distances between items in the dataset and the query location
+    distances = [geographic_distance(x.coordinates, query.coordinates) for x in data]
+    
+    print('------ Distances: ', distances)
+
     # Run Evaluator and fetch results
-    ev.evaluate()
-    results = ev.get_results()
-    timings = ev.get_timings()
-    print('*** Solution -', solution_list_comprehension(results))
-    print('*** Timing -', timing_list_comprehension(timings))
+    # ev.evaluate()
+    # results = ev.get_results()
+    # timings = ev.get_timings()
+    # print('*** Solution -', solution_list_comprehension(results))
+    # print('*** Timing -', timing_list_comprehension(timings))
     
-    # Results of the best solution
-    print('*** results[0][0][0] -', results[0][0][0][1])
+    # # Results of the best solution
+    # print('*** results[0][0][0] -', results[0][0][0][1])
     
-    lats = []
-    lons = []
-    keywords = []
+    # initialLat = []
+    # initialLon = []
+    # lats = []
+    # lons = []
+    # keywords = []
     
-    # Third dimension is the order of solution (Best: 0, Second best: 1...)
-    for kwc in results[0][0][0][1]:
-        lats.append(kwc.coordinates.x)
-        lons.append(kwc.coordinates.y)
-        keywords.append(kwc.keywords)
+    # # Third dimension is the order of solution (Best: 0, Second best: 1...)
+    # for kwc in results[0][0][0][1]:
+    #     lats.append(kwc.coordinates.x)
+    #     lons.append(kwc.coordinates.y)
+    #     keywords.append(kwc.keywords)
     
-   #  lats, lons = zip(*[
-   # (17.3833, 78.4011),(17.4239, 78.4738),(17.3713, 78.4804),(17.3616, 78.4747),
-   # (17.3578, 78.4717),(17.3604, 78.4736),(17.2543, 78.6808),(17.4062, 78.4691),
-   # (17.3950, 78.3968),(17.3587, 78.2988),(17.4156, 78.4750)])
     
-    gmap = gmplot.GoogleMapPlotter(query.coordinates.x, query.coordinates.y, 15)
-    gmap.scatter(lats, lons, '#FF0000',size = 50, marker = False )
+    # gmap = gmplot.GoogleMapPlotter(query.coordinates.x, query.coordinates.y, 15)
     
-    gmap.plot(lats, lons, 'cornflowerblue', edge_width = 3.0)
-    #Your Google_API_Key
-    #gmap.apikey = " API_Key”
-    # save it to html
-    gmap.draw(r"graphic_results.html")
     
-    print("--- %s seconds ---" % (time.time() - start_time))
+    # initialLat.append(query.coordinates.x)
+    # initialLon.append(query.coordinates.y)
+    
+    # gmap.scatter(initialLat, initialLon, '00FF00', size = 70, marker = False)
+    # gmap.scatter(lats, lons, '#FF0000',size = 50, marker = False )
+    
+    # gmap.plot(lats, lons, 'cornflowerblue', edge_width = 3.0)
+    # #Your Google_API_Key
+    # #gmap.apikey = " API_Key”
+    # # save it to html
+    # gmap.draw(r"graphic_results.html")
+    
+    # print("--- %s seconds ---" % (time.time() - start_time))

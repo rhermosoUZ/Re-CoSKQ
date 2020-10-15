@@ -7,6 +7,7 @@ from src.model.coordinate import Coordinate
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.logging_utils import dataset_comprehension, result_list_comprehension
 from src.utils.typing_definitions import dataset_type, solution_list
+from math import sin, cos, sqrt, atan2, radians
 
 
 def euclidean_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> float:
@@ -21,6 +22,41 @@ def euclidean_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> floa
     solution = math.sqrt((coordinate1.x - coordinate2.x) ** 2 + (coordinate1.y - coordinate2.y) ** 2)
     logger.debug('calculated {}'.format(solution))
     return solution
+
+def geographic_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> float:
+    """
+    Calculates distance between two geographic coordinates. Uses radians (by default). Resulting value is in meters.
+    Parameters
+    ----------
+    coordinate1 : Coordinate
+        DESCRIPTION.
+    coordinate2 : Coordinate
+        DESCRIPTION.
+    Returns
+    -------
+    float Distance between two points in meters
+        DESCRIPTION.
+    """
+    logger = logging.getLogger(__name__ + '.geographic_distance')
+    logger.debug('calculating for {} and {}'.format(coordinate1, coordinate2))
+    
+    # approximate radius of earth in km
+    R = 6373.0
+    lat1 = radians(coordinate1.x)
+    lon1 = radians(coordinate1.y)
+    lat2 = radians(coordinate2.x)
+    lon2 = radians(coordinate2.y)
+    
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1   
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    c = 2 * atan2(sqrt(a), sqrt(1 - a))   
+    solution = R * c * 1000 # Results in meters (x1000)
+    
+    logger.debug('calculated {}'.format(solution))
+    
+    return solution
+    
 
 
 def manhattan_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> float:
