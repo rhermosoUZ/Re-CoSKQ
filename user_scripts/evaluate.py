@@ -16,7 +16,6 @@ from src.utils.typing_definitions import dataset_type
 
 if __name__ == '__main__':
     start_time = time.time()
-    RADIUS = 3000 # 3km
     
     # Evaluator, instantiate it first for logging purposes
     ev = Evaluator()
@@ -24,12 +23,12 @@ if __name__ == '__main__':
     query: KeywordCoordinate = load_pickle('data20_query.pickle')
     #print('Query:', query)
     data: dataset_type = load_pickle('data20_dataset.pickle')
-    #print('Data:', dataset_comprehension(data))
+    # print('Data:', dataset_comprehension(data))
 
     # Let's filter out by user radius
-    dataAux = sorted(data, key=lambda x: geographic_distance(x.coordinates, query.coordinates))
-    distances = [geographic_distance(x.coordinates, query.coordinates) >= RADIUS for x in dataAux]
-    print('------ Distances: ', distances)
+    # dataAux = sorted(data, key=lambda x: geographic_distance(x.coordinates, query.coordinates))
+    # distances = [geographic_distance(x.coordinates, query.coordinates) >= RADIUS for x in dataAux]
+    # print('------ Distances: ', distances)
 
     # Load precalculated values and models
     precalculated_inter_dataset_distances_data20 = load_pickle('precalculated_inter_dataset_distances_data20.pickle')
@@ -78,11 +77,11 @@ if __name__ == '__main__':
     # print('------ Distances: ', distances)
 
     # Run Evaluator and fetch results
-    # ev.evaluate()
-    # results = ev.get_results()
-    # timings = ev.get_timings()
-    # print('*** Solution -', solution_list_comprehension(results))
-    # print('*** Timing -', timing_list_comprehension(timings))
+    ev.evaluate()
+    results = ev.get_results()
+    timings = ev.get_timings()
+    print('*** Solution -', solution_list_comprehension(results))
+    print('*** Timing -', timing_list_comprehension(timings))
     
     # # Results of the best solution
     # print('*** results[0][0][0] -', results[0][0][0][1])

@@ -4,9 +4,10 @@ import concurrent.futures
 import logging
 import math
 import multiprocessing as mp
+import pandas as pd
 
 from src.costfunctions.costfunction import CostFunction
-from src.metrics.distance_metrics import normalize_data, denormalize_result_data
+from src.metrics.distance_metrics import normalize_data, denormalize_result_data, geographic_distance
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.solvers.solver import Solver
 from src.utils.data_handler import split_subsets
@@ -48,7 +49,34 @@ class NaiveSolver(Solver):
                                                                                                              dataset_comprehension(
                                                                                                                  self.data),
                                                                                                              self.cost_function,
-                                                                                                             self.result_length))
+                                                                                                              self.result_length))
+        #  Calculates distances between any pair of locations (POIs)
+        distances = []
+        for kwc in self.data:
+            distance_list = []
+            # print(kwc.coordinates.x)
+            # print(kwc.coordinates.y)
+            distance_list.append(str(kwc.coordinates.x) + ','+str(kwc.coordinates.y))
+            for kwc2 in self.data:
+                distance_list.append(geographic_distance(kwc.coordinates, kwc2.coordinates))
+            distances.append(distance_list)
+        
+        # Calculates distance list from query location to any POI
+        distances_to_query = []
+        for kwc in self.data:
+            distances_one_poi = []
+            distances_one_poi.append(str(kwc.coordinates.x) + ',' + str(kwc.coordinates.y))
+            distances_one_poi.append(geographic_distance(self.query.coordinates, kwc.coordinates))
+            distances_to_query.append(distances_one_poi)
+        
+        geographic_distances = pd.DataFrame(distances)
+        geographic_distances.set_index(0, inplace=True)
+        geographic_distances.columns = geographic_distances.index.tolist()
+        
+        distances_to_query_df = pd.DataFrame(distances_to_query)
+        distances_to_query_df.set_index(0, inplace=True)
+        distances_to_query_df.columns = ['Distances2Query']
+        
         result_list: solution_list = []
         if self.normalize_data:
             query, data, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y = normalize_data(
@@ -56,7 +84,16 @@ class NaiveSolver(Solver):
         else:
             query = self.query
             data = self.data
-        list_of_subsets = self.get_all_subsets(data)
+            
+        # Variation with heuristics
+        # geographic_distances = [[]]
+
+        
+        # print ('Geographic distances: ', geographic_distances)
+        
+        list_of_subsets = self.get_all_subsets_heuristic(data, distances_to_query_df)
+        
+        # list_of_subsets = self.get_all_subsets(data)
         list_of_split_subsets = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes,
                                               self.rebalance_subsets)
         with concurrent.futures.ProcessPoolExecutor(

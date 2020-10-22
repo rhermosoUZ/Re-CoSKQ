@@ -18,10 +18,12 @@ class Solver:
     """
     The Solver solves a given CostFunction for a given query and dataset.
     """
+    # MAX_ROUTE_DISTANCE = 10000 # 10km as max route distance for the user. If works move it to constructor.
 
     def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction,
                  normalize: bool = True, result_length: int = 10, max_subset_size: int = math.inf,
-                 max_number_of_concurrent_processes: int = mp.cpu_count(), rebalance_subsets: bool = True):
+                 max_number_of_concurrent_processes: int = mp.cpu_count(), rebalance_subsets: bool = True,
+                 RADIUS: float = 2000):
         """
         Constructs a new Solver object. The Solver class should never be directly instantiated. Instead use a class that inherits from the Solver class and implements the solve() method.
         :param query: The query for which to solve for
@@ -44,6 +46,7 @@ class Solver:
         self.max_subset_size = max_subset_size
         self.max_number_of_concurrent_processes = max_number_of_concurrent_processes
         self.rebalance_subsets = rebalance_subsets
+        self.RADIUS = RADIUS
         logging.getLogger(__name__).debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
     def solve(self) -> solution_list:
@@ -225,6 +228,45 @@ class Solver:
                 result_dict[frozenset(subset[1])] = subset[0]
         return result_dict
 
+    def get_all_subsets_heuristic(self, data, geographic_distances):
+        """
+        Calculates all the possible subsets for the given data. Takes the set maximum length for subsets into account.
+        :param data: The data
+        :param geographic_distances: Distance dataframe between any two locations
+        :return: A list of all possible subsets
+        """
+        candidates = geographic_distances[(0 < geographic_distances)  &
+                                          (geographic_distances < self.RADIUS)].apply(lambda x: x.dropna().index.tolist())
+        
+        print('Candidates --> ', candidates)
+        candidates_set = set()
+        for values in candidates.values:
+            for v in values:
+                candidates_set.add(v)
+    
+        print('+++++++ Values: ', candidates_set)
+    
+        print('***** Longitud antes: ', len(data))
+    
+        data = [x for x in data if (str(x.coordinates.x)+","+str(x.coordinates.y)) in candidates_set] 
+        # [x for x in somelist if not determine(x)]                
+        print('***** Longitud después: ', len(data))
+        
+        list_of_subsets = []
+        max_length = min(len(data), self.max_subset_size)
+        
+        j = 1
+        for index in range(max_length):
+            print('***** Longitud ', j)
+            j += 1
+            new_subsets = find_subsets(data, index + 1)
+            for subset in new_subsets:
+                list_of_subsets.append(subset)
+            print('# subsets: ', len(list_of_subsets))
+        
+        return list_of_subsets
+    
+    
     def get_all_subsets(self, data):
         """
         Calculates all the possible subsets for the given data. Takes the set maximum length for subsets into account.
@@ -233,10 +275,16 @@ class Solver:
         """
         max_length = min(len(data), self.max_subset_size)
         list_of_subsets = []
+
+        j = 1
         for index in range(max_length):
+            print('***** Longitud ', j)
+            j += 1
             new_subsets = find_subsets(data, index + 1)
             for subset in new_subsets:
                 list_of_subsets.append(subset)
+            print('# subsets: ', len(list_of_subsets))
+
         return list_of_subsets
 
     def __str__(self):

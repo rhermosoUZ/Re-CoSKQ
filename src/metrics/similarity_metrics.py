@@ -6,6 +6,7 @@ import math
 import typing
 
 import numpy as np
+import pandas as pd
 
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.logging_utils import dataset_comprehension, sets_of_set_comprehension
@@ -208,6 +209,24 @@ def find_subsets(input_set: dataset_type, subset_size: int):
         solution = set(itertools.combinations(input_set, subset_size))
     logger.debug('found {}'.format(sets_of_set_comprehension(solution)))
     return solution
+
+# def find_subsets(input_set: dataset_type, subset_size: int, candidates: pd.DataFrame):
+#     """
+#     Calculates all the subsets of an input dataset and a given size.
+#     :param input_set: The input dataset with candidates to be in solution sets
+#     :param subset_size: The subset size
+#     :return: A set of all the subsets
+#     """
+        
+#     logger = logging.getLogger(__name__ + '.find_subsets')
+#     logger.debug('finding all subsets of length {} in set {}'.format(subset_size, dataset_comprehension(input_set)))
+#     if subset_size > len(input_set):
+#         solution = set(itertools.combinations(input_set, 0))
+#     else:
+#         solution = set(itertools.combinations(input_set, subset_size))
+#     logger.debug('found {}'.format(sets_of_set_comprehension(solution)))
+#     return solution
+
 
 
 def get_word_vector(word: str, model):
