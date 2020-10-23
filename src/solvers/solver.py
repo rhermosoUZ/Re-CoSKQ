@@ -228,8 +228,8 @@ class Solver:
                 result_dict[frozenset(subset[1])] = subset[0]
         return result_dict
 
-    def append_coordinates(self, lat, lon):
-        return str(lat)+','+str(lon)
+    # def append_coordinates(self, lat, lon):
+    #     return str(lat)+','+str(lon)
 
     def get_all_subsets_heuristic(self, data, geographic_distances):
         """
@@ -252,7 +252,7 @@ class Solver:
     
         print('***** Longitud antes: ', len(data))
     
-        data = [x for x in data if self.append_coordinates(x.coordinates.x, x.coordinates.y) in candidates_list] 
+        data = [x for x in data if (str(x.coordinates.x)+','+str(x.coordinates.y)) in candidates_list] 
         # data = [x for x in data if '48.869173,2.391884' in candidates_list] 
         # [x for x in somelist if not determine(x)]                
         print('***** Longitud después: ', len(data))

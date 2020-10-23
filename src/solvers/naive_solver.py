@@ -78,6 +78,12 @@ class NaiveSolver(Solver):
         distances_to_query_df.columns = ['Distances2Query']
         
         result_list: solution_list = []
+        
+        list_of_subsets = self.get_all_subsets_heuristic(self.data, distances_to_query_df)
+        
+        # list_of_subsets = self.get_all_subsets(data)
+        list_of_split_subsets = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes,
+                                              self.rebalance_subsets)
         if self.normalize_data:
             query, data, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y = normalize_data(
                 self.query, self.data)
@@ -91,11 +97,7 @@ class NaiveSolver(Solver):
         
         # print ('Geographic distances: ', geographic_distances)
         
-        list_of_subsets = self.get_all_subsets_heuristic(data, distances_to_query_df)
         
-        # list_of_subsets = self.get_all_subsets(data)
-        list_of_split_subsets = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes,
-                                              self.rebalance_subsets)
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self.max_number_of_concurrent_processes) as executor:
             future_list = []
