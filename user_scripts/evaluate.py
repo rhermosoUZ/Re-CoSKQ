@@ -64,7 +64,7 @@ if __name__ == '__main__':
     #                   max_number_of_concurrent_processes=max_number_of_processes)
     # ns3 = NaiveSolver(query, data, cf3, result_length=5, max_subset_size=6,
     #                   max_number_of_concurrent_processes=max_number_of_processes)
-    ns4 = NaiveSolver(query, data, cf4, result_length=5, max_subset_size=6,
+    ns4 = NaiveSolver(query, data, cf4, result_length=5, max_subset_size=3,
                       max_number_of_concurrent_processes=max_number_of_processes)
 
     # Add Solvers to Evaluator
@@ -86,32 +86,40 @@ if __name__ == '__main__':
     # # Results of the best solution
     # print('*** results[0][0][0] -', results[0][0][0][1])
     
-    # initialLat = []
-    # initialLon = []
-    # lats = []
-    # lons = []
-    # keywords = []
+    initialLat = []
+    initialLon = []
+    lats = []
+    lons = []
+    keywords = []
+
+    gmap = gmplot.GoogleMapPlotter(query.coordinates.x, query.coordinates.y, 14)
     
-    # # Third dimension is the order of solution (Best: 0, Second best: 1...)
-    # for kwc in results[0][0][0][1]:
-    #     lats.append(kwc.coordinates.x)
-    #     lons.append(kwc.coordinates.y)
-    #     keywords.append(kwc.keywords)
+    # Third dimension is the order of solution (Best: 0, Second best: 1...)
+    for i in range(5): 
+         for kwc in results[0][0][i][1]:
+            lats.append(kwc.coordinates.x)
+            lons.append(kwc.coordinates.y)
+            keywords.append(kwc.keywords)           
     
+        # initialLat.append(query.coordinates.x)
+        # initialLon.append(query.coordinates.y)
+        
+        # gmap.scatter(initialLat, initialLon, '#00FF00', size = 70, marker = False)
+        # gmap.scatter(lats, lons, '#FF0000',size = 50, marker = False )
+            
+        # gmap.plot(lats, lons, 'cornflowerblue', edge_width = 3.0)
+        # gmap.polygon(lats, lons, color='cornflowerblue', edge_width=10)
+        
+        # for j in range(len(lats)):
+        #     gmap.marker(lats[j], lons[j], color='#FF0000')
+        # gmap.scatter(lats, lons, color='#3B0B39', size=40, marker=False)
+        
+        
+        #Your Google_API_Key
+        #gmap.apikey = " API_Key”
+        # save it to html
+    gmap.scatter(lats, lons, '#FF0000', size=40, marker=True)
+    gmap.marker(query.coordinates.x, query.coordinates.y, color='cornflowerblue')
+    gmap.draw(r"graphic_results.html")
     
-    # gmap = gmplot.GoogleMapPlotter(query.coordinates.x, query.coordinates.y, 15)
-    
-    
-    # initialLat.append(query.coordinates.x)
-    # initialLon.append(query.coordinates.y)
-    
-    # gmap.scatter(initialLat, initialLon, '00FF00', size = 70, marker = False)
-    # gmap.scatter(lats, lons, '#FF0000',size = 50, marker = False )
-    
-    # gmap.plot(lats, lons, 'cornflowerblue', edge_width = 3.0)
-    # #Your Google_API_Key
-    # #gmap.apikey = " API_Key”
-    # # save it to html
-    # gmap.draw(r"graphic_results.html")
-    
-    # print("--- %s seconds ---" % (time.time() - start_time))
+    print("--- %s seconds ---" % (time.time() - start_time))

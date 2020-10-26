@@ -76,7 +76,7 @@ def manhattan_distance(coordinate1: Coordinate, coordinate2: Coordinate) -> floa
 def normalize_data(query: KeywordCoordinate, dataset: dataset_type) -> typing.Tuple[
     KeywordCoordinate, typing.List[KeywordCoordinate], float, float, float, float]:
     """
-    Calculates the normalizes query, dataset and parameters to undo this normalization.
+    Calculates the normalized query, dataset and parameters to undo this normalization.
     :param query: The query
     :param dataset: The dataset
     :return: A tuple with: the normalized query, the normalized dataset, the denormalization parameter max_x,  the denormalization parameter min_x, the denormalization parameter max_y and the denormalization parameter min_y,
@@ -120,10 +120,12 @@ def denormalize_result_data(result_list: solution_list, max_x: float, min_x: flo
     :return: The denormalized list of results
     """
     logger = logging.getLogger(__name__ + '.denormalize_result_data')
-    logger.debug('calculation for result {}, max_x {}, min_x {}, max_y {} and min_y {}'.format(result_list_comprehension(result_list), max_x, min_x, max_y, min_y))
+    # print('********* TYPE: ', type(result_list[0][0]))
+    # logger.debug('calculation for result {}, max_x {}, min_x {}, max_y {} and min_y {}'.format(result_list_comprehension(result_list), max_x, min_x, max_y, min_y))
     result: solution_list = []
     for solution_tuple in result_list:
         solution_tuple_copy = copy.deepcopy(solution_tuple)
+        # print('>>>>> solution_tuple_copy', solution_tuple_copy)
         for kwc in solution_tuple_copy[1]:
             kwc.coordinates.x = kwc.coordinates.x * (max_x - min_x) + min_x
             kwc.coordinates.y = kwc.coordinates.y * (max_y - min_y) + min_y

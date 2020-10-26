@@ -19,10 +19,10 @@ class NaiveSolver(Solver):
     """
     The NaiveSolver does not use any kind of heuristic. It calculates the cost for every possibility and returns the best results.
     """
-
+    # Change max_number_of_concurrent_processes TO mp.cpu_count() if running in Linux-based (Multiprocessing doesn't work on Windows 10)
     def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction,
                  normalize: bool = True, result_length: int = 10, max_subset_size: int = math.inf,
-                 max_number_of_concurrent_processes: int = mp.cpu_count(), rebalance_subsets: bool = True):
+                 max_number_of_concurrent_processes: int = 5, rebalance_subsets: bool = True):
         """
         Constructs a new NaiveSolver object.
         :param query: The query for which to solve for
@@ -73,40 +73,64 @@ class NaiveSolver(Solver):
         geographic_distances.set_index(0, inplace=True)
         geographic_distances.columns = geographic_distances.index.tolist()
         
+        # Calculates distances to query location from every POI
         distances_to_query_df = pd.DataFrame(distances_to_query)
         distances_to_query_df.set_index(0, inplace=True)
         distances_to_query_df.columns = ['Distances2Query']
         
-        result_list: solution_list = []
         
-        list_of_subsets = self.get_all_subsets_heuristic(self.data, distances_to_query_df)
+        
+        candidates_set = self.get_all_candidates_heuristic(self.data, distances_to_query_df)
         
         # list_of_subsets = self.get_all_subsets(data)
-        list_of_split_subsets = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes,
-                                              self.rebalance_subsets)
+        
+        #  ONLY ONE PROCESSOR (NO BALANCING NEEDED)
+        # list_of_split_subsets = list_of_subsets
+        
+        dataAux = [x for x in self.data if (str(x.coordinates.x)+','+str(x.coordinates.y)) in candidates_set]
+        
         if self.normalize_data:
             query, data, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y = normalize_data(
-                self.query, self.data)
+                self.query, dataAux)
         else:
             query = self.query
-            data = self.data
+            data = self.dataAux
             
-        # Variation with heuristics
-        # geographic_distances = [[]]
-
+        list_of_subsets = self.get_all_subsets_heuristic(data)
         
-        # print ('Geographic distances: ', geographic_distances)
+        #  UNCOMMENT IF MULTIPROCESSING
+        # list_of_split_subsets = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes,
+                                               # self.rebalance_subsets)
+                
+        result_list: solution_list = []
         
+        # UNCOMMENT FOR MULTIPROCESSING (DOES NOT WORK IN WINDOWS 10)
+        # with concurrent.futures.ProcessPoolExecutor(
+        #         max_workers=self.max_number_of_concurrent_processes) as executor:
+        #     future_list = []
+        #     for subsets in list_of_split_subsets:
+        #         future = executor.submit(self.get_cost_for_subset, query, subsets)
+        #         future_list.append(future)
+        #     for future in future_list:
+        #         for solution in future.result():
+        #             result_list.append(solution)
         
-        with concurrent.futures.ProcessPoolExecutor(
-                max_workers=self.max_number_of_concurrent_processes) as executor:
-            future_list = []
-            for subsets in list_of_split_subsets:
-                future = executor.submit(self.get_cost_for_subset, query, subsets)
-                future_list.append(future)
-            for future in future_list:
-                for solution in future.result():
-                    result_list.append(solution)
+        # ONE PROCESSOR VERSION
+        result_list = []
+ 
+        for subset in list_of_subsets: # list_of_split_subsets if multiprocessing enabled.
+            # print(i)
+            # i = i + 1
+            solution = self.get_cost_for_subset(query, subset)
+            result_list.append((solution, subset))
+            
+            
+        # MULTIPROCESSOR VERSION
+        # for future in future_list:
+        #     for solution in future.result():
+        #         result_list.append(solution)
+        #########################
+        
         result_list.sort(key=lambda x: x[0])
         result_list = result_list[:self.result_length]
         denormalized_result_list = denormalize_result_data(result_list, self.denormalize_max_x, self.denormalize_min_x,
@@ -115,7 +139,7 @@ class NaiveSolver(Solver):
                                                           self.result_length))
         return denormalized_result_list
 
-    def get_cost_for_subset(self, query, subsets) -> solution_list:
+    def get_cost_for_subset(self, query, subset):
         """
         Calculates the costs of all the subsets for a given query and cost function.
         :param query: The query
@@ -123,12 +147,18 @@ class NaiveSolver(Solver):
         :param costfunction: The costfunction
         :return: A list of solutions. Each solution being a cost and the corresponding subset
         """
-        results: solution_list = []
-        for subset in subsets:
-            denormalized_result = denormalize_result_data([(0.0, subset)], self.denormalize_max_x,
-                                                          self.denormalize_min_x, self.denormalize_max_y,
-                                                          self.denormalize_min_y)
-            denormalized_subset = denormalized_result[0][1]
-            current_result = self.cost_function.solve(query, subset, denormalized_subset)
-            results.append((current_result, subset))
-        return results
+        # results: solution_list = []
+        # print('***** subsets lenght: ', len(subset))
+        # i = 1;
+        # print('i = ', i)
+        # i = i + 1
+        
+        denormalized_result = denormalize_result_data([(0.0, subset)], self.denormalize_max_x,
+                                                      self.denormalize_min_x, self.denormalize_max_y,
+                                                      self.denormalize_min_y)
+        # print('Bottleneck 1')
+        denormalized_subset = denormalized_result[0][1]
+        current_result = self.cost_function.solve(query, subset, denormalized_subset)
+        # print('Bottleneck 2')
+        # results.append((current_result, subset))
+        return current_result

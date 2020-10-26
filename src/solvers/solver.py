@@ -231,13 +231,7 @@ class Solver:
     # def append_coordinates(self, lat, lon):
     #     return str(lat)+','+str(lon)
 
-    def get_all_subsets_heuristic(self, data, geographic_distances):
-        """
-        Calculates all the possible subsets for the given data. Takes the set maximum length for subsets into account.
-        :param data: The data
-        :param geographic_distances: Distance dataframe between any two locations
-        :return: A list of all possible subsets
-        """
+    def get_all_candidates_heuristic(self, data, geographic_distances):
         candidates = geographic_distances[(0 < geographic_distances)  &
                                           (geographic_distances < self.RADIUS)].apply(lambda x: x.dropna().index.tolist())
         
@@ -247,15 +241,23 @@ class Solver:
             for v in values:
                 candidates_set.add(v)
     
-        candidates_list = list(candidates_set)
+        # candidates_list = list(candidates_set)
         print('+++++++ Values: ', candidates_set)
     
         print('***** Longitud antes: ', len(data))
     
-        data = [x for x in data if (str(x.coordinates.x)+','+str(x.coordinates.y)) in candidates_list] 
-        # data = [x for x in data if '48.869173,2.391884' in candidates_list] 
-        # [x for x in somelist if not determine(x)]                
+        data = [x for x in data if (str(x.coordinates.x)+','+str(x.coordinates.y)) in candidates_set] 
+                   
         print('***** Longitud después: ', len(data))
+        
+        return candidates_set
+
+    def get_all_subsets_heuristic(self, data):
+        """
+        Calculates all the possible subsets for the given data. Takes the set maximum length for subsets into account.
+        :param data: The data
+        :return: A list of all possible subsets
+        """
         
         list_of_subsets = []
         max_length = min(len(data), self.max_subset_size)
