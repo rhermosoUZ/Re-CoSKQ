@@ -88,19 +88,25 @@ if __name__ == '__main__':
     
     initialLat = []
     initialLon = []
-    lats = []
-    lons = []
+    
     keywords = []
 
     gmap = gmplot.GoogleMapPlotter(query.coordinates.x, query.coordinates.y, 14)
     
-    # Third dimension is the order of solution (Best: 0, Second best: 1...)
-    for i in range(5): 
-         for kwc in results[0][0][i][1]:
-            lats.append(kwc.coordinates.x)
-            lons.append(kwc.coordinates.y)
-            keywords.append(kwc.keywords)           
+    colors = ['red','blue','green','purple','orange']
     
+    # Third dimension is the order of solution (Best: 0, Second best: 1...)
+    for i in range(5):
+        lats = []
+        lons = []
+        for kwc in results[0][0][i][1]:
+           lats.append(kwc.coordinates.x)
+           lons.append(kwc.coordinates.y)
+           keywords.append(kwc.keywords)           
+        for j in range(len(lats)):
+            gmap.marker(lats[j], lons[j], color=colors[i])
+        gmap.polygon(lats, lons, color='cornflowerblue', edge_width=7)
+            
         # initialLat.append(query.coordinates.x)
         # initialLon.append(query.coordinates.y)
         
@@ -110,15 +116,14 @@ if __name__ == '__main__':
         # gmap.plot(lats, lons, 'cornflowerblue', edge_width = 3.0)
         # gmap.polygon(lats, lons, color='cornflowerblue', edge_width=10)
         
-        # for j in range(len(lats)):
-        #     gmap.marker(lats[j], lons[j], color='#FF0000')
+    
         # gmap.scatter(lats, lons, color='#3B0B39', size=40, marker=False)
         
         
         #Your Google_API_Key
         #gmap.apikey = " API_Key”
         # save it to html
-    gmap.scatter(lats, lons, '#FF0000', size=40, marker=True)
+    # gmap.scatter(lats, lons, '#FF0000', size=40, marker=True)
     gmap.marker(query.coordinates.x, query.coordinates.y, color='cornflowerblue')
     gmap.draw(r"graphic_results.html")
     
