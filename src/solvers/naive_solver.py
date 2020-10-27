@@ -16,6 +16,9 @@ from src.utils.typing_definitions import dataset_type, solution_list
 
 
 class NaiveSolver(Solver):
+    
+    list_of_subsets = []
+    normalised_query = ''
     """
     The NaiveSolver does not use any kind of heuristic. It calculates the cost for every possibility and returns the best results.
     """
@@ -37,6 +40,9 @@ class NaiveSolver(Solver):
         logger.debug('creating with query {}, data {}, cost function {}, normalization {} and result length {}'.format(query, dataset_comprehension(data), cost_function, normalize, result_length))
         super().__init__(query, data, cost_function, normalize, result_length, max_subset_size,
                          max_number_of_concurrent_processes, rebalance_subsets)
+        
+        self.list_of_subsets, self.normalised_query = self.preprocess_input()
+        
         logger.debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
     def solve(self) -> solution_list:
@@ -46,10 +52,49 @@ class NaiveSolver(Solver):
         """
         logger = logging.getLogger(__name__)
         logger.info('solving for query {} and dataset {} using cost function {} and result length {}'.format(self.query,
-                                                                                                             dataset_comprehension(
-                                                                                                                 self.data),
-                                                                                                             self.cost_function,
-                                                                                                              self.result_length))
+                                                                                                              dataset_comprehension(
+                                                                                                                  self.data),
+                                                                                                              self.cost_function,
+                                                                                                               self.result_length))
+        
+        result_list: solution_list = []
+        
+        # UNCOMMENT FOR MULTIPROCESSING (DOES NOT WORK IN WINDOWS 10)
+        # with concurrent.futures.ProcessPoolExecutor(
+        #         max_workers=self.max_number_of_concurrent_processes) as executor:
+        #     future_list = []
+        #     for subsets in list_of_split_subsets:
+        #         future = executor.submit(self.get_cost_for_subset, query, subsets)
+        #         future_list.append(future)
+        #     for future in future_list:
+        #         for solution in future.result():
+        #             result_list.append(solution)
+        
+        # ONE PROCESSOR VERSION
+        result_list = []
+ 
+        for subset in self.list_of_subsets: # list_of_split_subsets if multiprocessing enabled.
+            # print(i)
+            # i = i + 1
+            solution = self.get_cost_for_subset(self.normalised_query, subset)
+            result_list.append((solution, subset))
+            
+            
+        # MULTIPROCESSOR VERSION
+        # for future in future_list:
+        #     for solution in future.result():
+        #         result_list.append(solution)
+        #########################
+        
+        result_list.sort(key=lambda x: x[0])
+        result_list = result_list[:self.result_length]
+        denormalized_result_list = denormalize_result_data(result_list, self.denormalize_max_x, self.denormalize_min_x,
+                                                           self.denormalize_max_y, self.denormalize_min_y)
+        logger.info('solved for {} with length {}'.format(result_list_comprehension(denormalized_result_list),
+                                                          self.result_length))
+        return denormalized_result_list
+
+    def preprocess_input(self):
         #  Calculates distances between any pair of locations (POIs)
         distances = []
         for kwc in self.data:
@@ -101,43 +146,8 @@ class NaiveSolver(Solver):
         #  UNCOMMENT IF MULTIPROCESSING
         # list_of_split_subsets = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes,
                                                # self.rebalance_subsets)
-                
-        result_list: solution_list = []
-        
-        # UNCOMMENT FOR MULTIPROCESSING (DOES NOT WORK IN WINDOWS 10)
-        # with concurrent.futures.ProcessPoolExecutor(
-        #         max_workers=self.max_number_of_concurrent_processes) as executor:
-        #     future_list = []
-        #     for subsets in list_of_split_subsets:
-        #         future = executor.submit(self.get_cost_for_subset, query, subsets)
-        #         future_list.append(future)
-        #     for future in future_list:
-        #         for solution in future.result():
-        #             result_list.append(solution)
-        
-        # ONE PROCESSOR VERSION
-        result_list = []
- 
-        for subset in list_of_subsets: # list_of_split_subsets if multiprocessing enabled.
-            # print(i)
-            # i = i + 1
-            solution = self.get_cost_for_subset(query, subset)
-            result_list.append((solution, subset))
-            
-            
-        # MULTIPROCESSOR VERSION
-        # for future in future_list:
-        #     for solution in future.result():
-        #         result_list.append(solution)
-        #########################
-        
-        result_list.sort(key=lambda x: x[0])
-        result_list = result_list[:self.result_length]
-        denormalized_result_list = denormalize_result_data(result_list, self.denormalize_max_x, self.denormalize_min_x,
-                                                           self.denormalize_max_y, self.denormalize_min_y)
-        logger.info('solved for {} with length {}'.format(result_list_comprehension(denormalized_result_list),
-                                                          self.result_length))
-        return denormalized_result_list
+                                        
+        return list_of_subsets, query                                  
 
     def get_cost_for_subset(self, query, subset):
         """

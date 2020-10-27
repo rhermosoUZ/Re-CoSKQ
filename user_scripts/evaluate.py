@@ -81,10 +81,8 @@ if __name__ == '__main__':
     results = ev.get_results()
     timings = ev.get_timings()
     print('*** Solution -', solution_list_comprehension(results))
-    print('*** Timing -', timing_list_comprehension(timings))
+    # print('*** Timing -', timing_list_comprehension(timings))
     
-    # # Results of the best solution
-    # print('*** results[0][0][0] -', results[0][0][0][1])
     
     initialLat = []
     initialLon = []
@@ -124,7 +122,7 @@ if __name__ == '__main__':
         #gmap.apikey = " API_Key”
         # save it to html
     # gmap.scatter(lats, lons, '#FF0000', size=40, marker=True)
-    gmap.marker(query.coordinates.x, query.coordinates.y, color='cornflowerblue')
+    gmap.marker(query.coordinates.x, query.coordinates.y, color='cornflowerblue', title='Query point')
     gmap.draw(r"graphic_results.html")
     
     print("--- %s seconds ---" % (time.time() - start_time))
