@@ -7,7 +7,7 @@ import multiprocessing as mp
 
 from src.costfunctions.costfunction import CostFunction
 from src.metrics.distance_metrics import normalize_data, denormalize_result_data
-from src.metrics.similarity_metrics import find_subsets
+from src.metrics.similarity_metrics import find_subsets, semantic_similarity
 from src.model.keyword_coordinate import KeywordCoordinate
 from src.utils.data_handler import split_subsets
 from src.utils.logging_utils import dataset_comprehension
@@ -23,7 +23,7 @@ class Solver:
     def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction,
                  normalize: bool = True, result_length: int = 10, max_subset_size: int = math.inf,
                  max_number_of_concurrent_processes: int = mp.cpu_count(), rebalance_subsets: bool = True,
-                 RADIUS: float = 2000):
+                 RADIUS: float = 3000, semantic_filtering: bool = True):
         """
         Constructs a new Solver object. The Solver class should never be directly instantiated. Instead use a class that inherits from the Solver class and implements the solve() method.
         :param query: The query for which to solve for
@@ -47,6 +47,7 @@ class Solver:
         self.max_number_of_concurrent_processes = max_number_of_concurrent_processes
         self.rebalance_subsets = rebalance_subsets
         self.RADIUS = RADIUS
+        self.semantic_filtering = semantic_filtering
         logging.getLogger(__name__).debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
     def solve(self) -> solution_list:
@@ -247,31 +248,35 @@ class Solver:
         print('***** Longitud antes: ', len(data))
     
         data = [x for x in data if (str(x.coordinates.x)+','+str(x.coordinates.y)) in candidates_set] 
+        
+        # Semantic filtering approach
+        if self.semantic_filtering:
+            data = [x for x in data if semantic_similarity(self.query, x) > 0.5]
                    
         print('***** Longitud después: ', len(data))
         
         return candidates_set
 
-    def get_all_subsets_heuristic(self, data):
-        """
-        Calculates all the possible subsets for the given data. Takes the set maximum length for subsets into account.
-        :param data: The data
-        :return: A list of all possible subsets
-        """
+    # def get_all_subsets_heuristic(self, data):
+    #     """
+    #     Calculates all the possible subsets for the given data. Takes the set maximum length for subsets into account.
+    #     :param data: The data
+    #     :return: A list of all possible subsets
+    #     """
         
-        list_of_subsets = []
-        max_length = min(len(data), self.max_subset_size)
+    #     list_of_subsets = []
+    #     max_length = min(len(data), self.max_subset_size)
         
-        j = 1
-        for index in range(max_length):
-            print('***** Longitud ', j)
-            j += 1
-            new_subsets = find_subsets(data, index + 1)
-            for subset in new_subsets:
-                list_of_subsets.append(subset)
-            print('# subsets: ', len(list_of_subsets))
+    #     j = 1
+    #     for index in range(max_length):
+    #         print('***** Longitud ', j)
+    #         j += 1
+    #         new_subsets = find_subsets(data, index + 1)
+    #         for subset in new_subsets:
+    #             list_of_subsets.append(subset)
+    #         print('# subsets: ', len(list_of_subsets))
         
-        return list_of_subsets
+    #     return list_of_subsets
     
     
     def get_all_subsets(self, data):

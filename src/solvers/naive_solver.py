@@ -56,7 +56,7 @@ class NaiveSolver(Solver):
                                                                                                                   self.data),
                                                                                                               self.cost_function,
                                                                                                                self.result_length))
-        
+       
         result_list: solution_list = []
         
         # UNCOMMENT FOR MULTIPROCESSING (DOES NOT WORK IN WINDOWS 10)
@@ -141,7 +141,7 @@ class NaiveSolver(Solver):
             query = self.query
             data = self.dataAux
             
-        list_of_subsets = self.get_all_subsets_heuristic(data)
+        list_of_subsets = self.get_all_subsets(data)
         
         #  UNCOMMENT IF MULTIPROCESSING
         # list_of_split_subsets = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes,
