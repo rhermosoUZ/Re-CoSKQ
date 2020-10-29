@@ -23,7 +23,7 @@ class Solver:
     def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction,
                  normalize: bool = True, result_length: int = 10, max_subset_size: int = math.inf,
                  max_number_of_concurrent_processes: int = mp.cpu_count(), rebalance_subsets: bool = True,
-                 RADIUS: float = 3000, semantic_filtering: bool = True):
+                 RADIUS: float = 2000, semantic_filtering: bool = True):
         """
         Constructs a new Solver object. The Solver class should never be directly instantiated. Instead use a class that inherits from the Solver class and implements the solve() method.
         :param query: The query for which to solve for
@@ -249,13 +249,15 @@ class Solver:
     
         data = [x for x in data if (str(x.coordinates.x)+','+str(x.coordinates.y)) in candidates_set] 
         
+        print('***** Longitud depués de filtrado físico: ', len(data))
         # Semantic filtering approach
         if self.semantic_filtering:
             data = [x for x in data if semantic_similarity(self.query, x) > 0.5]
                    
-        print('***** Longitud después: ', len(data))
+        print('***** Longitud después de filtrado semántico: ', len(data))
         
-        return candidates_set
+        # return candidates_set
+        return data
 
     # def get_all_subsets_heuristic(self, data):
     #     """

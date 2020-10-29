@@ -125,14 +125,15 @@ class NaiveSolver(Solver):
         
         
         
-        candidates_set = self.get_all_candidates_heuristic(self.data, distances_to_query_df)
+        # candidates_set = self.get_all_candidates_heuristic(self.data, distances_to_query_df)
+        dataAux = self.get_all_candidates_heuristic(self.data, distances_to_query_df)
         
         # list_of_subsets = self.get_all_subsets(data)
         
         #  ONLY ONE PROCESSOR (NO BALANCING NEEDED)
         # list_of_split_subsets = list_of_subsets
         
-        dataAux = [x for x in self.data if (str(x.coordinates.x)+','+str(x.coordinates.y)) in candidates_set]
+        # dataAux = [x for x in self.data if (str(x.coordinates.x)+','+str(x.coordinates.y)) in candidates_set]
         
         if self.normalize_data:
             query, data, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y = normalize_data(
