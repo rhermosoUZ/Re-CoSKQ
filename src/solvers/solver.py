@@ -3,6 +3,9 @@ from __future__ import annotations
 import concurrent.futures
 import logging
 import math
+import time
+import spacy
+import en_core_web_lg
 import multiprocessing as mp
 
 from src.costfunctions.costfunction import CostFunction
@@ -23,7 +26,7 @@ class Solver:
     def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction,
                  normalize: bool = True, result_length: int = 10, max_subset_size: int = math.inf,
                  max_number_of_concurrent_processes: int = mp.cpu_count(), rebalance_subsets: bool = True,
-                 RADIUS: float = 2000, semantic_filtering: bool = True):
+                 RADIUS: float = 4000, semantic_filtering: bool = True):
         """
         Constructs a new Solver object. The Solver class should never be directly instantiated. Instead use a class that inherits from the Solver class and implements the solve() method.
         :param query: The query for which to solve for
@@ -245,16 +248,32 @@ class Solver:
         # candidates_list = list(candidates_set)
         print('+++++++ Values: ', candidates_set)
     
-        print('***** Longitud antes: ', len(data))
+        print('***** Longitud inicial: ', len(data))
     
+        start_time = time.time()
         data = [x for x in data if (str(x.coordinates.x)+','+str(x.coordinates.y)) in candidates_set] 
+        finish_time = time.time()
+        print("Tiempo empleado en filtrado físico: ", finish_time - start_time)
         
         print('***** Longitud depués de filtrado físico: ', len(data))
         # Semantic filtering approach
+
         if self.semantic_filtering:
-            data = [x for x in data if semantic_similarity(self.query, x) > 0.5]
-                   
-        print('***** Longitud después de filtrado semántico: ', len(data))
+            start_time = time.time()
+            nlp = en_core_web_lg.load()
+            
+            # Build NLP representation
+            query_string = ''
+            for kw in self.query.keywords:
+                query_string = query_string + ' ' + kw
+            doc_query = nlp(query_string)
+            ###########################
+            
+            data = [x for x in data if semantic_similarity(doc_query, x, nlp) > 0.5]
+            
+            finish_time = time.time()
+            print("Tiempo empleado en filtrado semántico: ", finish_time - start_time)       
+            print('***** Longitud después de filtrado semántico: ', len(data))
         
         # return candidates_set
         return data

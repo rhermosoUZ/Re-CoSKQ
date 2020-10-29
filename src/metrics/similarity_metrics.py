@@ -5,7 +5,7 @@ import logging
 import math
 import typing
 import spacy
-import en_core_web_lg
+
 
 import numpy as np
 import pandas as pd
@@ -196,22 +196,17 @@ def word2vec_cosine_similarity(wordlist1: keyword_dataset_type, wordlist2: keywo
 
 # Using spaCy
 # Returns simlarity values between a query and a POI
-def semantic_similarity(query: KeywordCoordinate, data_element: KeywordCoordinate):
-    nlp = en_core_web_lg.load()
-    result: bool;
+def semantic_similarity(query_nlps, data_element: KeywordCoordinate, nlp):
     
-    query_string = ''
-    for kw in query.keywords:
-        query_string = query_string + ' ' + kw
+    result: bool;
     
     element_string = ''        
     for kw in data_element.keywords:
         element_string = element_string + ' ' + kw
     
-    doc1 = nlp(query_string)
-    doc2 = nlp(element_string)
+    doc = nlp(element_string)
     
-    return doc1.similarity(doc2)
+    return query_nlps.similarity(doc)
 
 # https://stackoverflow.com/questions/374626/how-can-i-find-all-the-subsets-of-a-set-with-exactly-n-elements#374645
 def find_subsets(input_set: dataset_type, subset_size: int):

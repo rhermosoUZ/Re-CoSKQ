@@ -7,7 +7,7 @@ if __name__ == '__main__':
     x_index = 0
     y_index = 1
     keyword_index = 2
-    query_index = 22
+    query_index = 1 # Let's test with the first query in the file
     keyword_delimiter = ' '
     csv_delimiter = ';'
     csv_quotechar = '"'

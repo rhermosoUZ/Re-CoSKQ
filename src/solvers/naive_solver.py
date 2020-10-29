@@ -41,7 +41,10 @@ class NaiveSolver(Solver):
         super().__init__(query, data, cost_function, normalize, result_length, max_subset_size,
                          max_number_of_concurrent_processes, rebalance_subsets)
         
-        self.list_of_subsets, self.normalised_query = self.preprocess_input()
+        if self.query.keywords[0] == '0': # Only for precalculate distance
+            self.list_of_subsets, self.normalised_query = self.preprocess_input_precalculate_only()    
+        else:
+            self.list_of_subsets, self.normalised_query = self.preprocess_input()
         
         logger.debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
@@ -94,7 +97,19 @@ class NaiveSolver(Solver):
                                                           self.result_length))
         return denormalized_result_list
 
+    def preprocess_input_precalculate_only(self):
+        
+        if self.normalize_data:
+            query, data, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y = normalize_data(
+                self.query, self.data)
+        else:
+            query = self.query
+            data = self.data
+        list_of_subsets = self.get_all_subsets(data)
+        return list_of_subsets, query
+
     def preprocess_input(self):
+        
         #  Calculates distances between any pair of locations (POIs)
         distances = []
         for kwc in self.data:
@@ -127,7 +142,7 @@ class NaiveSolver(Solver):
         
         # candidates_set = self.get_all_candidates_heuristic(self.data, distances_to_query_df)
         dataAux = self.get_all_candidates_heuristic(self.data, distances_to_query_df)
-        
+    
         # list_of_subsets = self.get_all_subsets(data)
         
         #  ONLY ONE PROCESSOR (NO BALANCING NEEDED)
@@ -147,7 +162,9 @@ class NaiveSolver(Solver):
         #  UNCOMMENT IF MULTIPROCESSING
         # list_of_split_subsets = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes,
                                                # self.rebalance_subsets)
-                                        
+
+        print('List of subsets length: ', len(list_of_subsets))
+    
         return list_of_subsets, query                                  
 
     def get_cost_for_subset(self, query, subset):
