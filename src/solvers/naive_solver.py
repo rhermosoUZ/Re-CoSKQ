@@ -3,6 +3,7 @@ from __future__ import annotations
 import concurrent.futures
 import logging
 import math
+import copy
 import multiprocessing as mp
 import pandas as pd
 
@@ -41,9 +42,7 @@ class NaiveSolver(Solver):
         super().__init__(query, data, cost_function, normalize, result_length, max_subset_size,
                          max_number_of_concurrent_processes, rebalance_subsets)
         
-        if self.query.keywords[0] == '0': # Only for precalculate distance
-            self.list_of_subsets, self.normalised_query = self.preprocess_input_precalculate_only()    
-        else:
+        if self.query.keywords[0] != '0': # Only for precalculate distance
             self.list_of_subsets, self.normalised_query = self.preprocess_input()
         
         logger.debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
@@ -99,15 +98,39 @@ class NaiveSolver(Solver):
 
     def preprocess_input_precalculate_only(self):
         
-        if self.normalize_data:
-            query, data, self.denormalize_max_x, self.denormalize_min_x, self.denormalize_max_y, self.denormalize_min_y = normalize_data(
-                self.query, self.data)
-        else:
-            query = self.query
-            data = self.data
-        list_of_subsets = self.get_all_subsets(data)
-        return list_of_subsets, query
+        #  Calculates distances between any pair of locations (POIs)
+        distances = []
+        for kwc in self.data:
+            distance_list = []
+            # print(kwc.coordinates.x)
+            # print(kwc.coordinates.y)
+            distance_list.append(str(kwc.coordinates.x) + ',' + str(kwc.coordinates.y))
+            for kwc2 in self.data:
+                distance_list.append(geographic_distance(kwc.coordinates, kwc2.coordinates))
+            distances.append(distance_list)
+        
+        # Calculates distance list from query location to any POI
+        distances_to_query = []
+        for kwc in self.data:
+            distances_one_poi = []
+            distances_one_poi.append(str(kwc.coordinates.x) + ',' + str(kwc.coordinates.y))
+            distances_one_poi.append(geographic_distance(self.query.coordinates, kwc.coordinates))
+            distances_to_query.append(distances_one_poi)
+        
+        geographic_distances = pd.DataFrame(distances)
+        geographic_distances.set_index(0, inplace=True)
+        geographic_distances.columns = geographic_distances.index.tolist()
+        
+        # Calculates distances to query location from every POI
+        distances_to_query_df = pd.DataFrame(distances_to_query)
+        distances_to_query_df.set_index(0, inplace=True)
+        distances_to_query_df.columns = ['Distances2Query']
+        # print('>>>>>>> Query location ', self.query.coordinates.x, ',', self.query.coordinates.y)
 
+        # candidates_set = self.get_all_candidates_heuristic(self.data, distances_to_query_df)
+        return self.get_all_candidates_heuristic(self.data, distances_to_query_df)
+
+    
     def preprocess_input(self):
         
         #  Calculates distances between any pair of locations (POIs)

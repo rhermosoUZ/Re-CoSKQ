@@ -21,7 +21,7 @@ if __name__ == '__main__':
     ev = Evaluator()
 
     query: KeywordCoordinate = load_pickle('data20_query.pickle')
-    #print('Query:', query)
+    print('Query:', query)
     data: dataset_type = load_pickle('data20_dataset.pickle')
     # print('Data:', dataset_comprehension(data))
 

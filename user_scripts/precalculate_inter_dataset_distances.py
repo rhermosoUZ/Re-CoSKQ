@@ -13,7 +13,7 @@ if __name__ == '__main__':
     # Config
     file_name_data = 'data20_dataset.pickle'
     target_file_name = 'precalculated_inter_dataset_distances_data20.pickle'
-    max_subset_size = 6 # Changed
+    max_subset_size = 3 # Changed
     cost_function = Type1(euclidean_distance, combined_cosine_similarity, 0.33, 0.33, 0.33)
     file_allow_overwrite = True
 

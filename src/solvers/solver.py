@@ -82,8 +82,8 @@ class Solver:
         else:
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        list_of_subsets = self.get_all_subsets(data)
-        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
+        # list_of_subsets = self.get_all_subsets(data)
+        split_ss = split_subsets(self.list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self.max_number_of_concurrent_processes) as executor:
@@ -117,8 +117,8 @@ class Solver:
         else:
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        list_of_subsets = self.get_all_subsets(data)
-        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
+        # list_of_subsets = self.get_all_subsets(data)
+        split_ss = split_subsets(self.list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self.max_number_of_concurrent_processes) as executor:
@@ -160,8 +160,8 @@ class Solver:
             query = self.query
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        list_of_subsets = self.get_all_subsets(data)
-        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
+        # list_of_subsets = self.get_all_subsets(data)
+        split_ss = split_subsets(self.list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self.max_number_of_concurrent_processes) as executor:
@@ -186,8 +186,8 @@ class Solver:
             query = self.query
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        list_of_subsets = self.get_all_subsets(data)
-        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
+        # list_of_subsets = self.get_all_subsets(data)
+        split_ss = split_subsets(self.list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self.max_number_of_concurrent_processes) as executor:
@@ -219,8 +219,8 @@ class Solver:
             query = self.query
             data = self.data
         result_dict: precalculated_dict_type = dict()
-        list_of_subsets = self.get_all_subsets(data)
-        split_ss = split_subsets(list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
+        # list_of_subsets = self.get_all_subsets(data)
+        split_ss = split_subsets(self.list_of_subsets, self.max_number_of_concurrent_processes, self.rebalance_subsets)
         results = []
         with concurrent.futures.ProcessPoolExecutor(
                 max_workers=self.max_number_of_concurrent_processes) as executor:
@@ -236,17 +236,18 @@ class Solver:
     #     return str(lat)+','+str(lon)
 
     def get_all_candidates_heuristic(self, data, geographic_distances):
+        # print('Geographic_distances: ', geographic_distances)
         candidates = geographic_distances[(0 < geographic_distances)  &
                                           (geographic_distances < self.RADIUS)].apply(lambda x: x.dropna().index.tolist())
         
-        print('Candidates --> ', candidates)
+        # print('Candidates --> ', candidates)
         candidates_set = set()
         for values in candidates.values:
             for v in values:
                 candidates_set.add(v)
     
         # candidates_list = list(candidates_set)
-        print('+++++++ Values: ', candidates_set)
+        # print('+++++++ Values: ', candidates_set)
     
         print('***** Longitud inicial: ', len(data))
     

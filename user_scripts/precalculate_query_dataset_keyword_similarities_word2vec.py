@@ -14,7 +14,7 @@ if __name__ == '__main__':
     file_name_query = 'data20_query.pickle'
     file_name_word2vec_model = 'data20_model.pickle'
     target_file_name = 'precalculated_query_dataset_keyword_similarities_word2vec_data20.pickle'
-    max_subset_size = 6
+    max_subset_size = 3
     cost_function = Type1(euclidean_distance, word2vec_cosine_similarity, 0.33, 0.33, 0.33,
                           model=load_word2vec_model(file_name_word2vec_model))
     file_allow_overwrite = True
