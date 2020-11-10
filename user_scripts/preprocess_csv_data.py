@@ -1,12 +1,15 @@
 from src.utils.data_handler import load_csv, write_pickle
+import time
 
 if __name__ == '__main__':
+    
+    start_time = time.time()
     # Config
-    csv_file_name = 'Paris_dataset.csv'
+    csv_file_name = 'amsterdam.csv'
     data_target_name = 'data20_dataset.pickle'
     x_index = 6 # Starts in 0
     y_index = 7
-    keyword_index = 2
+    keyword_index = 8
     max_read_length = -1   # -1 to disable
     keyword_delimiter = ' '
     csv_delimiter = ';'
@@ -23,3 +26,7 @@ if __name__ == '__main__':
         write_pickle(data=data, file_name=data_target_name, file_allow_overwrite=file_allow_overwrite)
     else:
         print('Could not load any data.')
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+    
+    

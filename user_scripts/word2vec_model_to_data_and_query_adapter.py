@@ -1,9 +1,14 @@
 import sys
+import time
+
 sys.path.append("..")
 
 from src.utils.data_handler import write_pickle, load_word2vec_model, calculate_model_subset, load_pickle
 
 if __name__ == '__main__':
+    
+    start_time = time.time()
+    
     # Config
     # Both files should be in the root directory of the project.
     word2vec_model_name = 'model.pickle'
@@ -18,3 +23,5 @@ if __name__ == '__main__':
     data = load_pickle(data_file_name)
     shrunk_model = calculate_model_subset(query, data, model)
     write_pickle(shrunk_model, model_pickle_file_name, file_allow_overwrite=file_allow_overwrite)
+
+    print("--- %s seconds ---" % (time.time() - start_time))

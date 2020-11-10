@@ -1,6 +1,10 @@
 from src.utils.data_handler import load_csv, write_pickle
+import time
 
 if __name__ == '__main__':
+    
+    start_time = time.time()
+    
     # Config
     csv_file_name = 'user_queries.csv'
     data_target_name = 'data20_query.pickle'
@@ -29,3 +33,5 @@ if __name__ == '__main__':
 
         else:
             print('Could not load any data.')
+
+print("--- %s seconds ---" % (time.time() - start_time))

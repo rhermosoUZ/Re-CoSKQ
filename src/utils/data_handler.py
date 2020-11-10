@@ -97,19 +97,22 @@ def load_csv(file_name: str, x_coordinate_index: int, y_coordinate_index: int, k
         file_path = os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '/../../files/' + file_name)
     else:
         file_path = file_name
-    with open(file_path, mode='rt', newline=newline) as csvfile:
+    with open(file_path, mode='rt', newline=newline, encoding='utf8') as csvfile:
         reader = csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)
         for row in reader:
             try:
                 # print(row[x_coordinate_index])
                 current_coordinate_x = float(row[x_coordinate_index])
+                # print(current_coordinate_x)
                 current_coordinate_y = float(row[y_coordinate_index])
+                # print(current_coordinate_y)
             except:
                 print('----- Failure -----')
                 if max_read_length > 0:
                     max_read_length += 1
                 continue
             raw_keyword_list = row[keywords_index].split(keywords_delimiter)
+            
             current_keywords: keyword_dataset_type = []
             for keyword in raw_keyword_list:
                 stripped_keyword = keyword.strip()
@@ -117,6 +120,7 @@ def load_csv(file_name: str, x_coordinate_index: int, y_coordinate_index: int, k
                     current_keywords.append(stripped_keyword)
             current_keyword_coordinate = KeywordCoordinate(current_coordinate_x, current_coordinate_y, current_keywords)
             dataset.append(current_keyword_coordinate)
+
             if len(dataset) == max_read_length:
                 return dataset
     return dataset
@@ -191,7 +195,19 @@ def calculate_model_subset(query: KeywordCoordinate, data: dataset_type, model):
     for kwc in data:
         for kw in kwc.keywords:
             keywords.add(kw)
+            
+    i = 1
+    num_keywords = 0;
     for kw in keywords:
-        if kw[0].isalpha(): # Whatch out! It doesn't work with symbols like &/... SOL: check if text is alphabetic
-            new_model[kw.lower()] = model[kw.lower()]
+        # print('------> ', kw)
+        try:
+            if kw[0].isalpha(): # Whatch out! It doesn't work with symbols like &/... SOL: check if text is alphabetic
+                # print('***** ', kw[0])
+                new_model[kw.lower()] = model[kw.lower()]
+                num_keywords = num_keywords + 1
+        except:
+            i = i + 1
+            continue
+    print('Words included: ', num_keywords)
+    print('Words left apart: ', i)
     return new_model

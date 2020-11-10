@@ -26,7 +26,7 @@ class Solver:
     def __init__(self, query: KeywordCoordinate, data: dataset_type, cost_function: CostFunction,
                  normalize: bool = True, result_length: int = 10, max_subset_size: int = math.inf,
                  max_number_of_concurrent_processes: int = mp.cpu_count(), rebalance_subsets: bool = True,
-                 RADIUS: float = 4000, semantic_filtering: bool = True):
+                 RADIUS: float = 2000, semantic_filtering: bool = True):
         """
         Constructs a new Solver object. The Solver class should never be directly instantiated. Instead use a class that inherits from the Solver class and implements the solve() method.
         :param query: The query for which to solve for
@@ -51,6 +51,7 @@ class Solver:
         self.rebalance_subsets = rebalance_subsets
         self.RADIUS = RADIUS
         self.semantic_filtering = semantic_filtering
+        self.SEMANTIC_THRESHOLD = 0.6
         logging.getLogger(__name__).debug('created with query {}, data {}, cost function {}, normalization {} and result length {}'.format(self.query, dataset_comprehension(self.data), self.cost_function, self.normalize_data, self.result_length))
 
     def solve(self) -> solution_list:
@@ -270,7 +271,7 @@ class Solver:
             doc_query = nlp(query_string)
             ###########################
             
-            data = [x for x in data if semantic_similarity(doc_query, x, nlp) > 0.5]
+            data = [x for x in data if semantic_similarity(doc_query, x, nlp) > self.SEMANTIC_THRESHOLD]
             
             finish_time = time.time()
             print("Tiempo empleado en filtrado semántico: ", finish_time - start_time)       
