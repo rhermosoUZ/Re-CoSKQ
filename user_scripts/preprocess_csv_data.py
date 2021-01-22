@@ -5,11 +5,11 @@ if __name__ == '__main__':
     
     start_time = time.time()
     # Config
-    csv_file_name = 'amsterdam.csv'
+    csv_file_name = 'London.csv'
     data_target_name = 'data20_dataset.pickle'
-    x_index = 6 # Starts in 0
-    y_index = 7
-    keyword_index = 8
+    x_index = 5 # Starts in 0
+    y_index = 6
+    keyword_index = 9
     max_read_length = -1   # -1 to disable
     keyword_delimiter = ' '
     csv_delimiter = ';'
