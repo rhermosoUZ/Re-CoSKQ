@@ -84,7 +84,7 @@ def extract_topn_from_vector(feature_names, sorted_items, topn=10):
     
     return results
 
-def get_topN_keywords(doc, N):
+def get_topN_keywords(doc, N, tfidf_transformer, cv, feature_names):
     
     try:
         #generate tf-idf for the given document
@@ -228,7 +228,7 @@ def load_csv(file_name: str, x_coordinate_index: int, y_coordinate_index: int, k
     
     feature_names=cv.get_feature_names()
     
-    df['Top-Keywords-TFIDF'] = reviews.apply(lambda x: get_topN_keywords(x, 10))
+    df['Top-Keywords-TFIDF'] = reviews.apply(lambda x: get_topN_keywords(x, 10, tfidf_transformer, cv, feature_names))
     
     
     ###########################################
@@ -262,8 +262,7 @@ def load_csv(file_name: str, x_coordinate_index: int, y_coordinate_index: int, k
         current_POI_name = df['name'][i]
         current_coordinate_x = float(df['lat'][i])
         current_coordinate_y = float(df['lng'][i])
-        current_keywords: keyword_dataset_type = []
-        current_keywords = ' '.join(df['Top-Keywords-TFIDF'][i])
+        current_keywords: keyword_dataset_type = ' '.join(df['Top-Keywords-TFIDF'][i])
     
             # current_keywords: keyword_dataset_type = []
             # for keyword in raw_keyword_list:
